@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Booking Checker</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="shortcut icon" type="image/png" href="icon16.png">
+  <script type="text/javascript" src="table.js"></script>
+  <script type="text/javascript" src="content.js"></script>
+  <script type="text/javascript" src="popup.js"></script>
+</head>
+<body>
+  <div id="notification-container"></div>
+  <div id="top-container"></div>
+  <form id="search-form">
+    <div class="input-group">
+      <label for="pickup-location">Pickup Location:</label>
+      <div class="autocomplete">
+        <input type="text" id="pickup-location" name="pickup-location" placeholder="Enter Pickup" autocomplete="off" required>
+        <ul id="location-list"></ul>
+      </div>
+      <button id="swap-button"></button>
+      <label for="destination">Destination:</label>
+      <div class="autocomplete">
+        <input type="text" id="destination" name="destination" placeholder="Enter Destination" autocomplete="off" required>
+        <ul id="destination-list"></ul>
+      </div>
+    </div>
+    <label for="date">Date:</label>
+    <input type="date" id="date" name="date" required>
+
+    <label for="time">Time:</label>
+    <input type="time" id="time" name="time" value="12:00" required>
+
+    <label for="passenger">Passenger:</label>
+    <select id="passenger" name="passenger" required>
+        <option value="">Pax</option>
+        <option value="1">1</option>
+        <option value="2" selected>2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+        <option value="13">13</option>
+        <option value="14">14</option>
+        <option value="15">15</option>
+        <option value="16">16</option>
+    </select>
+
+    <div class="button-container">
+      <button type="submit" id="submit-button">
+        Search
+        <div id="submit-spinner" class="loader" style="display: none;"></div>
+      </button>
+    </div>
+  </form>
+  <div id="history-container">
+    <div class="controls-container">
+      <div class="toggle-container">
+        <label for="toggle-switch">RELOAD</label>
+        <label class="switch">
+          <input type="checkbox" id="toggle-switch">
+          <span class="slider round"></span>
+        </label>
+      </div>
+      <select id="history-dropdown">
+        <option value="">Select a previous search...</option>
+      </select>
+    </div>
+  </div>
+  <p id="placeholder-text">Please enter a route</p>
+  <table id="data-table-route">
+    <thead>
+      <tr>
+        <th>FROM</th>
+        <th>TO</th>
+        <th>DATE & TIME</th>
+        <th>CURRENCY</th>
+        <th>DISTANCE & TIME</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <div id="booking-container">
+    <p id="booking-table-name" class="table-name">booking.com</p>
+    <table id="data-table">
+      <thead>
+        <tr>
+          <th>NO.</th>
+          <th>CAR MODEL</th>
+          <th>CAR DECRIPTION</th>
+          <th>PRICE</th>
+          <th>SUPPLIER</th>
+          <th>SUPPLIER CATEGORY</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+<div id="elifelimo-container">
+  <p id="elifelimo-table-name" class="table-name">Elifelimo</p>
+  <table id="data-table-elifelimo">
+    <thead>
+      <tr>
+        <th>NO.</th>
+        <th>CAR MODEL</th>
+        <th>CAR DECRIPTION</th>
+        <th>PRICE</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+<div id="mytransfers-container">
+  <p id="mytransfers-table-name" class="table-name">MyTransfers</p>
+  <table id="data-table-mytransfers">
+    <thead>
+      <tr>
+        <th>NO.</th>
+        <th>CAR DECRIPTION</th>
+        <th>PRICE</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+<div id="jayride-container">
+  <p id="jayride-table-name" class="table-name">Jayride</p>
+  <table id="data-table-jayride">
+    <thead>
+      <tr>
+        <th>NO.</th>
+        <th>CAR DECRIPTION</th>
+        <th>SUPPLIER</th>
+        <th>PRICE</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+  <div id="sixt-container">
+    <a id="sixt-url" href="#">SIXT URL</a>
+  </div>
+  <div class="spacer"></div>
+  <footer>
+    <p>© 2023 duckvhuynh for education purpose only.</p>
+  </footer>
+</body>
+</html>
