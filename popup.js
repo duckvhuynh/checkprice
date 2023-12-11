@@ -41,7 +41,13 @@ function updateLocationList(predictions) {
       secondaryText.textContent = prediction.structured_formatting.secondary_text;
 
       const icon = document.createElement('img');
-      icon.src = 'location.png'; 
+      if (mainText.textContent.toLowerCase().includes('airport') || secondaryText.textContent.toLowerCase().includes('airport')) {
+        icon.src = 'airport.svg';
+      } else if (mainText.textContent.toLowerCase().includes('hotel') || secondaryText.textContent.toLowerCase().includes('hotel')) {
+        icon.src = 'hotel.svg';
+      } else {
+        icon.src = 'location.png';
+      }
       icon.alt = 'Location icon'; 
       icon.classList.add('location-icon');
 
@@ -49,9 +55,13 @@ function updateLocationList(predictions) {
       item.appendChild(mainText);
       item.appendChild(secondaryText);
 
+      item.appendChild(icon);
+      item.appendChild(mainText);
+      item.appendChild(secondaryText);
+
       item.setAttribute('data-placeid', prediction.place_id);
       item.addEventListener('click', function() {
-        document.querySelector('#pickup-location').value = this.textContent;
+        document.querySelector('#pickup-location').value = this.textContent.substring(0, 33) + '...';
         document.querySelector('#pickup-location').setAttribute('data-placeid', this.getAttribute('data-placeid'));
         while (list.firstChild) {
           list.removeChild(list.firstChild);
@@ -117,23 +127,33 @@ function updateLocationList(predictions) {
       secondaryText.classList.add('secondary-text');
       secondaryText.textContent = prediction.structured_formatting.secondary_text;
       const icon = document.createElement('img');
-      icon.src = 'location.png';
-      icon.alt = 'Location icon';
+      if (mainText.textContent.toLowerCase().includes('airport') || secondaryText.textContent.toLowerCase().includes('airport')) {
+        icon.src = 'airport.svg';
+      } else if (mainText.textContent.toLowerCase().includes('hotel') || secondaryText.textContent.toLowerCase().includes('hotel')) {
+        icon.src = 'hotel.svg';
+      } else {
+        icon.src = 'location.png';
+      }
+      icon.alt = 'Location icon'; 
       icon.classList.add('location-icon');
 
       item.appendChild(icon);
       item.appendChild(mainText);
       item.appendChild(secondaryText);
-        item.setAttribute('data-placeid', prediction.place_id);
-        item.addEventListener('click', function() {
-          document.querySelector('#destination').value = this.textContent;
-          document.querySelector('#destination').setAttribute('data-placeid', this.getAttribute('data-placeid'));
-          while (list.firstChild) {
-            list.removeChild(list.firstChild);
-          }
-          list.style.display = 'none';
-        });
-        list.appendChild(item);
+
+      item.appendChild(icon);
+      item.appendChild(mainText);
+      item.appendChild(secondaryText);
+      item.setAttribute('data-placeid', prediction.place_id);
+      item.addEventListener('click', function() {
+        document.querySelector('#destination').value = this.textContent.substring(0, 30) + '...';
+        document.querySelector('#destination').setAttribute('data-placeid', this.getAttribute('data-placeid'));
+        while (list.firstChild) {
+          list.removeChild(list.firstChild);
+        }
+        list.style.display = 'none';
+      });
+      list.appendChild(item);
       });
       list.style.display = 'block';
     } else {
@@ -141,14 +161,61 @@ function updateLocationList(predictions) {
     }
   }
 
-  
-  
+  function debounce(func, delay) {
+    let debounceTimer;
+    return function() {
+      const context = this;
+      const args = arguments;
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => func.apply(context, args), delay);
+    }
+  }
   document.addEventListener("DOMContentLoaded", function() {
+    const oneWeekFromNow = new Date();
+    oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
+    oneWeekFromNow.setHours(12, 0, 0, 0);
+    const fp = flatpickr("#date", {
+      allowInput: true,
+      enableTime: true,
+      dateFormat: "D j, M, H:i",
+      minDate: "today",
+      defaultDate: oneWeekFromNow,
+      time_24hr: true,
+      onChange: function(selectedDates, dateStr, instance) {
+        if (selectedDates.length === 0) {
+          instance.setDate(instance.latestSelectedDateObj);
+        }
+      },
+      onReady: function(selectedDates, dateStr, instance) {
+        const todayButton = document.createElement('button');
+        todayButton.textContent = 'Today';
+        todayButton.className = 'flatpickr-today-button';
+        todayButton.type = 'button';
+        todayButton.addEventListener('click', function() {
+          const selectedTime = instance.selectedDates[0];
+          
+          const hours = selectedTime ? selectedTime.getHours() : 12;
+          const minutes = selectedTime ? selectedTime.getMinutes() : 0;
+          
+          const newDate = new Date();
+          newDate.setHours(hours, minutes, 0, 0);
+
+          instance.setDate(newDate, false);
+        });
+        instance.calendarContainer.appendChild(todayButton);
+      }
+    });
+    
     const pickupInput = document.querySelector('#pickup-location');
     const destinationInput = document.querySelector('#destination');
   
     pickupInput.addEventListener('input', () => searchLocation(pickupInput.value));
     destinationInput.addEventListener('input', () => searchDestination(destinationInput.value));
+    // const pickupInput = document.querySelector('#pickup-location');
+    // const destinationInput = document.querySelector('#destination');
+
+    // pickupInput.addEventListener('input', debounce(() => searchLocation(pickupInput.value), 200));
+    // destinationInput.addEventListener('input', debounce(() => searchDestination(destinationInput.value), 200));
 
     document.querySelector('#swap-button').addEventListener('click', function(event) {
       event.preventDefault();
@@ -165,24 +232,14 @@ function updateLocationList(predictions) {
       destinationInput.setAttribute('data-placeid', tempPlaceId);
     });
   
-    // Your existing code
-  });
-
-  var pickupPlaceId;
-  var destinationPlaceId;
-  var date;
-  var time;
-  var passenger;
-  const spinner = document.createElement("div");
-  spinner.classList.add("loader");
-
-  document.addEventListener("DOMContentLoaded", function() {
-  
     const submitButton = document.querySelector('#submit-button');
+    const spinner = document.createElement("div");
+    spinner.classList.add("loader");
+
     submitButton.addEventListener('click', function(event) {
       event.preventDefault();
       if (!navigator.onLine) {
-        showWarning('You are offline. Please connect to the internet and try again.');
+        showWarning('You are offline.');
         return;
       }
       if (submitButton.textContent === '') {
@@ -192,8 +249,14 @@ function updateLocationList(predictions) {
       if (!submitButton.contains(spinner)) {
         submitButton.appendChild(spinner);
       }
+      
+
+      const pickupPlaceId = document.querySelector('#pickup-location').getAttribute('data-placeid');
+      const destinationPlaceId = document.querySelector('#destination').getAttribute('data-placeid');
+      const passenger = document.querySelector('#passenger').value;
+      const date = fp.formatDate(fp.selectedDates[0], "Y-m-d");
+      const time = fp.formatDate(fp.selectedDates[0], "H:i");
     
-      pickupPlaceId = document.querySelector('#pickup-location').getAttribute('data-placeid');
       if (!pickupPlaceId) {
         showWarning('Please select a pickup location from the list');
         submitButton.textContent = 'Search';
@@ -202,7 +265,7 @@ function updateLocationList(predictions) {
         }
         return;
       }
-      destinationPlaceId = document.querySelector('#destination').getAttribute('data-placeid');
+
       if (!destinationPlaceId) {
         showWarning('Please select a destination from the list');
         submitButton.textContent = 'Search';
@@ -211,7 +274,7 @@ function updateLocationList(predictions) {
         }
         return;
       }
-      date = document.querySelector('#date').value;
+
       if (!date) {
         showWarning('Please select a date');
         submitButton.textContent = 'Search';
@@ -221,7 +284,6 @@ function updateLocationList(predictions) {
         return;
       }
 
-      time = document.querySelector('#time').value;
       if (!time) {
         showWarning('Please select a time');
         submitButton.textContent = 'Search';
@@ -230,7 +292,6 @@ function updateLocationList(predictions) {
         }
         return;
       }
-      passenger = document.querySelector('#passenger').value;
       if (!passenger) {
         showWarning('Please select a passenger');
         submitButton.textContent = 'Search';
@@ -241,7 +302,7 @@ function updateLocationList(predictions) {
       }
     
       console.log(generateNewDynamicLink());
-      fetchDataFromNetwork(generateNewDynamicLink())
+      fetchDataFromNetwork(generateNewDynamicLink(pickupPlaceId, destinationPlaceId, date, time, passenger))
         .then(() => {
           submitButton.textContent = 'Search';
           if (submitButton.contains(spinner)) {
@@ -249,7 +310,6 @@ function updateLocationList(predictions) {
           }
         });
     });
-
   });
 
   function showLoadingSpinner() {
@@ -265,7 +325,7 @@ function updateLocationList(predictions) {
     refreshButton.textContent = 'Refresh';
     spinner.remove();
   }
-  function generateNewDynamicLink() {
+  function generateNewDynamicLink(pickupPlaceId, destinationPlaceId, date, time, passenger) {
     const baseURL = "https://taxi.booking.com/search-results-mfe/rates?format=envelope";
     const queryParams = {
       passenger: passenger,

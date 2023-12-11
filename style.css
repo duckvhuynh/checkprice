@@ -206,6 +206,65 @@ td:hover {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+
+.flatpickr-calendar {
+  border-radius: 15px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.flatpickr-day {
+  border-radius: 15px;
+}
+
+.flatpickr-day.today {
+  border-color: #e14d20;
+  border-radius: 15px;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.flatpickr-day.today:hover {
+  border-color: #e14d20;
+  background: #e14d20;
+  color: #fff;
+}
+
+.flatpickr-day.selected {
+  border-color: #e14d20;
+  border-radius: 15px;
+  background: #e14d20;
+  color: #fff;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.flatpickr-day.selected:hover {
+  background: #f88a4b;
+  border-color: #f88a4b;
+}
+.flatpickr-today-button {
+  font-family: 'Montserrat', sans-serif;
+  color: #fff;
+  background: #e14d20; /* Change the background color */
+  border: 2px solid #FFFFFF; /* Increase border thickness */
+  border-radius: 20px; /* Increase border radius for a more rounded look */
+  padding: 10px 20px; /* Increase padding for a larger button */
+  margin-top: 10px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease; /* Add transform to the transition property */
+}
+
+.flatpickr-today-button:hover {
+  background: #f88a4b; /* Darken the background color on hover */
+}
+#date {
+  width: 15%;
+  cursor: pointer;
+  background-image: url('calendar.svg');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 13px;
+}
+
 form {
   display: flex;
   justify-content: center;
@@ -220,40 +279,44 @@ form label {
   display: none;
 }
 
+
 form input[type="text"],
 form input[type="date"],
 form input[type="time"],
 form input[type="number"] {
+  font-size: 13px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
   height: auto;
   width: auto;
   font-family: 'Montserrat', sans-serif;
   width: 100%;
-  padding: 10px;
   border: 2px solid #ddd;
   border-radius: 15px;
   margin-bottom: 20px;
 }
-
-form input[type="text"] {
-  width: 210px;
+#pickup-location, #destination {
+  background-image: url('location.png');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
 }
-
-form input[type="date"],
-form input[type="time"] {
-  padding: 9px;
+form input[type="text"] {
+  padding: 11px;
+  width: 258px;
 }
 
 form input[type="date"] {
+  padding: 10px;
   width: 110px;
 }
 
 form input[type="time"] {
+  padding: 9px;
   width: 90px;
 }
 
 form button[type="submit"] {
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
   width: 70px;
   height: 40px;
   padding: 5px 10px;
@@ -284,7 +347,7 @@ form select {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
   height: auto;
   font-family: 'Montserrat', sans-serif;
-  padding: 10px;
+  padding: 10.5px;
   border: 2px solid #ddd;
   border-radius: 15px;
   margin-bottom: 20px;
@@ -292,14 +355,13 @@ form select {
   width: 30px;
   background-color: #fff;
   color: #333;
-  font-size: 16px;
-  font-weight: 400;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23333"><path d="M7 10l5 5 5-5z"/></svg>');
   background-repeat: no-repeat;
   background-position: right 5px center;
+  background-size: 32px;
 }
 
 form select::-ms-expand {
