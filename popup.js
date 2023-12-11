@@ -1,176 +1,196 @@
-function searchLocation(input) {
-  if (!input) {
-    const list = document.querySelector('#location-list');
-    if (list) {
-      while (list.firstChild) {
-        list.removeChild(list.firstChild);
-      }
-      list.style.display = 'none';
-    }
-    return;
-  }
-  fetch(`https://388bivap71.execute-api.us-east-2.amazonaws.com/prod/maps/places/auto-comp?input_text=${input}`)
-    .then(response => response.json())
-    .then(data => {
-      console.log(data); 
-      if (data.predictions.predictions) {
-        updateLocationList(data.predictions.predictions);
-      } else {
-        console.error('Predictions not found in response data');
-      }
-    })
-    .catch(error => console.error(error));
-}
-  
-function updateLocationList(predictions) {
-  const list = document.querySelector('#location-list');
-  if (list) {
-    while (list.firstChild) {
-      list.removeChild(list.firstChild);
-    }
-    predictions.forEach(prediction => {
-      const item = document.createElement('li');
-      item.classList.add('list-item'); 
-      
-      const mainText = document.createElement('span');
-      mainText.classList.add('main-text');
-      mainText.textContent = prediction.structured_formatting.main_text + ' ';
+const hotelKeywords = ['hotel', 'inn', 'resort', 'lodge', 'suites', 'motel', 'b&b', 'bed and breakfast', 'guesthouse', 'hostel', 'boutique', 'serviced apartments', 'villa'];
+const locationWorker = new Worker('locationWorker.js');
+const destinationWorker = new Worker('destinationWorker.js');
 
-      const secondaryText = document.createElement('span');
-      secondaryText.classList.add('secondary-text'); 
-      secondaryText.textContent = prediction.structured_formatting.secondary_text;
-
-      const icon = document.createElement('img');
-      if (mainText.textContent.toLowerCase().includes('airport') || secondaryText.textContent.toLowerCase().includes('airport')) {
-        icon.src = 'airport.svg';
-      } else if (mainText.textContent.toLowerCase().includes('hotel') || secondaryText.textContent.toLowerCase().includes('hotel')) {
-        icon.src = 'hotel.svg';
-      } else {
-        icon.src = 'location.png';
-      }
-      icon.alt = 'Location icon'; 
-      icon.classList.add('location-icon');
-
-      item.appendChild(icon);
-      item.appendChild(mainText);
-      item.appendChild(secondaryText);
-
-      item.appendChild(icon);
-      item.appendChild(mainText);
-      item.appendChild(secondaryText);
-
-      item.setAttribute('data-placeid', prediction.place_id);
-      item.addEventListener('click', function() {
-        document.querySelector('#pickup-location').value = this.textContent.substring(0, 33) + '...';
-        document.querySelector('#pickup-location').setAttribute('data-placeid', this.getAttribute('data-placeid'));
+  function searchLocation(input) {
+    if (!input) {
+      const locationIcon = document.querySelector('#pickup-icon');
+      locationIcon.src = 'location.png';
+      const list = document.querySelector('#location-list');
+      if (list) {
         while (list.firstChild) {
           list.removeChild(list.firstChild);
         }
         list.style.display = 'none';
-      });
-      list.appendChild(item);
-    });
-    list.style.display = 'block';
-  } else {
-    console.error('Element with id "location-list" not found');
+      }
+      return;
+    }
+    locationWorker.postMessage(input);
   }
-}
+  
+  
+  function updateLocationList(predictions) {
+    const list = document.querySelector('#location-list');
+    const pickupLocation = document.querySelector('#pickup-location');
+    
+    if (list) {
+      while (list.firstChild) {
+        list.removeChild(list.firstChild);
+      }
+
+      const fragment = document.createDocumentFragment();
+
+      predictions.forEach(prediction => {
+        const item = document.createElement('li');
+        item.classList.add('list-item'); 
+
+        const mainText = document.createElement('span');
+        mainText.classList.add('main-text');
+        mainText.textContent = prediction.structured_formatting.main_text + ' ';
+
+        const secondaryText = document.createElement('span');
+        secondaryText.classList.add('secondary-text'); 
+        secondaryText.textContent = prediction.structured_formatting.secondary_text;
+
+        const icon = document.createElement('img');
+        if (prediction.description.toLowerCase().includes('airport')) {
+          icon.src = 'airport.svg';
+        } else if (hotelKeywords.some(keyword => prediction.description.toLowerCase().includes(keyword))) {
+          icon.src = 'hotel.svg';
+        } else {
+          icon.src = 'location.png';
+        }
+        icon.alt = 'Location icon'; 
+        icon.classList.add('location-icon');
+
+        item.appendChild(icon);
+        item.appendChild(mainText);
+        item.appendChild(secondaryText);
+
+        item.setAttribute('data-placeid', prediction.place_id);
+        item.addEventListener('click', function(event) {
+          event.stopPropagation();
+          const locationIcon = document.querySelector('#pickup-icon');
+          locationIcon.src = icon.src;
+          pickupLocation.value = this.textContent;
+          pickupLocation.setAttribute('data-placeid', this.getAttribute('data-placeid'));
+          while (list.firstChild) {
+            list.removeChild(list.firstChild);
+          }
+          list.style.display = 'none';
+        });
+        fragment.appendChild(item);
+      });
+
+      list.appendChild(fragment);
+      list.style.display = 'block';
+    } else {
+      console.error('Element with id "location-list" not found');
+    }
+  }
   
   function searchDestination(input) {
-    fetch(`https://388bivap71.execute-api.us-east-2.amazonaws.com/prod/maps/places/auto-comp?input_text=${input}`)
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        if (data.predictions.predictions) {
-          updateDestinationList(data.predictions.predictions);
-        } else {
-          console.error('Predictions not found in response data');
+    if (!input) {
+      const locationIcon = document.querySelector('#destination-icon');
+      locationIcon.src = 'location.png';
+      const list = document.querySelector('#destination-list');
+      if (list) {
+        while (list.firstChild) {
+          list.removeChild(list.firstChild);
         }
-      })
-      .catch(error => console.error(error));
-  }
-
-  document.addEventListener('click', function(event) {
-    const locationList = document.querySelector('#location-list');
-    const destinationList = document.querySelector('#destination-list');
-  
-    if (!event.target.closest('.autocomplete')) {
-      if (locationList) {
-        while (locationList.firstChild) {
-          locationList.removeChild(locationList.firstChild);
-        }
-        locationList.style.display = 'none';
+        list.style.display = 'none';
       }
-      if (destinationList) {
-        while (destinationList.firstChild) {
-          destinationList.removeChild(destinationList.firstChild);
-        }
-        destinationList.style.display = 'none';
-      }
+      return;
     }
-  });
+    destinationWorker.postMessage(input);
+  }
   
   function updateDestinationList(predictions) {
     const list = document.querySelector('#destination-list');
+    const destinationInput = document.querySelector('#destination');
+  
     if (list) {
       while (list.firstChild) {
         list.removeChild(list.firstChild);
       }
+  
+      const fragment = document.createDocumentFragment();
+  
       predictions.forEach(prediction => {
         const item = document.createElement('li');
-      item.classList.add('list-item'); 
-      
-      const mainText = document.createElement('span');
-      mainText.classList.add('main-text');
-      mainText.textContent = prediction.structured_formatting.main_text + ' ';
-      const secondaryText = document.createElement('span');
-      secondaryText.classList.add('secondary-text');
-      secondaryText.textContent = prediction.structured_formatting.secondary_text;
-      const icon = document.createElement('img');
-      if (mainText.textContent.toLowerCase().includes('airport') || secondaryText.textContent.toLowerCase().includes('airport')) {
-        icon.src = 'airport.svg';
-      } else if (mainText.textContent.toLowerCase().includes('hotel') || secondaryText.textContent.toLowerCase().includes('hotel')) {
-        icon.src = 'hotel.svg';
-      } else {
-        icon.src = 'location.png';
-      }
-      icon.alt = 'Location icon'; 
-      icon.classList.add('location-icon');
-
-      item.appendChild(icon);
-      item.appendChild(mainText);
-      item.appendChild(secondaryText);
-
-      item.appendChild(icon);
-      item.appendChild(mainText);
-      item.appendChild(secondaryText);
-      item.setAttribute('data-placeid', prediction.place_id);
-      item.addEventListener('click', function() {
-        document.querySelector('#destination').value = this.textContent.substring(0, 30) + '...';
-        document.querySelector('#destination').setAttribute('data-placeid', this.getAttribute('data-placeid'));
-        while (list.firstChild) {
-          list.removeChild(list.firstChild);
+        item.classList.add('list-item'); 
+  
+        const mainText = document.createElement('span');
+        mainText.classList.add('main-text');
+        mainText.textContent = prediction.structured_formatting.main_text + ' ';
+  
+        const secondaryText = document.createElement('span');
+        secondaryText.classList.add('secondary-text');
+        secondaryText.textContent = prediction.structured_formatting.secondary_text;
+  
+        const icon = document.createElement('img');
+        if (prediction.description.toLowerCase().includes('airport')) {
+          icon.src = 'airport.svg';
+        } else if (hotelKeywords.some(keyword => prediction.description.toLowerCase().includes(keyword))) {
+          icon.src = 'hotel.svg';
+        } else {
+          icon.src = 'location.png';
         }
-        list.style.display = 'none';
+        icon.alt = 'Location icon';
+        icon.classList.add('location-icon');
+  
+        item.appendChild(icon);
+        item.appendChild(mainText);
+        item.appendChild(secondaryText);
+  
+        item.setAttribute('data-placeid', prediction.place_id);
+        item.addEventListener('click', function(event) {
+          event.stopPropagation();
+          const locationIcon = document.querySelector('#destination-icon');
+          locationIcon.src = icon.src;
+          destinationInput.value = this.textContent;
+          destinationInput.setAttribute('data-placeid', this.getAttribute('data-placeid'));
+          while (list.firstChild) {
+            list.removeChild(list.firstChild);
+          }
+          list.style.display = 'none';
+        });
+        fragment.appendChild(item);
       });
-      list.appendChild(item);
-      });
+  
+      list.appendChild(fragment);
       list.style.display = 'block';
     } else {
       console.error('Element with id "destination-list" not found');
     }
   }
 
-  function debounce(func, delay) {
-    let debounceTimer;
-    return function() {
-      const context = this;
-      const args = arguments;
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => func.apply(context, args), delay);
-    }
-  }
   document.addEventListener("DOMContentLoaded", function() {
+    locationWorker.addEventListener('message', function(e) {
+      const processedData = e.data;
+      if (processedData) {
+        updateLocationList(processedData);
+      } else {
+        console.error('Predictions not found in response data');
+      }
+    }, false);
+    destinationWorker.addEventListener('message', function(e) {
+      const processedData = e.data;
+      if (processedData) {
+        updateDestinationList(processedData);
+      } else {
+        console.error('Predictions not found in response data');
+      }
+    }, false);
+    document.addEventListener('click', function(event) {
+      const locationList = document.querySelector('#location-list');
+      const destinationList = document.querySelector('#destination-list');
+    
+      if (!event.target.closest('.autocomplete')) {
+        if (locationList) {
+          while (locationList.firstChild) {
+            locationList.removeChild(locationList.firstChild);
+          }
+          locationList.style.display = 'none';
+        }
+        if (destinationList) {
+          while (destinationList.firstChild) {
+            destinationList.removeChild(destinationList.firstChild);
+          }
+          destinationList.style.display = 'none';
+        }
+      }
+    });
     const oneWeekFromNow = new Date();
     oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
     oneWeekFromNow.setHours(12, 0, 0, 0);
@@ -205,17 +225,45 @@ function updateLocationList(predictions) {
         instance.calendarContainer.appendChild(todayButton);
       }
     });
-    
+    function debounce(func, delay) {
+      let debounceTimer;
+      return function() {
+        const context = this;
+        const args = arguments;
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => func.apply(context, args), delay);
+      }
+    }
+  
     const pickupInput = document.querySelector('#pickup-location');
     const destinationInput = document.querySelector('#destination');
-  
-    pickupInput.addEventListener('input', () => searchLocation(pickupInput.value));
-    destinationInput.addEventListener('input', () => searchDestination(destinationInput.value));
-    // const pickupInput = document.querySelector('#pickup-location');
-    // const destinationInput = document.querySelector('#destination');
 
-    // pickupInput.addEventListener('input', debounce(() => searchLocation(pickupInput.value), 200));
-    // destinationInput.addEventListener('input', debounce(() => searchDestination(destinationInput.value), 200));
+    pickupInput.addEventListener('paste', () => {
+      setTimeout(() => searchLocation(pickupInput.value), 0);
+    });
+    destinationInput.addEventListener('paste', () => {
+      setTimeout(() => searchDestination(destinationInput.value), 0);
+    });
+    pickupInput.addEventListener('input', debounce(() => searchLocation(pickupInput.value), 150));
+    destinationInput.addEventListener('input', debounce(() => searchDestination(destinationInput.value), 150));
+
+    const locationListItems = document.querySelectorAll('#location-list .autocomplete-item');
+    const destinationListItems = document.querySelectorAll('#destination-list .autocomplete-item');
+
+    pickupInput.addEventListener('change', function() {
+      const match = Array.from(locationListItems).find(item => item.textContent === this.value);
+      if (!match) {
+        this.setAttribute('data-placeid', '');
+      }
+    });
+
+    destinationInput.addEventListener('change', function() {
+      const match = Array.from(destinationListItems).find(item => item.textContent === this.value);
+      if (!match) {
+        this.setAttribute('data-placeid', '');
+      }
+    });
+    
 
     document.querySelector('#swap-button').addEventListener('click', function(event) {
       event.preventDefault();
@@ -224,18 +272,35 @@ function updateLocationList(predictions) {
       }
       const tempValue = pickupInput.value;
       const tempPlaceId = pickupInput.getAttribute('data-placeid');
+      const tempIconSrc = document.querySelector('#pickup-icon').src;
       
       pickupInput.value = destinationInput.value;
       pickupInput.setAttribute('data-placeid', destinationInput.getAttribute('data-placeid'));
+      document.querySelector('#pickup-icon').src = document.querySelector('#destination-icon').src;
       
       destinationInput.value = tempValue;
       destinationInput.setAttribute('data-placeid', tempPlaceId);
+      document.querySelector('#destination-icon').src = tempIconSrc;
     });
-  
+
+
     const submitButton = document.querySelector('#submit-button');
     const spinner = document.createElement("div");
     spinner.classList.add("loader");
 
+    function showLoadingSpinner() {
+      submitButton.textContent = '';
+      if (!submitButton.contains(spinner)) {
+        submitButton.appendChild(spinner);
+      }
+    }
+    
+    function hideLoadingSpinner() {
+      submitButton.textContent = 'Search';
+      if (submitButton.contains(spinner)) {
+        submitButton.removeChild(spinner);
+      }
+    }
     submitButton.addEventListener('click', function(event) {
       event.preventDefault();
       if (!navigator.onLine) {
@@ -245,86 +310,51 @@ function updateLocationList(predictions) {
       if (submitButton.textContent === '') {
         return;
       }
-      submitButton.textContent = '';
-      if (!submitButton.contains(spinner)) {
-        submitButton.appendChild(spinner);
-      }
-      
+
+      showLoadingSpinner();
 
       const pickupPlaceId = document.querySelector('#pickup-location').getAttribute('data-placeid');
-      const destinationPlaceId = document.querySelector('#destination').getAttribute('data-placeid');
-      const passenger = document.querySelector('#passenger').value;
-      const date = fp.formatDate(fp.selectedDates[0], "Y-m-d");
-      const time = fp.formatDate(fp.selectedDates[0], "H:i");
-    
       if (!pickupPlaceId) {
         showWarning('Please select a pickup location from the list');
-        submitButton.textContent = 'Search';
-        if (submitButton.contains(spinner)) {
-          submitButton.removeChild(spinner);
-        }
+        hideLoadingSpinner();
         return;
       }
 
+      const destinationPlaceId = document.querySelector('#destination').getAttribute('data-placeid');
       if (!destinationPlaceId) {
         showWarning('Please select a destination from the list');
-        submitButton.textContent = 'Search';
-        if (submitButton.contains(spinner)) {
-          submitButton.removeChild(spinner);
-        }
+        hideLoadingSpinner();
         return;
       }
 
+      const date = fp.formatDate(fp.selectedDates[0], "Y-m-d");
       if (!date) {
         showWarning('Please select a date');
-        submitButton.textContent = 'Search';
-        if (submitButton.contains(spinner)) {
-          submitButton.removeChild(spinner);
-        }
+        hideLoadingSpinner();
         return;
       }
 
+      const time = fp.formatDate(fp.selectedDates[0], "H:i");
       if (!time) {
         showWarning('Please select a time');
-        submitButton.textContent = 'Search';
-        if (submitButton.contains(spinner)) {
-          submitButton.removeChild(spinner);
-        }
+        hideLoadingSpinner();
         return;
       }
+
+      const passenger = document.querySelector('#passenger').value;
       if (!passenger) {
         showWarning('Please select a passenger');
-        submitButton.textContent = 'Search';
-        if (submitButton.contains(spinner)) {
-          submitButton.removeChild(spinner);
-        }
+        hideLoadingSpinner();
         return;
       }
-    
-      console.log(generateNewDynamicLink());
+      
       fetchDataFromNetwork(generateNewDynamicLink(pickupPlaceId, destinationPlaceId, date, time, passenger))
         .then(() => {
-          submitButton.textContent = 'Search';
-          if (submitButton.contains(spinner)) {
-            submitButton.removeChild(spinner);
-          }
+          hideLoadingSpinner();
         });
     });
   });
 
-  function showLoadingSpinner() {
-    const refreshButton = document.querySelector("#refresh-button");
-    refreshButton.textContent = '';
-    if (!refreshButton.contains(spinner)) {
-      refreshButton.appendChild(spinner);
-    }
-  }
-  
-  function hideLoadingSpinner() {
-    const refreshButton = document.querySelector("#refresh-button");
-    refreshButton.textContent = 'Refresh';
-    spinner.remove();
-  }
   function generateNewDynamicLink(pickupPlaceId, destinationPlaceId, date, time, passenger) {
     const baseURL = "https://taxi.booking.com/search-results-mfe/rates?format=envelope";
     const queryParams = {

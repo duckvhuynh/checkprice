@@ -1,3 +1,6 @@
+const fetchMytransfersWorker = new Worker('fetchMytransfersWorker.js');
+const fetchElifeLimoWorker = new Worker('fetchElifeLimoWorker.js');
+
 async function fetchDataFromNetwork(link) {
   try {
     const response = await fetch(link);
@@ -78,7 +81,7 @@ let cellTime;
 function processRoute(websiteData) {
   const dataTableRoute = document.querySelector("#data-table-route tbody");
   const leg = websiteData.journeys[0].legs[0];
-  const pickup = leg.pickupLocation.establishment;
+  const pickup = leg.pickupLocation.name.split(',')[0];
   const dropoff = leg.dropoffLocation.name.split(',')[0];
   const dateTime = leg.requestedPickupDateTime;
   const currency = leg.results[0].currency;
@@ -138,46 +141,62 @@ function sortDescriptionJayride(quotes) {
   return sortedQuotes;
 }
 
-async function fetchMytransfers(urlMyTransfers) {
-  try {
-    const response = await fetch(urlMyTransfers);
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
+fetchMytransfersWorker.addEventListener('message', function(e) {
+  const data = e.data;
+  clearTable("#data-table-mytransfers");
+  processMyTransfers(data);
+});
 
-    }
-    const data = await response.json();
-    clearTable("#data-table-mytransfers");
-    processMyTransfers(data);
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
-};
 function fetchJayRide(request) {
   fetchJayRidePayload(request);
 }
 
 function processMyTransfers(data) {
-const dataTableMytransfers = document.querySelector("#data-table-mytransfers tbody");
-if (data) {
-    data.response.transferPriceList.forEach((transfer, index) => {
-        const row = dataTableMytransfers.insertRow();
-        row.insertCell(0).textContent = ++index;
-        row.insertCell(1).textContent = transfer.transportName;
-        row.insertCell(2).textContent = `${(transfer.price * 1.09476082005).toFixed(2)}`;
-    });
-    showMyTransfers();
-  } else {
-      console.log('No data found');
-      showWarning("No data found for Mytransfers");
-      hideMyTransfers();
-  }
+  const dataTableMytransfers = document.querySelector("#data-table-mytransfers tbody");
+  if (data) {
+      data.response.transferPriceList.forEach((transfer, index) => {
+          const row = dataTableMytransfers.insertRow();
+          row.insertCell(0).textContent = ++index;
+          row.insertCell(1).textContent = transfer.transportName;
+          row.insertCell(2).textContent = `${(transfer.price * 1.09476082005).toFixed(2)}`;
+      });
+      showMyTransfers();
+    } else {
+        console.log('No data found');
+        showWarning("No data found for Mytransfers");
+        hideMyTransfers();
+    }
 }
 
+fetchElifeLimoWorker.addEventListener('message', function(e) {
+  const data = e.data;
+  if (data.error) {
+    console.error('Error:', data.error);
+    showWarning("No data found for ElifeLimo");
+    hideElifeLimo();
+  } else {
+    const dataTableElifelimo = document.querySelector("#data-table-elifelimo tbody");
+    const filteredVehicleClasses = data.fleets[0].vehicle_classes.filter(vehicle => 
+      carDescriptionOrderElifeLimo.includes(vehicle.vehicle_class)
+     );
+    const sortedVehicleClasses = sortDescriptionElifeLimo(filteredVehicleClasses);
+    sortedVehicleClasses.forEach((vehicle, index) => {
+        const row = dataTableElifelimo.insertRow();
+        row.insertCell(0).textContent = ++index
+        row.insertCell(1).textContent = vehicle.typical_vehicle.manufacturer + " " + vehicle.typical_vehicle.model;
+        row.insertCell(2).textContent = vehicle.vehicle_class;
+        row.insertCell(3).textContent = vehicle.price.amount;
+    });
+    addCopyOnClickElife();
+    showElifeLimo();
+  }
+}, false);
+
 function processElfieLimo(websiteData) {
-const dataTableElifelimo = document.querySelector("#data-table-elifelimo tbody");
+// const dataTableElifelimo = document.querySelector("#data-table-elifelimo tbody");
 const locationData = websiteData.journeys[0].legs[0];
 const passenger = websiteData.journeys[0].legs[0].passenger;
-const pickupName = locationData.pickupLocation.establishment;
+const pickupName = locationData.pickupLocation.name;
 const dropoffName = locationData.dropoffLocation.name;
 const pickupID = locationData.pickupLocation.locationId;
 const dropoffID = locationData.dropoffLocation.locationId;
@@ -212,7 +231,7 @@ showSixtURL();
 const getDistanceURL = `https://388bivap71.execute-api.us-east-2.amazonaws.com/prod/maps/routes/distance-time?from_lat=${pickupLatitude}&from_lng=${pickupLongitude}&to_lat=${dropoffLatitude}&to_lng=${dropoffLongitude}`;
 let url;
 
-fetchMytransfers(urlMyTransfers);
+fetchMytransfersWorker.postMessage(urlMyTransfers);
 
 fetch(getDistanceURL)
   .then(response => response.json())
@@ -226,29 +245,30 @@ fetch(getDistanceURL)
           console.log('No data found');
       }
       url = `https://k3zdvi12m6.execute-api.us-east-2.amazonaws.com/prod/ride-pricings?currency=USD&from_lat=${pickupLatitude}&from_lng=${pickupLongitude}&to_lat=${dropoffLatitude}&to_lng=${dropoffLongitude}&distance=${distance}&from_utc=${utcFormat}&from_time_str=${dateTimeURL}&passenger_count=${passenger}`;
-      fetch(url)
-          .then(response => response.json())
-          .then(data => {
-            if (data) {
-              const filteredVehicleClasses = data.fleets[0].vehicle_classes.filter(vehicle => 
-                carDescriptionOrderElifeLimo.includes(vehicle.vehicle_class)
-               );
-              const sortedVehicleClasses = sortDescriptionElifeLimo(filteredVehicleClasses);
-              sortedVehicleClasses.forEach((vehicle, index) => {
-                  const row = dataTableElifelimo.insertRow();
-                  row.insertCell(0).textContent = ++index
-                  row.insertCell(1).textContent = vehicle.typical_vehicle.manufacturer + " " + vehicle.typical_vehicle.model;
-                  row.insertCell(2).textContent = vehicle.vehicle_class;
-                  row.insertCell(3).textContent = vehicle.price.amount;
-              });
-              addCopyOnClickElife();
-              showElifeLimo();
-            } else {
-              showWarning("No data found for ElifeLimo");
-              hideElifeLimo();
-            }
-          })
-          .catch(error => console.error('Error:', error));
+      fetchElifeLimoWorker.postMessage(url);
+      // fetch(url)
+      //     .then(response => response.json())
+      //     .then(data => {
+      //       if (data) {
+      //         const filteredVehicleClasses = data.fleets[0].vehicle_classes.filter(vehicle => 
+      //           carDescriptionOrderElifeLimo.includes(vehicle.vehicle_class)
+      //          );
+      //         const sortedVehicleClasses = sortDescriptionElifeLimo(filteredVehicleClasses);
+      //         sortedVehicleClasses.forEach((vehicle, index) => {
+      //             const row = dataTableElifelimo.insertRow();
+      //             row.insertCell(0).textContent = ++index
+      //             row.insertCell(1).textContent = vehicle.typical_vehicle.manufacturer + " " + vehicle.typical_vehicle.model;
+      //             row.insertCell(2).textContent = vehicle.vehicle_class;
+      //             row.insertCell(3).textContent = vehicle.price.amount;
+      //         });
+      //         addCopyOnClickElife();
+      //         showElifeLimo();
+      //       } else {
+      //         showWarning("No data found for ElifeLimo");
+      //         hideElifeLimo();
+      //       }
+      //     })
+      //     .catch(error => console.error('Error:', error));
   })
   .catch(error => console.error('Error:', error));
 }
@@ -281,40 +301,32 @@ function fetchWithHeadersAndPayload(url, headers, payload) {
   });
 }
 
+// content.js
+const fetchJayRideWorker = new Worker('fetchJayRideWorker.js');
+
 function fetchJayRidePayload(payload) {
-fetchWithHeadersAndPayload('https://api.jayride.com/internal/v2/quote-request?key=a988097b5d9c4975a06df44a35aa90e0', {
-  'Host': 'api.jayride.com',
-  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0',
-  'Accept': 'application/json, text/plain, */*',
-  'Accept-Language': 'en-US,en;q=0.5',
-  'Accept-Encoding': 'gzip, deflate, br',
-  'Content-Type': 'application/json',
-  'Content-Length': '351',
-  'Origin': 'https://booking.jayride.com',
-  'Connection': 'keep-alive',
-  'Referer': 'https://booking.jayride.com/',
-  'Sec-Fetch-Dest': 'empty',
-  'Sec-Fetch-Mode': 'cors',
-  'Sec-Fetch-Site': 'same-site'
-}, payload)
-  .then(response => response.json())
-  .then(data => {
-      if (data) {
-          const dataTableJayRide = document.querySelector("#data-table-jayride tbody");
-          const sortedQuotes = sortDescriptionJayride(data.results.quotes);
-          sortedQuotes.forEach((quote, index) => {
-              const row = dataTableJayRide.insertRow();
-              row.insertCell(0).textContent = ++index;
-              row.insertCell(1).textContent = quote.service_info.vehicle_type;
-              row.insertCell(2).textContent = quote.service_info.supplier.name;
-              row.insertCell(3).textContent = (quote.fare.price / 1.44).toFixed(2);
-          });
-          showJayride();
-      } else {
-          console.log('No data found for Jayride');
-          showWarning("No data found for Jayride");
-          hideJayride();
-      }
-  })
-  .catch(error => console.error('Error:', error));
+  // Send the payload to the worker
+  fetchJayRideWorker.postMessage(payload);
+
+  // Listen for the data to be sent back
+  fetchJayRideWorker.addEventListener('message', function(e) {
+    const data = e.data;
+
+    if (data) {
+      const dataTableJayRide = document.querySelector("#data-table-jayride tbody");
+      const sortedQuotes = sortDescriptionJayride(data.results.quotes);
+      sortedQuotes.forEach((quote, index) => {
+        const row = dataTableJayRide.insertRow();
+        row.insertCell(0).textContent = ++index;
+        row.insertCell(1).textContent = quote.service_info.vehicle_type;
+        row.insertCell(2).textContent = quote.service_info.supplier.name;
+        row.insertCell(3).textContent = (quote.fare.price / 1.44).toFixed(2);
+      });
+      showJayride();
+    } else {
+      console.log('No data found for Jayride');
+      showWarning("No data found for Jayride");
+      hideJayride();
+    }
+  });
 }

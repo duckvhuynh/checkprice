@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Booking Checker</title>
+  <title>Check Price</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" type="text/css" href="style.css">
   <link rel="shortcut icon" type="image/png" href="icon16.png">
@@ -17,21 +17,28 @@
     <div class="input-group">
       <label for="pickup-location">Pickup Location:</label>
       <div class="autocomplete">
-        <input type="text" id="pickup-location" name="pickup-location" placeholder="Enter Pickup" autocomplete="off" required>
+        <div class="input-container">
+          <input type="text" id="pickup-location" name="pickup-location" placeholder="Enter Pickup" autocomplete="off" required>
+          <div class="icon-container">
+            <img id="pickup-icon" src="location.png" alt="location icon">
+          </div>
+        </div>
         <ul id="location-list"></ul>
       </div>
       <button id="swap-button"></button>
       <label for="destination">Destination:</label>
       <div class="autocomplete">
-        <input type="text" id="destination" name="destination" placeholder="Enter Destination" autocomplete="off" required>
-        <ul id="destination-list"></ul>
+        <div class="input-container">
+          <input type="text" id="destination" name="destination" placeholder="Enter Destination" autocomplete="off" required>
+          <div class="icon-container">
+            <img id="destination-icon" src="location.png" alt="location icon">
+          </div>
+        </div>
+          <ul id="destination-list"></ul>
       </div>
     </div>
     <label for="date">Date:</label>
     <input type="text" id="date" name="date" autocomplete="off" required readonly>
-
-    <!-- <label for="time">Time:</label>
-    <input type="text" id="time" name="time" value="12:00" required> -->
 
     <label for="passenger">Passenger:</label>
     <select id="passenger" name="passenger" required>
@@ -89,7 +96,7 @@
     <tbody></tbody>
   </table>
   <div id="booking-container">
-    <p id="booking-table-name" class="table-name">booking.com</p>
+    <p id="booking-table-name" class="table-name">Booking.com</p>
     <table id="data-table">
       <thead>
         <tr>
@@ -105,7 +112,7 @@
     </table>
   </div>
 <div id="elifelimo-container">
-  <p id="elifelimo-table-name" class="table-name">Elifelimo</p>
+  <p id="elifelimo-table-name" class="table-name">Elife Limo</p>
   <table id="data-table-elifelimo">
     <thead>
       <tr>
