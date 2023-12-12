@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Check Price</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" type="text/css" href="../style.css">
+  <link rel="shortcut icon" type="image/png" href="../icon16.png">
+  <script type="text/javascript" src="../map.js"></script>
+  <script type="text/javascript" src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script type="text/javascript" src="../table.js"></script>
+  <script type="text/javascript" src="../content.js"></script>
+  <script type="text/javascript" src="../popup.js"></script>
+</head>
+<body>
+  <!-- <div id="map"></div> -->
+  <div id="notification-container"></div>
+  <div id="top-container"></div>
+  <form id="search-form">
+    <div class="input-group">
+      <label for="pickup-location">Pickup Location:</label>
+      <div class="autocomplete">
+        <div class="input-container">
+          <input type="text" id="pickup-location" name="pickup-location" placeholder="Enter Pickup" autocomplete="off" required>
+          <div class="icon-container">
+            <img id="pickup-icon" src="../location.png" alt="location icon">
+          </div>
+        </div>
+        <ul id="location-list"></ul>
+      </div>
+      <button id="swap-button"></button>
+      <div class="destinations-container">
+        <label for="destination">Destination:</label>
+        <div class="autocomplete">
+            <div class="input-container">
+            <input type="text" id="destination-one" name="destination" placeholder="Enter Destination" autocomplete="off" required>
+            <div class="icon-container">
+                <img id="destination-icon" src="../location.png" alt="location icon">
+            </div>
+            </div>
+            <ul id="destination-list-one"></ul>
+        </div>
+        <div class="autocomplete">
+            <div class="input-container">
+            <input type="text" id="destination-two" name="destination" placeholder="Enter Destination" autocomplete="off" required>
+            <div class="icon-container">
+                <img id="destination-icon" src="../location.png" alt="location icon">
+            </div>
+            </div>
+            <ul id="destination-list"></ul>
+        </div>
+        <div class="autocomplete">
+            <div class="input-container">
+            <input type="text" id="destination-three" name="destination" placeholder="Enter Destination" autocomplete="off" required>
+            <div class="icon-container">
+                <img id="destination-icon" src="../location.png" alt="location icon">
+            </div>
+            </div>
+            <ul id="destination-list-three"></ul>
+        </div>
+      </div>
+    </div>
+    <label for="date">Date:</label>
+    <input type="text" id="date" name="date" autocomplete="off" required readonly>
+
+    <label for="passenger">Passenger:</label>
+    <select id="passenger" name="passenger" required>
+        <option value="">Pax</option>
+        <option value="1">1</option>
+        <option value="2" selected>2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+        <option value="13">13</option>
+        <option value="14">14</option>
+        <option value="15">15</option>
+        <option value="16">16</option>
+    </select>
+
+    <div class="button-container">
+      <button type="submit" id="submit-button">
+        Search
+        <div id="submit-spinner" class="loader" style="display: none;"></div>
+      </button>
+    </div>
+  </form>
+  <p id="placeholder-text">Please enter a route</p>
+  <table id="data-table-route">
+    <thead>
+      <tr>
+        <th>FROM</th>
+        <th>TO</th>
+        <th>DATE & TIME</th>
+        <th>CURRENCY</th>
+        <th>DISTANCE & TIME</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <div id="booking-containerr">
+    <p id="booking-table-name" class="table-name">Booking.com</p>
+    <table id="data-tablea">
+      <thead>
+        <tr>
+          <th>NO.</th>
+          <th>CAR DECRIPTION</th>
+          <th>PRICE</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <div class="spacer"></div>
+  <footer>
+    <p>© 2023 duckvhuynh for education purpose only.</p>
+  </footer>
+</body>
+</html>

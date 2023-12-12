@@ -165,7 +165,7 @@ const destinationWorker = new Worker('destinationWorker.js');
       window.getSelection().addRange(range); 
       document.execCommand('copy'); 
       window.getSelection().removeAllRanges();
-      alert('Jayride Table Copied!');
+      showNotification('Copied whole table to clipboard');
     });
     locationWorker.addEventListener('message', function(e) {
       const processedData = e.data;
@@ -249,12 +249,22 @@ const destinationWorker = new Worker('destinationWorker.js');
     const pickupInput = document.querySelector('#pickup-location');
     const destinationInput = document.querySelector('#destination');
 
-    pickupInput.addEventListener('paste', () => {
-      setTimeout(() => searchLocation(pickupInput.value), 0);
+    pickupInput.addEventListener('paste', (event) => {
+      const pasteData = event.clipboardData || window.clipboardData;
+      if (pasteData) {
+        const pastedText = pasteData.getData('text');
+        searchLocation(pastedText);
+      }
     });
-    destinationInput.addEventListener('paste', () => {
-      setTimeout(() => searchDestination(destinationInput.value), 0);
+    
+    destinationInput.addEventListener('paste', (event) => {
+      const pasteData = event.clipboardData || window.clipboardData;
+      if (pasteData) {
+        const pastedText = pasteData.getData('text');
+        searchDestination(pastedText);
+      }
     });
+    
     pickupInput.addEventListener('input', debounce(() => searchLocation(pickupInput.value), 150));
     destinationInput.addEventListener('input', debounce(() => searchDestination(destinationInput.value), 150));
 
@@ -296,22 +306,22 @@ const destinationWorker = new Worker('destinationWorker.js');
 
 
     const submitButton = document.querySelector('#submit-button');
-    const spinner = document.createElement("div");
-    spinner.classList.add("loader");
+    // const spinner = document.createElement("div");
+    // spinner.classList.add("loader");
 
-    function showLoadingSpinner() {
-      submitButton.textContent = '';
-      if (!submitButton.contains(spinner)) {
-        submitButton.appendChild(spinner);
-      }
-    }
+    // function showLoadingSpinner() {
+    //   submitButton.textContent = '';
+    //   if (!submitButton.contains(spinner)) {
+    //     submitButton.appendChild(spinner);
+    //   }
+    // }
     
-    function hideLoadingSpinner() {
-      submitButton.textContent = 'Search';
-      if (submitButton.contains(spinner)) {
-        submitButton.removeChild(spinner);
-      }
-    }
+    // function hideLoadingSpinner() {
+    //   submitButton.textContent = 'Search';
+    //   if (submitButton.contains(spinner)) {
+    //     submitButton.removeChild(spinner);
+    //   }
+    // }
     submitButton.addEventListener('click', function(event) {
       event.preventDefault();
       if (!navigator.onLine) {
@@ -360,13 +370,29 @@ const destinationWorker = new Worker('destinationWorker.js');
       }
       hideAllTables();
       showInstructions('Loading...');
-      fetchDataFromNetwork(generateNewDynamicLink(pickupPlaceId, destinationPlaceId, date, time, passenger))
-        .then(() => {
-          hideLoadingSpinner();
-          showAllTables();
-        });
+      fetchDataWorker.postMessage(generateNewDynamicLink(pickupPlaceId, destinationPlaceId, date, time, passenger))
     });
   });
+
+  function showLoadingSpinner() {
+    const submitButton = document.querySelector('#submit-button');
+    const spinner = document.createElement("div");
+    spinner.classList.add("loader");
+    submitButton.textContent = '';
+    if (!submitButton.contains(spinner)) {
+      submitButton.appendChild(spinner);
+    }
+  }
+  
+  function hideLoadingSpinner() {
+    const submitButton = document.querySelector('#submit-button');
+    const spinner = document.createElement("div");
+    spinner.classList.add("loader");
+    submitButton.textContent = 'Search';
+    if (submitButton.contains(spinner)) {
+      submitButton.removeChild(spinner);
+    }
+  }
 
   function generateNewDynamicLink(pickupPlaceId, destinationPlaceId, date, time, passenger) {
     const baseURL = "https://taxi.booking.com/search-results-mfe/rates?format=envelope";

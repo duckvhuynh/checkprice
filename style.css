@@ -1,27 +1,34 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap');
-.copyJayrideTable {
-  position: relative;
-  cursor: pointer;
-  margin: center;
-  font-family: 'Montserrat', sans-serif;
-  font-size: 12px;
-  font-weight: bold;
-  color: #333;
-  text-align: center;
-  margin-top: 20px;
-  margin-left: 15px;
-  margin-bottom: 5px;
-  padding: 10px;
-  background-color: rgba(248, 249, 250, 0.5);
-  border-radius: 15px;
-  width: 10%; 
-  box-sizing: border-box; 
+#destinations-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.copyJayrideTable:hover {
-  background-color: white; 
-  color: black; 
-  border: 2px solid #4CAF50;
+#jayride-container-header {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#copyJayrideTable {
+  font-size: 12px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+  width: 90px;
+  height: 30px;
+  padding: 5px 10px;
+  background-color: rgba(248, 249, 250, 0.427);
+  color: #000;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  margin-bottom: 5px;
+  font-family: 'Montserrat', sans-serif;
+  transition: background-color 0.3s ease;  
+}
+#copyJayrideTable:hover {
+  background-color: rgba(248, 249, 250, 0.929);
 }
 #map {
   height: 400px;
@@ -451,7 +458,7 @@ form, #data-table-route, #data-table, #data-table-elifelimo, #data-table-mytrans
   background-color: #f1f1f1; 
 }
 
-#destination-list {
+#destination-list, #destination-list-one, #destination-list-two, #destination-list-three {
   border-radius: 15px;
   position: absolute;
   width: 98%;
@@ -465,7 +472,10 @@ form, #data-table-route, #data-table, #data-table-elifelimo, #data-table-mytrans
   display: none; 
 }
 
-#destination-list li {
+#destination-list li,
+#destination-list-one li,
+#destination-list-two li,
+#destination-list-three li {
   display: flex;
   align-items: center;
   font-size: 12px;
@@ -475,7 +485,10 @@ form, #data-table-route, #data-table, #data-table-elifelimo, #data-table-mytrans
   transition: background-color 0.1s ease;
 }
 
-#destination-list li:hover {
+#destination-list li:hover,
+#destination-list-one li:hover,
+#destination-list-two li:hover,
+#destination-list-three li:hover {
   background-color: #f1f1f1; 
 }
 #location-list, #destination-list {

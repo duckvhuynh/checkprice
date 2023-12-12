@@ -1,31 +1,27 @@
 const fetchMytransfersWorker = new Worker('fetchMytransfersWorker.js');
 const fetchElifeLimoWorker = new Worker('fetchElifeLimoWorker.js');
+const fetchDataWorker = new Worker('fetchDataWorker.js');
 
-async function fetchDataFromNetwork(link) {
-  try {
-    const response = await fetch(link);
-    if (!response.ok) throw new Error('Network response was not ok');
-    const data = await response.json();
+fetchDataWorker.addEventListener('message', function(e) {
+  const data = e.data;
+  if (data.error) {
+    console.error('Error fetching data:', data.error);
+    showWarning("No data found");
+    hideLoadingSpinner();
+    showInstructions('Please enter a route');
+  } else {
     processWebsiteData(data);
-  } catch (error) {
-    console.error('Error fetching data:', error);
   }
-};
+});
 
 function processWebsiteData(websiteData) {
-  if (websiteData && websiteData.journeys) {
-      hideInstructions();
-      clearAll();
-      showTableHeader();
-      processRoute(websiteData);
-      processMain(websiteData);
-      // addCopyOnClick();
-  } else {
-      console.error('Website data or journeys is undefined');
-      showWarning("No data found");
-      hideBooking();
-      showInstructions('Please enter a route');
-  }
+  hideInstructions();
+  clearAll();
+  showTableHeader();
+  processRoute(websiteData);
+  processMain(websiteData);
+  hideLoadingSpinner();
+  showAllTables();
 }
 
 const carDescriptionOrder = [
@@ -149,7 +145,7 @@ fetchMytransfersWorker.addEventListener('message', function(e) {
 
 function processMyTransfers(data) {
   const dataTableMytransfers = document.querySelector("#data-table-mytransfers tbody");
-  if (data) {
+  if (data.response.transferPriceList) {
       data.response.transferPriceList.forEach((transfer, index) => {
           const row = dataTableMytransfers.insertRow();
           row.insertCell(0).textContent = ++index;
@@ -166,11 +162,8 @@ function processMyTransfers(data) {
 
 fetchElifeLimoWorker.addEventListener('message', function(e) {
   const data = e.data;
-  if (data.error) {
-    console.error('Error:', data.error);
-    showWarning("No data found for ElifeLimo");
-    hideElifeLimo();
-  } else {
+
+  if (data.fleets[0].vehicle_classes) {
     const dataTableElifelimo = document.querySelector("#data-table-elifelimo tbody");
     const filteredVehicleClasses = data.fleets[0].vehicle_classes.filter(vehicle => 
       carDescriptionOrderElifeLimo.includes(vehicle.vehicle_class)
@@ -185,6 +178,10 @@ fetchElifeLimoWorker.addEventListener('message', function(e) {
     });
     addCopyOnClickElife();
     showElifeLimo();
+  } else {
+    console.error('Error:', data.error);
+    showWarning("No data found for ElifeLimo");
+    hideElifeLimo();
   }
 }, false);
 
@@ -280,7 +277,7 @@ fetchJayRideWorker.addEventListener('message', function(e) {
   clearTable("#data-table-jayride");
   const data = e.data;
 
-  if (data) {
+  if (data.results.quotes) {
     const dataTableJayRide = document.querySelector("#data-table-jayride tbody");
     const sortedQuotes = sortDescriptionJayride(data.results.quotes);
     sortedQuotes.forEach((quote, index) => {
