@@ -148,12 +148,11 @@ function showTableHeader() {
 }
 
 function clearTable(tableId) {
-    const table = document.querySelector(tableId);
-    if (table) {
-        const rows = table.rows;
-        for (let i = rows.length - 1; i > 0; i--) {
-            table.deleteRow(i);
-        }
+    const tableBody = document.querySelector(tableId + ' tbody');
+    if (tableBody) {
+        tableBody.innerHTML = '';
+    } else {
+        alert('Table not found: ', tableId);
     }
 }
 function createCopyIcon() {
@@ -177,7 +176,14 @@ function clearAll() {
     clearTable("#data-table-route");
     clearTable("#data-table-elifelimo");
     clearTable("#data-table-mytransfers");
-    clearTable("#data-table-jayride");
+    //clearTable("#data-table-jayride");
+}
+
+function showRoute() {
+    document.querySelector("#data-table-route").style.display = "block";
+}
+function hideRoute() {
+    document.querySelector("#data-table-route").style.display = "none";
 }
 
 function showSixtURL(){
@@ -192,8 +198,10 @@ function hideInstructions() {
     document.querySelector('#placeholder-text').style.display = 'none';
 }
 
-function showInstructions() {
-    document.querySelector('#placeholder-text').style.display = 'block';
+function showInstructions(text) {
+    const intructions = document.querySelector('#placeholder-text');
+    intructions.textContent = text;
+    intructions.style.display = 'block';
 }
 
 function showElifeLimo() {
@@ -220,4 +228,22 @@ function showBooking() {
 }
 function hideBooking() {
     document.querySelector('#booking-container').style.display = 'none';
+}
+
+function hideAllTables() {
+    hideRoute();
+    hideSixtURL();
+    hideElifeLimo();
+    hideMyTransfers();
+    hideJayride();
+    hideBooking();
+}
+
+function showAllTables() {
+    showRoute();
+    showSixtURL();
+    showElifeLimo();
+    showMyTransfers();
+    showJayride();
+    showBooking();
 }

@@ -2,15 +2,19 @@
 <html>
 <head>
   <title>Check Price</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" type="text/css" href="style.css">
   <link rel="shortcut icon" type="image/png" href="icon16.png">
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script type="text/javascript" src="map.js"></script>
+  <script type="text/javascript" src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script type="text/javascript" src="table.js"></script>
   <script type="text/javascript" src="content.js"></script>
   <script type="text/javascript" src="popup.js"></script>
 </head>
 <body>
+  <!-- <div id="map"></div> -->
   <div id="notification-container"></div>
   <div id="top-container"></div>
   <form id="search-form">
@@ -138,7 +142,9 @@
     <tbody></tbody>
   </table>
 </div>
+
 <div id="jayride-container">
+  <button id="copyJayrideTable">Copy Jayride Table</button>
   <p id="jayride-table-name" class="table-name">Jayride</p>
   <table id="data-table-jayride">
     <thead>

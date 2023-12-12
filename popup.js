@@ -156,6 +156,17 @@ const destinationWorker = new Worker('destinationWorker.js');
   }
 
   document.addEventListener("DOMContentLoaded", function() {
+    //initMap();
+    //drawCircleAndTriangle(15.887746792486352, 107.95146650372304, 1000);
+    document.querySelector('#copyJayrideTable').addEventListener('click', function() {
+      var range = document.createRange(); 
+      range.selectNode(document.querySelector('#data-table-jayride')); 
+      window.getSelection().removeAllRanges(); 
+      window.getSelection().addRange(range); 
+      document.execCommand('copy'); 
+      window.getSelection().removeAllRanges();
+      alert('Jayride Table Copied!');
+    });
     locationWorker.addEventListener('message', function(e) {
       const processedData = e.data;
       if (processedData) {
@@ -347,10 +358,12 @@ const destinationWorker = new Worker('destinationWorker.js');
         hideLoadingSpinner();
         return;
       }
-      
+      hideAllTables();
+      showInstructions('Loading...');
       fetchDataFromNetwork(generateNewDynamicLink(pickupPlaceId, destinationPlaceId, date, time, passenger))
         .then(() => {
           hideLoadingSpinner();
+          showAllTables();
         });
     });
   });

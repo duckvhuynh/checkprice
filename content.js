@@ -24,7 +24,7 @@ function processWebsiteData(websiteData) {
       console.error('Website data or journeys is undefined');
       showWarning("No data found");
       hideBooking();
-      showInstructions();
+      showInstructions('Please enter a route');
   }
 }
 
@@ -147,10 +147,6 @@ fetchMytransfersWorker.addEventListener('message', function(e) {
   processMyTransfers(data);
 });
 
-function fetchJayRide(request) {
-  fetchJayRidePayload(request);
-}
-
 function processMyTransfers(data) {
   const dataTableMytransfers = document.querySelector("#data-table-mytransfers tbody");
   if (data) {
@@ -221,7 +217,8 @@ let request = {
   "to_location": {"type": "others", "description": dropoffName, "lat": dropoffLatitude, "lng": dropoffLongitude}
 };
 
-fetchJayRide(request);
+fetchJayRideWorker.postMessage(request);
+//fetchJayRide(request);
 
 let sixtElement = document.querySelector('#sixt-url');
 sixtElement.innerHTML = `<a href="${urlSixt}" target="_blank">Sixt URL</a>`;
@@ -246,29 +243,6 @@ fetch(getDistanceURL)
       }
       url = `https://k3zdvi12m6.execute-api.us-east-2.amazonaws.com/prod/ride-pricings?currency=USD&from_lat=${pickupLatitude}&from_lng=${pickupLongitude}&to_lat=${dropoffLatitude}&to_lng=${dropoffLongitude}&distance=${distance}&from_utc=${utcFormat}&from_time_str=${dateTimeURL}&passenger_count=${passenger}`;
       fetchElifeLimoWorker.postMessage(url);
-      // fetch(url)
-      //     .then(response => response.json())
-      //     .then(data => {
-      //       if (data) {
-      //         const filteredVehicleClasses = data.fleets[0].vehicle_classes.filter(vehicle => 
-      //           carDescriptionOrderElifeLimo.includes(vehicle.vehicle_class)
-      //          );
-      //         const sortedVehicleClasses = sortDescriptionElifeLimo(filteredVehicleClasses);
-      //         sortedVehicleClasses.forEach((vehicle, index) => {
-      //             const row = dataTableElifelimo.insertRow();
-      //             row.insertCell(0).textContent = ++index
-      //             row.insertCell(1).textContent = vehicle.typical_vehicle.manufacturer + " " + vehicle.typical_vehicle.model;
-      //             row.insertCell(2).textContent = vehicle.vehicle_class;
-      //             row.insertCell(3).textContent = vehicle.price.amount;
-      //         });
-      //         addCopyOnClickElife();
-      //         showElifeLimo();
-      //       } else {
-      //         showWarning("No data found for ElifeLimo");
-      //         hideElifeLimo();
-      //       }
-      //     })
-      //     .catch(error => console.error('Error:', error));
   })
   .catch(error => console.error('Error:', error));
 }
@@ -301,32 +275,25 @@ function fetchWithHeadersAndPayload(url, headers, payload) {
   });
 }
 
-// content.js
 const fetchJayRideWorker = new Worker('fetchJayRideWorker.js');
+fetchJayRideWorker.addEventListener('message', function(e) {
+  clearTable("#data-table-jayride");
+  const data = e.data;
 
-function fetchJayRidePayload(payload) {
-  // Send the payload to the worker
-  fetchJayRideWorker.postMessage(payload);
-
-  // Listen for the data to be sent back
-  fetchJayRideWorker.addEventListener('message', function(e) {
-    const data = e.data;
-
-    if (data) {
-      const dataTableJayRide = document.querySelector("#data-table-jayride tbody");
-      const sortedQuotes = sortDescriptionJayride(data.results.quotes);
-      sortedQuotes.forEach((quote, index) => {
-        const row = dataTableJayRide.insertRow();
-        row.insertCell(0).textContent = ++index;
-        row.insertCell(1).textContent = quote.service_info.vehicle_type;
-        row.insertCell(2).textContent = quote.service_info.supplier.name;
-        row.insertCell(3).textContent = (quote.fare.price / 1.44).toFixed(2);
-      });
-      showJayride();
-    } else {
-      console.log('No data found for Jayride');
-      showWarning("No data found for Jayride");
-      hideJayride();
-    }
-  });
-}
+  if (data) {
+    const dataTableJayRide = document.querySelector("#data-table-jayride tbody");
+    const sortedQuotes = sortDescriptionJayride(data.results.quotes);
+    sortedQuotes.forEach((quote, index) => {
+      const row = dataTableJayRide.insertRow();
+      row.insertCell(0).textContent = ++index;
+      row.insertCell(1).textContent = quote.service_info.vehicle_type;
+      row.insertCell(2).textContent = quote.service_info.supplier.name;
+      row.insertCell(3).textContent = (quote.fare.price / 1.44).toFixed(2);
+    });
+    showJayride();
+  } else {
+    console.log('No data found for Jayride');
+    showWarning("No data found for Jayride");
+    hideJayride();
+  }
+});
