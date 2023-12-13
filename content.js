@@ -145,7 +145,7 @@ fetchMytransfersWorker.addEventListener('message', function(e) {
 
 function processMyTransfers(data) {
   const dataTableMytransfers = document.querySelector("#data-table-mytransfers tbody");
-  if (data.response.transferPriceList) {
+  if (data.response) {
       data.response.transferPriceList.forEach((transfer, index) => {
           const row = dataTableMytransfers.insertRow();
           row.insertCell(0).textContent = ++index;
@@ -161,6 +161,7 @@ function processMyTransfers(data) {
 }
 
 fetchElifeLimoWorker.addEventListener('message', function(e) {
+  clearTable("#data-table-elifelimo");
   const data = e.data;
 
   if (data.fleets[0].vehicle_classes) {
