@@ -3,14 +3,13 @@ const locationWorker = new Worker('worker/locationWorker.js');
 const destinationWorker = new Worker('worker/destinationWorker.js');
 
   function searchLocation(input) {
+    const locationIcon = document.querySelector('#pickup-icon');
+    const list = document.querySelector('#location-list');
+  
     if (!input) {
-      const locationIcon = document.querySelector('#pickup-icon');
       locationIcon.src = 'icon/location.svg';
-      const list = document.querySelector('#location-list');
       if (list) {
-        while (list.firstChild) {
-          list.removeChild(list.firstChild);
-        }
+        list.innerHTML = '';
         list.style.display = 'none';
       }
       return;
@@ -18,141 +17,135 @@ const destinationWorker = new Worker('worker/destinationWorker.js');
     locationWorker.postMessage(input);
   }
   
-  
   function updateLocationList(predictions) {
     const list = document.querySelector('#location-list');
     const pickupLocation = document.querySelector('#pickup-location');
-    
-    if (list) {
-      while (list.firstChild) {
-        list.removeChild(list.firstChild);
-      }
-
-      const fragment = document.createDocumentFragment();
-
-      predictions.forEach(prediction => {
-        const item = document.createElement('li');
-        item.classList.add('list-item'); 
-
-        const mainText = document.createElement('span');
-        mainText.classList.add('main-text');
-        mainText.textContent = prediction.structured_formatting.main_text + ' ';
-
-        const secondaryText = document.createElement('span');
-        secondaryText.classList.add('secondary-text'); 
-        secondaryText.textContent = prediction.structured_formatting.secondary_text;
-
-        const icon = document.createElement('img');
-        if (prediction.description.toLowerCase().includes('airport')) {
-          icon.src = 'icon/airport.svg';
-        } else if (hotelKeywords.some(keyword => prediction.description.toLowerCase().includes(keyword))) {
-          icon.src = 'icon/hotel.svg';
-        } else {
-          icon.src = 'icon/location.svg';
-        }
-        icon.alt = 'Location icon'; 
-        icon.classList.add('location-icon');
-
-        item.appendChild(icon);
-        item.appendChild(mainText);
-        item.appendChild(secondaryText);
-
-        item.setAttribute('data-placeid', prediction.place_id);
-        item.addEventListener('click', function(event) {
-          event.stopPropagation();
-          const locationIcon = document.querySelector('#pickup-icon');
-          locationIcon.src = icon.src;
-          pickupLocation.value = this.textContent;
-          pickupLocation.setAttribute('data-placeid', this.getAttribute('data-placeid'));
-          while (list.firstChild) {
-            list.removeChild(list.firstChild);
-          }
-          list.style.display = 'none';
-        });
-        fragment.appendChild(item);
-      });
-
-      list.appendChild(fragment);
-      list.style.display = 'block';
-    } else {
+  
+    if (!list) {
       console.error('Element with id "location-list" not found');
+      return;
     }
+  
+    // Clear the list
+    list.innerHTML = '';
+  
+    const fragment = document.createDocumentFragment();
+  
+    predictions.forEach(prediction => {
+      const item = document.createElement('li');
+      item.classList.add('list-item');
+  
+      const mainText = document.createElement('span');
+      mainText.classList.add('main-text');
+      mainText.textContent = prediction.structured_formatting.main_text + ' ';
+  
+      const secondaryText = document.createElement('span');
+      secondaryText.classList.add('secondary-text');
+      secondaryText.textContent = prediction.structured_formatting.secondary_text;
+  
+      const icon = document.createElement('img');
+      icon.src = 'icon/' + (prediction.description.toLowerCase().includes('airport') ? 'airport' : (hotelKeywords.some(keyword => prediction.description.toLowerCase().includes(keyword)) ? 'hotel' : 'location')) + '.svg';
+      icon.alt = 'Location icon';
+      icon.classList.add('location-icon');
+  
+      item.appendChild(icon);
+      item.appendChild(mainText);
+      item.appendChild(secondaryText);
+  
+      item.dataset.placeid = prediction.place_id;
+  
+      fragment.appendChild(item);
+    });
+  
+    list.appendChild(fragment);
+    list.style.display = 'block';
+  
+    // Use event delegation to handle click events on list items
+    list.addEventListener('click', function(event) {
+      const item = event.target.closest('.list-item');
+      if (item) {
+        event.stopPropagation();
+        const locationIcon = document.querySelector('#pickup-icon');
+        locationIcon.src = item.querySelector('.location-icon').src;
+        pickupLocation.value = item.textContent;
+        pickupLocation.dataset.placeid = item.dataset.placeid;
+        list.innerHTML = '';
+        list.style.display = 'none';
+      }
+    });
   }
   
   function searchDestination(input) {
+    const locationIcon = document.querySelector('#destination-icon');
+    const list = document.querySelector('#destination-list');
+  
     if (!input) {
-      const locationIcon = document.querySelector('#destination-icon');
-      locationIcon.src = 'location.svg';
-      const list = document.querySelector('#destination-list');
+      locationIcon.src = 'icon/location.svg';
       if (list) {
-        while (list.firstChild) {
-          list.removeChild(list.firstChild);
-        }
+        list.innerHTML = '';
         list.style.display = 'none';
       }
       return;
     }
     destinationWorker.postMessage(input);
   }
-  
+
   function updateDestinationList(predictions) {
     const list = document.querySelector('#destination-list');
     const destinationInput = document.querySelector('#destination');
   
-    if (list) {
-      while (list.firstChild) {
-        list.removeChild(list.firstChild);
-      }
-  
-      const fragment = document.createDocumentFragment();
-  
-      predictions.forEach(prediction => {
-        const item = document.createElement('li');
-        item.classList.add('list-item'); 
-  
-        const mainText = document.createElement('span');
-        mainText.classList.add('main-text');
-        mainText.textContent = prediction.structured_formatting.main_text + ' ';
-  
-        const secondaryText = document.createElement('span');
-        secondaryText.classList.add('secondary-text');
-        secondaryText.textContent = prediction.structured_formatting.secondary_text;
-  
-        const icon = document.createElement('img');
-        if (prediction.description.toLowerCase().includes('airport')) {
-          icon.src = 'icon/airport.svg';
-        } else if (hotelKeywords.some(keyword => prediction.description.toLowerCase().includes(keyword))) {
-          icon.src = 'icon/hotel.svg';
-        } else {
-          icon.src = 'icon/location.svg';
-        }
-        icon.alt = 'Location icon';
-        icon.classList.add('location-icon');
-  
-        item.appendChild(icon);
-        item.appendChild(mainText);
-        item.appendChild(secondaryText);
-  
-        item.setAttribute('data-placeid', prediction.place_id);
-        item.addEventListener('click', function(event) {
-          event.stopPropagation();
-          const locationIcon = document.querySelector('#destination-icon');
-          locationIcon.src = icon.src;
-          destinationInput.value = this.textContent;
-          destinationInput.setAttribute('data-placeid', this.getAttribute('data-placeid'));
-          while (list.firstChild) {
-            list.removeChild(list.firstChild);
-          }
-          list.style.display = 'none';
-        });
-        fragment.appendChild(item);
-      });
-  
-      list.appendChild(fragment);
-      list.style.display = 'block';
-    } else {
+    if (!list) {
       console.error('Element with id "destination-list" not found');
+      return;
     }
+  
+    // Clear the list
+    list.innerHTML = '';
+  
+    const fragment = document.createDocumentFragment();
+  
+    predictions.forEach(prediction => {
+      const item = document.createElement('li');
+      item.classList.add('list-item');
+  
+      const mainText = document.createElement('span');
+      mainText.classList.add('main-text');
+      mainText.textContent = prediction.structured_formatting.main_text + ' ';
+  
+      const secondaryText = document.createElement('span');
+      secondaryText.classList.add('secondary-text');
+      secondaryText.textContent = prediction.structured_formatting.secondary_text;
+  
+      const icon = document.createElement('img');
+      icon.src = 'icon/' + (prediction.description.toLowerCase().includes('airport') ? 'airport' : (hotelKeywords.some(keyword => prediction.description.toLowerCase().includes(keyword)) ? 'hotel' : 'location')) + '.svg';
+      icon.alt = 'Location icon';
+      icon.classList.add('location-icon');
+  
+      item.appendChild(icon);
+      item.appendChild(mainText);
+      item.appendChild(secondaryText);
+  
+      item.dataset.placeid = prediction.place_id;
+  
+      fragment.appendChild(item);
+    });
+  
+    list.appendChild(fragment);
+    list.style.display = 'block';
+  
+    // Use event delegation to handle click events on list items
+    list.addEventListener('click', function(event) {
+      const item = event.target.closest('.list-item');
+      if (item) {
+        event.stopPropagation();
+        const locationIcon = document.querySelector('#destination-icon');
+        locationIcon.src = item.querySelector('.location-icon').src;
+        destinationInput.value = item.textContent;
+        destinationInput.dataset.placeid = item.dataset.placeid;
+        list.innerHTML = '';
+        list.style.display = 'none';
+      }
+    });
   }
 
   document.addEventListener("DOMContentLoaded", function() {

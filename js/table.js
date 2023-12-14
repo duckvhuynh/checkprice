@@ -112,27 +112,29 @@ function copyToClipboard(text, message) {
     showWarning('Copying text is not supported in your browser');
     return;
   }
-  const textarea = document.createElement('textarea');
-  textarea.value = text;
-  document.body.appendChild(textarea);
-  textarea.select();
 
   try {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    document.body.appendChild(textarea);
+    textarea.select();
+
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text);
     } else {
       document.execCommand('copy');
     }
     showNotification(message);
+
+    document.body.removeChild(textarea);
   } catch (err) {
     console.error('Failed to copy text: ', err);
   }
-
-  document.body.removeChild(textarea);
 }
+
 function createCopyIcon() {
   const img = document.createElement('img');
-  img.src = '/icon/copy.svg';
+  img.src = 'icon/copy.svg';
   img.classList.add('copy-icon'); 
   return img;
 }
