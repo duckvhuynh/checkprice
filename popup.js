@@ -208,7 +208,7 @@ const destinationWorker = new Worker('destinationWorker.js');
     const fp = flatpickr("#date", {
       allowInput: true,
       enableTime: true,
-      dateFormat: "D j, M, H:i",
+      dateFormat: "D j, M Y H:i",
       minDate: "today",
       defaultDate: oneWeekFromNow,
       time_24hr: true,

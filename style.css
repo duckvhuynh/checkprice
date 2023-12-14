@@ -315,7 +315,7 @@ td:hover {
   background: #f88a4b; /* Darken the background color on hover */
 }
 #date {
-  width: 15%;
+  width: 18%;
   cursor: pointer;
   background-image: url('calendar.svg');
   background-repeat: no-repeat;
@@ -370,7 +370,7 @@ form input[type="number"] {
 }
 form input[type="text"] {
   padding: 11px;
-  width: 258px;
+  width: 240px;
 }
 
 form input[type="date"] {
