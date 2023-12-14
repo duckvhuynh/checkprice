@@ -18,8 +18,8 @@ function copyToClipboard(text, message) {
   document.body.removeChild(textarea);
 }
 
-let isBookingListenerAdded = false;
-let isCarDescriptionListenerAdded = false;
+// let isBookingListenerAdded = false;
+// let isCarDescriptionListenerAdded = false;
 
 function addCopyOnClickBooking() {
   const priceCells = document.querySelectorAll("#data-table td:nth-child(4)");
@@ -31,23 +31,35 @@ function addCopyOnClickBooking() {
 
   priceHeader.style.cursor = "pointer"; 
   priceHeader.title = "Click to copy all prices"; 
-  if (!isBookingListenerAdded) {
-    priceHeader.addEventListener("click", () => {
-      let allPrices = Array.from(priceCells).map(cell => cell.innerText).join("\n");
-      copyToClipboard(allPrices, "Copied all prices");
-    });
-    isBookingListenerAdded = true;
-  }
+  priceHeader.addEventListener("click", () => {
+    let allPrices = Array.from(priceCells).map(cell => cell.innerText).join("\n");
+    copyToClipboard(allPrices, "Copied all prices");
+  });
 
+  // if (!isBookingListenerAdded) {
+  //   priceHeader.addEventListener("click", () => {
+  //     let allPrices = Array.from(priceCells).map(cell => cell.innerText).join("\n");
+  //     copyToClipboard(allPrices, "Copied all prices");
+  //   });
+  //   isBookingListenerAdded = true;
+  // }
+
+
+  
   carDescriptionHeader.style.cursor = "pointer"; 
   carDescriptionHeader.title = "Click to copy all car descriptions"; 
-  if (!isCarDescriptionListenerAdded) {
-    carDescriptionHeader.addEventListener("click", () => {
-      let allCarDescriptions = Array.from(carDescriptionCells).map(cell => cell.innerText).join("\n");
-      copyToClipboard(allCarDescriptions, "Copied all car descriptions");
-    });
-    isCarDescriptionListenerAdded = true;
-  }
+  carDescriptionHeader.addEventListener("click", () => {
+    let allCarDescriptions = Array.from(carDescriptionCells).map(cell => cell.innerText).join("\n");
+    copyToClipboard(allCarDescriptions, "Copied all car descriptions");
+  });
+
+  // if (!isCarDescriptionListenerAdded) {
+  //   carDescriptionHeader.addEventListener("click", () => {
+  //     let allCarDescriptions = Array.from(carDescriptionCells).map(cell => cell.innerText).join("\n");
+  //     copyToClipboard(allCarDescriptions, "Copied all car descriptions");
+  //   });
+  //   isCarDescriptionListenerAdded = true;
+  // }
 
   priceCells.forEach((cell) => {
     cell.style.cursor = "pointer";
@@ -73,8 +85,8 @@ function addCopyOnClickRoute() {
 }
 
 
-let isElifeListenerAdded = false;
-let isCarDescriptionElifeListenerAdded = false;
+// let isElifeListenerAdded = false;
+// let isCarDescriptionElifeListenerAdded = false;
 function addCopyOnClickElife() {
   const priceCells = document.querySelectorAll("#data-table-elifelimo td:nth-child(4)");
   const priceHeader = document.querySelector("#data-table-elifelimo th:nth-child(4)");
@@ -85,23 +97,33 @@ function addCopyOnClickElife() {
 
   priceHeader.style.cursor = "pointer"; 
   priceHeader.title = "Click to copy all prices"; 
-  if (!isElifeListenerAdded) {
-    priceHeader.addEventListener("click", () => {
-      let allPrices = Array.from(priceCells).map(cell => cell.innerText).join("\n");
-      copyToClipboard(allPrices, "Copied all prices");
-    });
-    isElifeListenerAdded = true;
-  }
+  priceHeader.addEventListener("click", () => {
+    let allPrices = Array.from(priceCells).map(cell => cell.innerText).join("\n");
+    copyToClipboard(allPrices, "Copied all prices");
+  });
+
+  // if (!isElifeListenerAdded) {
+  //   priceHeader.addEventListener("click", () => {
+  //     let allPrices = Array.from(priceCells).map(cell => cell.innerText).join("\n");
+  //     copyToClipboard(allPrices, "Copied all prices");
+  //   });
+  //   isElifeListenerAdded = true;
+  // }
 
   carDescriptionHeader.style.cursor = "pointer"; 
   carDescriptionHeader.title = "Click to copy all car descriptions"; 
-  if (!isCarDescriptionElifeListenerAdded) {
-    carDescriptionHeader.addEventListener("click", () => {
-      let allCarDescriptions = Array.from(carDescriptionCells).map(cell => cell.innerText).join("\n");
-      copyToClipboard(allCarDescriptions, "Copied all car descriptions");
-    });
-    isCarDescriptionElifeListenerAdded = true;
-  }
+  carDescriptionHeader.addEventListener("click", () => {
+    let allCarDescriptions = Array.from(carDescriptionCells).map(cell => cell.innerText).join("\n");
+    copyToClipboard(allCarDescriptions, "Copied all car descriptions");
+  });
+
+  // if (!isCarDescriptionElifeListenerAdded) {
+  //   carDescriptionHeader.addEventListener("click", () => {
+  //     let allCarDescriptions = Array.from(carDescriptionCells).map(cell => cell.innerText).join("\n");
+  //     copyToClipboard(allCarDescriptions, "Copied all car descriptions");
+  //   });
+  //   isCarDescriptionElifeListenerAdded = true;
+  // }
 
   priceCells.forEach((cell) => {
     cell.style.cursor = "pointer";
