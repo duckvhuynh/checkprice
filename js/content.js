@@ -1,7 +1,7 @@
-const fetchMytransfersWorker = new Worker('/worker/fetchMytransfersWorker.js');
-const fetchElifeLimoWorker = new Worker('/worker/fetchElifeLimoWorker.js');
-const fetchDataWorker = new Worker('/worker/fetchDataWorker.js');
-const fetchJayRideWorker = new Worker('/worker/fetchJayRideWorker.js');
+const fetchMytransfersWorker = new Worker('worker/fetchMytransfersWorker.js');
+const fetchElifeLimoWorker = new Worker('worker/fetchElifeLimoWorker.js');
+const fetchDataWorker = new Worker('worker/fetchDataWorker.js');
+const fetchJayRideWorker = new Worker('worker/fetchJayRideWorker.js');
 
 fetchDataWorker.addEventListener('message', function(e) {
   const data = e.data;

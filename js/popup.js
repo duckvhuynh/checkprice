@@ -1,11 +1,11 @@
 const hotelKeywords = ['hotel', 'inn', 'resort', 'lodge', 'suites', 'motel', 'b&b', 'bed and breakfast', 'guesthouse', 'hostel', 'boutique', 'serviced apartments', 'villa'];
-const locationWorker = new Worker('/worker/locationWorker.js');
-const destinationWorker = new Worker('/worker/destinationWorker.js');
+const locationWorker = new Worker('worker/locationWorker.js');
+const destinationWorker = new Worker('worker/destinationWorker.js');
 
   function searchLocation(input) {
     if (!input) {
       const locationIcon = document.querySelector('#pickup-icon');
-      locationIcon.src = '/icon/location.svg';
+      locationIcon.src = 'icon/location.svg';
       const list = document.querySelector('#location-list');
       if (list) {
         while (list.firstChild) {
@@ -44,11 +44,11 @@ const destinationWorker = new Worker('/worker/destinationWorker.js');
 
         const icon = document.createElement('img');
         if (prediction.description.toLowerCase().includes('airport')) {
-          icon.src = '/icon/airport.svg';
+          icon.src = 'icon/airport.svg';
         } else if (hotelKeywords.some(keyword => prediction.description.toLowerCase().includes(keyword))) {
-          icon.src = '/icon/hotel.svg';
+          icon.src = 'icon/hotel.svg';
         } else {
-          icon.src = '/icon/location.svg';
+          icon.src = 'icon/location.svg';
         }
         icon.alt = 'Location icon'; 
         icon.classList.add('location-icon');
@@ -120,11 +120,11 @@ const destinationWorker = new Worker('/worker/destinationWorker.js');
   
         const icon = document.createElement('img');
         if (prediction.description.toLowerCase().includes('airport')) {
-          icon.src = '/icon/airport.svg';
+          icon.src = 'icon/airport.svg';
         } else if (hotelKeywords.some(keyword => prediction.description.toLowerCase().includes(keyword))) {
-          icon.src = '/icon/hotel.svg';
+          icon.src = 'icon/hotel.svg';
         } else {
-          icon.src = '/icon/location.svg';
+          icon.src = 'icon/location.svg';
         }
         icon.alt = 'Location icon';
         icon.classList.add('location-icon');
