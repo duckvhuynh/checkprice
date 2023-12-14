@@ -1,6 +1,7 @@
-const fetchMytransfersWorker = new Worker('fetchMytransfersWorker.js');
-const fetchElifeLimoWorker = new Worker('fetchElifeLimoWorker.js');
-const fetchDataWorker = new Worker('fetchDataWorker.js');
+const fetchMytransfersWorker = new Worker('/worker/fetchMytransfersWorker.js');
+const fetchElifeLimoWorker = new Worker('/worker/fetchElifeLimoWorker.js');
+const fetchDataWorker = new Worker('/worker/fetchDataWorker.js');
+const fetchJayRideWorker = new Worker('/worker/fetchJayRideWorker.js');
 
 fetchDataWorker.addEventListener('message', function(e) {
   const data = e.data;
@@ -236,6 +237,7 @@ fetch(getDistanceURL)
           const time = data.time / 60;
           const distance = data.distance / 1000;
           cellTime.textContent = distance.toFixed(2) + " km" + " (" + time.toFixed(0) + " min)";
+          addCopyOnClickDistance();
       } else {
           console.log('No data found');
       }
@@ -273,7 +275,7 @@ function fetchWithHeadersAndPayload(url, headers, payload) {
   });
 }
 
-const fetchJayRideWorker = new Worker('fetchJayRideWorker.js');
+
 fetchJayRideWorker.addEventListener('message', function(e) {
   clearTable("#data-table-jayride");
   const data = e.data;

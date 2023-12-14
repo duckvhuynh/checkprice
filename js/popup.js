@@ -1,11 +1,11 @@
 const hotelKeywords = ['hotel', 'inn', 'resort', 'lodge', 'suites', 'motel', 'b&b', 'bed and breakfast', 'guesthouse', 'hostel', 'boutique', 'serviced apartments', 'villa'];
-const locationWorker = new Worker('locationWorker.js');
-const destinationWorker = new Worker('destinationWorker.js');
+const locationWorker = new Worker('/worker/locationWorker.js');
+const destinationWorker = new Worker('/worker/destinationWorker.js');
 
   function searchLocation(input) {
     if (!input) {
       const locationIcon = document.querySelector('#pickup-icon');
-      locationIcon.src = 'location.png';
+      locationIcon.src = '/icon/location.svg';
       const list = document.querySelector('#location-list');
       if (list) {
         while (list.firstChild) {
@@ -44,11 +44,11 @@ const destinationWorker = new Worker('destinationWorker.js');
 
         const icon = document.createElement('img');
         if (prediction.description.toLowerCase().includes('airport')) {
-          icon.src = 'airport.svg';
+          icon.src = '/icon/airport.svg';
         } else if (hotelKeywords.some(keyword => prediction.description.toLowerCase().includes(keyword))) {
-          icon.src = 'hotel.svg';
+          icon.src = '/icon/hotel.svg';
         } else {
-          icon.src = 'location.png';
+          icon.src = '/icon/location.svg';
         }
         icon.alt = 'Location icon'; 
         icon.classList.add('location-icon');
@@ -82,7 +82,7 @@ const destinationWorker = new Worker('destinationWorker.js');
   function searchDestination(input) {
     if (!input) {
       const locationIcon = document.querySelector('#destination-icon');
-      locationIcon.src = 'location.png';
+      locationIcon.src = 'location.svg';
       const list = document.querySelector('#destination-list');
       if (list) {
         while (list.firstChild) {
@@ -120,11 +120,11 @@ const destinationWorker = new Worker('destinationWorker.js');
   
         const icon = document.createElement('img');
         if (prediction.description.toLowerCase().includes('airport')) {
-          icon.src = 'airport.svg';
+          icon.src = '/icon/airport.svg';
         } else if (hotelKeywords.some(keyword => prediction.description.toLowerCase().includes(keyword))) {
-          icon.src = 'hotel.svg';
+          icon.src = '/icon/hotel.svg';
         } else {
-          icon.src = 'location.png';
+          icon.src = '/icon/location.svg';
         }
         icon.alt = 'Location icon';
         icon.classList.add('location-icon');

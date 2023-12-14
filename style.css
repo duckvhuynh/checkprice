@@ -317,7 +317,7 @@ td:hover {
 #date {
   width: 18%;
   cursor: pointer;
-  background-image: url('calendar.svg');
+  background-image: url('/icon/calendar.svg');
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 13px;
@@ -628,6 +628,8 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 .copy-icon {
+  width: 10px;
+  height: 10px;
   margin-left: 5px;
 }
 footer {
@@ -655,7 +657,7 @@ footer p {
   cursor: pointer;
   font-size: 16px; 
   transition: background-color 0.3s ease; 
-  background-image: url('swap.svg');
+  background-image: url('/icon/swap.svg');
   background-repeat: no-repeat;
   background-position: center;
   background-size: 50%;
