@@ -5,13 +5,10 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" type="text/css" href="../style.css">
-  <link rel="shortcut icon" type="image/png" href="/icon/icon16.png">
-  <script type="text/javascript" src="/js/map.js"></script>
+  <link rel="shortcut icon" type="image/png" href="../icon/icon16.png">
   <script type="text/javascript" src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script type="text/javascript" src="/js/table.js"></script>
-  <script type="text/javascript" src="/js/content.js"></script>
-  <script type="text/javascript" src="/js/popup.js"></script>
+  <script type="text/javascript" src="multi.js"></script>
 </head>
 <body>
   <!-- <div id="map"></div> -->
@@ -36,7 +33,7 @@
             <div class="input-container">
             <input type="text" id="destination-one" name="destination" placeholder="Enter Destination" autocomplete="off" required>
             <div class="icon-container">
-                <img id="destination-icon" src="/icon/location.svg" alt="location icon">
+                <img id="destination-icon-one" src="/icon/location.svg" alt="location icon">
             </div>
             </div>
             <ul id="destination-list-one"></ul>
@@ -45,16 +42,16 @@
             <div class="input-container">
             <input type="text" id="destination-two" name="destination" placeholder="Enter Destination" autocomplete="off" required>
             <div class="icon-container">
-                <img id="destination-icon" src="/icon/location.svg" alt="location icon">
+                <img id="destination-icon-two" src="/icon/location.svg" alt="location icon">
             </div>
             </div>
-            <ul id="destination-list"></ul>
+            <ul id="destination-list-two"></ul>
         </div>
         <div class="autocomplete">
             <div class="input-container">
             <input type="text" id="destination-three" name="destination" placeholder="Enter Destination" autocomplete="off" required>
             <div class="icon-container">
-                <img id="destination-icon" src="/icon/location.svg" alt="location icon">
+                <img id="destination-icon-three" src="/icon/location.svg" alt="location icon">
             </div>
             </div>
             <ul id="destination-list-three"></ul>
@@ -112,7 +109,9 @@
         <tr>
           <th>NO.</th>
           <th>CAR DECRIPTION</th>
-          <th>PRICE</th>
+          <th>PRICE ONE</th>
+          <th>PRICE TWO</th>
+          <th>PRICE THREE</th>
         </tr>
       </thead>
       <tbody></tbody>

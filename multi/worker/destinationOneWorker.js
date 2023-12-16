@@ -6,7 +6,7 @@ self.addEventListener('message', function(e) {
     .then(data => {
       const modifiedData = data.predictions.predictions.map(prediction => {
         const description = prediction.description.toLowerCase();
-        const icon = 'icon/' + (description.includes('airport') ? 'airport' : (hotelKeywords.some(keyword => description.includes(keyword)) ? 'hotel' : 'location')) + '.svg';
+        const icon = '../icon/' + (description.includes('airport') ? 'airport' : (hotelKeywords.some(keyword => description.includes(keyword)) ? 'hotel' : 'location')) + '.svg';
         return { ...prediction, 'location-icon': icon };
       });
       self.postMessage(modifiedData);

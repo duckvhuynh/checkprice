@@ -1,4 +1,3 @@
-const hotelKeywords = ['hotel', 'inn', 'resort', 'lodge', 'suites', 'motel', 'b&b', 'bed and breakfast', 'guesthouse', 'hostel', 'boutique', 'serviced apartments', 'villa'];
 const locationWorker = new Worker('worker/locationWorker.js');
 const destinationWorker = new Worker('worker/destinationWorker.js');
 
@@ -44,7 +43,7 @@ const destinationWorker = new Worker('worker/destinationWorker.js');
       secondaryText.textContent = prediction.structured_formatting.secondary_text;
   
       const icon = document.createElement('img');
-      icon.src = 'icon/' + (prediction.description.toLowerCase().includes('airport') ? 'airport' : (hotelKeywords.some(keyword => prediction.description.toLowerCase().includes(keyword)) ? 'hotel' : 'location')) + '.svg';
+      icon.src = prediction['location-icon'];
       icon.alt = 'Location icon';
       icon.classList.add('location-icon');
   
@@ -117,7 +116,7 @@ const destinationWorker = new Worker('worker/destinationWorker.js');
       secondaryText.textContent = prediction.structured_formatting.secondary_text;
   
       const icon = document.createElement('img');
-      icon.src = 'icon/' + (prediction.description.toLowerCase().includes('airport') ? 'airport' : (hotelKeywords.some(keyword => prediction.description.toLowerCase().includes(keyword)) ? 'hotel' : 'location')) + '.svg';
+      icon.src = prediction['location-icon'];
       icon.alt = 'Location icon';
       icon.classList.add('location-icon');
   
@@ -149,7 +148,7 @@ const destinationWorker = new Worker('worker/destinationWorker.js');
   }
 
   document.addEventListener("DOMContentLoaded", function() {
-    //initMap();
+    // initMap(14.0583, 108.2772, 6);
     //drawCircleAndTriangle(15.887746792486352, 107.95146650372304, 1000);
     document.querySelector('#copyJayrideTable').addEventListener('click', function() {
       var range = document.createRange(); 
@@ -241,25 +240,41 @@ const destinationWorker = new Worker('worker/destinationWorker.js');
   
     const pickupInput = document.querySelector('#pickup-location');
     const destinationInput = document.querySelector('#destination');
+    let isPasting = false;
 
     pickupInput.addEventListener('paste', (event) => {
+      isPasting = true;
       const pasteData = event.clipboardData || window.clipboardData;
       if (pasteData) {
         const pastedText = pasteData.getData('text');
         searchLocation(pastedText);
       }
     });
-    
+
     destinationInput.addEventListener('paste', (event) => {
+      isPasting = true;
       const pasteData = event.clipboardData || window.clipboardData;
       if (pasteData) {
         const pastedText = pasteData.getData('text');
         searchDestination(pastedText);
       }
     });
-    
-    pickupInput.addEventListener('input', debounce(() => searchLocation(pickupInput.value), 150));
-    destinationInput.addEventListener('input', debounce(() => searchDestination(destinationInput.value), 150));
+
+    pickupInput.addEventListener('input', debounce(() => {
+      if (isPasting) {
+        isPasting = false;
+        return;
+      }
+      searchLocation(pickupInput.value);
+    }, 150));
+
+    destinationInput.addEventListener('input', debounce(() => {
+      if (isPasting) {
+        isPasting = false;
+        return;
+      }
+      searchDestination(destinationInput.value);
+    }, 150));
 
     const locationListItems = document.querySelectorAll('#location-list .autocomplete-item');
     const destinationListItems = document.querySelectorAll('#destination-list .autocomplete-item');

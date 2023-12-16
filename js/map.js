@@ -1,11 +1,40 @@
-function initMap() {
-    var map = L.map('map').setView([14.0583, 108.2772], 6);
+var map;
+function initMap(lat, lng, zoom) {
+    if (!map) {
+        map = L.map('map').setView([lat, lng], zoom);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+    } else {
+        map.setView([lat, lng], zoom);
+    }
+}
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+function updateRoute(fromLat, fromLng, toLat, toLng) {
+    if (!map) {
+        initMap(fromLat, fromLng, 10);
+    }
+    routeMap(fromLat, fromLng, toLat, toLng);
+}
+
+function routeMap(fromLat, fromLng, toLat, toLng) {
+    map.setView([fromLat, fromLng], 10);
+    L.Routing.control({
+        waypoints: [
+            L.latLng(fromLat, fromLng),  // Location coordinates
+            L.latLng(toLat, toLng)  // Destination coordinates
+        ],
+        routeWhileDragging: false,
+        lineOptions: {
+            styles: [{ color: "red", opacity: 0.7, weight: 8 }],
+        },
+        router: new L.Routing.osrmv1({
+            serviceUrl: 'https://router.project-osrm.org/route/v1',
+            profile: 'driving',
+            show: false
+        }),
+        show: false
     }).addTo(map);
-    
-    
 }
 function drawCircle(lat, lng, radius) {
     var map = L.map('map').setView([lat, lng], 10);

@@ -1,4 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap');
+.leaflet-top.leaflet-right {
+  display: none;
+}
 #destinations-container {
   width: 100%;
   display: flex;
@@ -512,7 +515,7 @@ form, #data-table-route, #data-table, #data-table-elifelimo, #data-table-mytrans
 #destination-list-three li:hover {
   background-color: #f1f1f1; 
 }
-#location-list, #destination-list {
+#location-list, #destination-list, #destination-list-one, #destination-list-two, #destination-list-three {
   z-index: 2;
 }
 #history-container {

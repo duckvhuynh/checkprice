@@ -188,63 +188,64 @@ fetchElifeLimoWorker.addEventListener('message', function(e) {
 }, false);
 
 function processElfieLimo(websiteData) {
-// const dataTableElifelimo = document.querySelector("#data-table-elifelimo tbody");
-const locationData = websiteData.journeys[0].legs[0];
-const passenger = websiteData.journeys[0].legs[0].passenger;
-const pickupName = locationData.pickupLocation.name;
-const dropoffName = locationData.dropoffLocation.name;
-const pickupID = locationData.pickupLocation.locationId;
-const dropoffID = locationData.dropoffLocation.locationId;
-const pickupLatitude = locationData.pickupLocation.latLng.latitude;
-const pickupLongitude = locationData.pickupLocation.latLng.longitude;
-const dropoffLatitude = locationData.dropoffLocation.latLng.latitude;
-const dropoffLongitude = locationData.dropoffLocation.latLng.longitude;
-const dateTime = locationData.requestedPickupDateTime;
-const dateTimeURL = encodeURI(dateTime.substring(0, 16));
-const dateTimeUTC = new Date(dateTime);
-const urlSixt = `https://www.sixt.com/ride/new/offers?datetime=${dateTimeUTC.getTime()}&destination=${dropoffID}&pickup=${pickupID}&type=DISTANCE`;
-const urlMyTransfers = `https://www.mytransfers.com/api/list?adults=2&arrival_date=${dateTimeURL}&arrival_lat=${pickupLatitude}&arrival_lng=${pickupLongitude}&departure_lat=${dropoffLatitude}&departure_lng=${dropoffLongitude}&lang=en&type=oneway`;
-dateTimeUTC.setHours(dateTimeUTC.getHours() + 5);
-const utcFormat = dateTimeUTC.getTime() / 1000;
+  // const dataTableElifelimo = document.querySelector("#data-table-elifelimo tbody");
+  const locationData = websiteData.journeys[0].legs[0];
+  const passenger = websiteData.journeys[0].legs[0].passenger;
+  const pickupName = locationData.pickupLocation.name;
+  const dropoffName = locationData.dropoffLocation.name;
+  const pickupID = locationData.pickupLocation.locationId;
+  const dropoffID = locationData.dropoffLocation.locationId;
+  const pickupLatitude = locationData.pickupLocation.latLng.latitude;
+  const pickupLongitude = locationData.pickupLocation.latLng.longitude;
+  const dropoffLatitude = locationData.dropoffLocation.latLng.latitude;
+  const dropoffLongitude = locationData.dropoffLocation.latLng.longitude;
+  // routeMap(pickupLatitude, pickupLongitude, dropoffLatitude, dropoffLongitude);
+  const dateTime = locationData.requestedPickupDateTime;
+  const dateTimeURL = encodeURI(dateTime.substring(0, 16));
+  const dateTimeUTC = new Date(dateTime);
+  const urlSixt = `https://www.sixt.com/ride/new/offers?datetime=${dateTimeUTC.getTime()}&destination=${dropoffID}&pickup=${pickupID}&type=DISTANCE`;
+  const urlMyTransfers = `https://www.mytransfers.com/api/list?adults=2&arrival_date=${dateTimeURL}&arrival_lat=${pickupLatitude}&arrival_lng=${pickupLongitude}&departure_lat=${dropoffLatitude}&departure_lng=${dropoffLongitude}&lang=en&type=oneway`;
+  dateTimeUTC.setHours(dateTimeUTC.getHours() + 5);
+  const utcFormat = dateTimeUTC.getTime() / 1000;
 
 
-let request = {
-  "include_return_trip": false,
-  "passenger": {"count": passenger},
-  "flight": {"landing_datetime_local": dateTime.substring(0, 16).replace(" ", "T")},
-  "from_location": {"type": "airport-terminal", "description": pickupName, "lat": pickupLatitude, "lng": pickupLongitude},
-  "to_location": {"type": "others", "description": dropoffName, "lat": dropoffLatitude, "lng": dropoffLongitude}
-};
+  let request = {
+    "include_return_trip": false,
+    "passenger": {"count": passenger},
+    "flight": {"landing_datetime_local": dateTime.substring(0, 16).replace(" ", "T")},
+    "from_location": {"type": "airport-terminal", "description": pickupName, "lat": pickupLatitude, "lng": pickupLongitude},
+    "to_location": {"type": "others", "description": dropoffName, "lat": dropoffLatitude, "lng": dropoffLongitude}
+  };
 
-fetchJayRideWorker.postMessage(request);
-//fetchJayRide(request);
+  fetchJayRideWorker.postMessage(request);
+  //fetchJayRide(request);
 
-let sixtElement = document.querySelector('#sixt-url');
-sixtElement.innerHTML = `<a href="${urlSixt}" target="_blank">Sixt URL</a>`;
+  let sixtElement = document.querySelector('#sixt-url');
+  sixtElement.innerHTML = `<a href="${urlSixt}" target="_blank">Sixt URL</a>`;
 
-showSixtURL();
+  showSixtURL();
 
-const getDistanceURL = `https://388bivap71.execute-api.us-east-2.amazonaws.com/prod/maps/routes/distance-time?from_lat=${pickupLatitude}&from_lng=${pickupLongitude}&to_lat=${dropoffLatitude}&to_lng=${dropoffLongitude}`;
-let url;
+  const getDistanceURL = `https://388bivap71.execute-api.us-east-2.amazonaws.com/prod/maps/routes/distance-time?from_lat=${pickupLatitude}&from_lng=${pickupLongitude}&to_lat=${dropoffLatitude}&to_lng=${dropoffLongitude}`;
+  let url;
 
-fetchMytransfersWorker.postMessage(urlMyTransfers);
+  fetchMytransfersWorker.postMessage(urlMyTransfers);
 
-fetch(getDistanceURL)
-  .then(response => response.json())
-  .then(data => {
-      const distance = data.distance;
-      if (data) {
-          const time = data.time / 60;
-          const distance = data.distance / 1000;
-          cellTime.textContent = distance.toFixed(2) + " km" + " (" + time.toFixed(0) + " min)";
-          addCopyOnClickDistance();
-      } else {
-          console.log('No data found');
-      }
-      url = `https://k3zdvi12m6.execute-api.us-east-2.amazonaws.com/prod/ride-pricings?currency=USD&from_lat=${pickupLatitude}&from_lng=${pickupLongitude}&to_lat=${dropoffLatitude}&to_lng=${dropoffLongitude}&distance=${distance}&from_utc=${utcFormat}&from_time_str=${dateTimeURL}&passenger_count=${passenger}`;
-      fetchElifeLimoWorker.postMessage(url);
-  })
-  .catch(error => console.error('Error:', error));
+  fetch(getDistanceURL)
+    .then(response => response.json())
+    .then(data => {
+        const distance = data.distance;
+        if (data) {
+            const time = data.time / 60;
+            const distance = data.distance / 1000;
+            cellTime.textContent = distance.toFixed(2) + " km" + " (" + time.toFixed(0) + " min)";
+            addCopyOnClickDistance();
+        } else {
+            console.log('No data found');
+        }
+        url = `https://k3zdvi12m6.execute-api.us-east-2.amazonaws.com/prod/ride-pricings?currency=USD&from_lat=${pickupLatitude}&from_lng=${pickupLongitude}&to_lat=${dropoffLatitude}&to_lng=${dropoffLongitude}&distance=${distance}&from_utc=${utcFormat}&from_time_str=${dateTimeURL}&passenger_count=${passenger}`;
+        fetchElifeLimoWorker.postMessage(url);
+    })
+    .catch(error => console.error('Error:', error));
 }
 
 function processBooking(websiteData) {
