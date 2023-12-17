@@ -1,152 +1,5 @@
 const locationWorker = new Worker('worker/locationWorker.js');
 const destinationWorker = new Worker('worker/destinationWorker.js');
-
-  function searchLocation(input) {
-    const locationIcon = document.querySelector('#pickup-icon');
-    const list = document.querySelector('#location-list');
-  
-    if (!input) {
-      locationIcon.src = 'icon/location.svg';
-      if (list) {
-        list.innerHTML = '';
-        list.style.display = 'none';
-      }
-      return;
-    }
-    locationWorker.postMessage(input);
-  }
-  
-  function updateLocationList(predictions) {
-    const list = document.querySelector('#location-list');
-    const pickupLocation = document.querySelector('#pickup-location');
-  
-    if (!list) {
-      console.error('Element with id "location-list" not found');
-      return;
-    }
-  
-    // Clear the list
-    list.innerHTML = '';
-  
-    const fragment = document.createDocumentFragment();
-  
-    predictions.forEach(prediction => {
-      const item = document.createElement('li');
-      item.classList.add('list-item');
-  
-      const mainText = document.createElement('span');
-      mainText.classList.add('main-text');
-      mainText.textContent = prediction.structured_formatting.main_text + ' ';
-  
-      const secondaryText = document.createElement('span');
-      secondaryText.classList.add('secondary-text');
-      secondaryText.textContent = prediction.structured_formatting.secondary_text;
-  
-      const icon = document.createElement('img');
-      icon.src = prediction['location-icon'];
-      icon.alt = 'Location icon';
-      icon.classList.add('location-icon');
-  
-      item.appendChild(icon);
-      item.appendChild(mainText);
-      item.appendChild(secondaryText);
-  
-      item.dataset.placeid = prediction.place_id;
-  
-      fragment.appendChild(item);
-    });
-  
-    list.appendChild(fragment);
-    list.style.display = 'block';
-  
-    // Use event delegation to handle click events on list items
-    list.addEventListener('click', function(event) {
-      const item = event.target.closest('.list-item');
-      if (item) {
-        event.stopPropagation();
-        const locationIcon = document.querySelector('#pickup-icon');
-        locationIcon.src = item.querySelector('.location-icon').src;
-        pickupLocation.value = item.textContent;
-        pickupLocation.dataset.placeid = item.dataset.placeid;
-        list.innerHTML = '';
-        list.style.display = 'none';
-      }
-    });
-  }
-  
-  function searchDestination(input) {
-    const locationIcon = document.querySelector('#destination-icon');
-    const list = document.querySelector('#destination-list');
-  
-    if (!input) {
-      locationIcon.src = 'icon/location.svg';
-      if (list) {
-        list.innerHTML = '';
-        list.style.display = 'none';
-      }
-      return;
-    }
-    destinationWorker.postMessage(input);
-  }
-
-  function updateDestinationList(predictions) {
-    const list = document.querySelector('#destination-list');
-    const destinationInput = document.querySelector('#destination');
-  
-    if (!list) {
-      console.error('Element with id "destination-list" not found');
-      return;
-    }
-  
-    // Clear the list
-    list.innerHTML = '';
-  
-    const fragment = document.createDocumentFragment();
-  
-    predictions.forEach(prediction => {
-      const item = document.createElement('li');
-      item.classList.add('list-item');
-  
-      const mainText = document.createElement('span');
-      mainText.classList.add('main-text');
-      mainText.textContent = prediction.structured_formatting.main_text + ' ';
-  
-      const secondaryText = document.createElement('span');
-      secondaryText.classList.add('secondary-text');
-      secondaryText.textContent = prediction.structured_formatting.secondary_text;
-  
-      const icon = document.createElement('img');
-      icon.src = prediction['location-icon'];
-      icon.alt = 'Location icon';
-      icon.classList.add('location-icon');
-  
-      item.appendChild(icon);
-      item.appendChild(mainText);
-      item.appendChild(secondaryText);
-  
-      item.dataset.placeid = prediction.place_id;
-  
-      fragment.appendChild(item);
-    });
-  
-    list.appendChild(fragment);
-    list.style.display = 'block';
-  
-    // Use event delegation to handle click events on list items
-    list.addEventListener('click', function(event) {
-      const item = event.target.closest('.list-item');
-      if (item) {
-        event.stopPropagation();
-        const locationIcon = document.querySelector('#destination-icon');
-        locationIcon.src = item.querySelector('.location-icon').src;
-        destinationInput.value = item.textContent;
-        destinationInput.dataset.placeid = item.dataset.placeid;
-        list.innerHTML = '';
-        list.style.display = 'none';
-      }
-    });
-  }
-
   document.addEventListener("DOMContentLoaded", function() {
     // initMap(14.0583, 108.2772, 6);
     //drawCircleAndTriangle(15.887746792486352, 107.95146650372304, 1000);
@@ -159,39 +12,20 @@ const destinationWorker = new Worker('worker/destinationWorker.js');
       window.getSelection().removeAllRanges();
       showNotification('Copied whole table to clipboard');
     });
-    locationWorker.addEventListener('message', function(e) {
-      const processedData = e.data;
-      if (processedData) {
-        updateLocationList(processedData);
-      } else {
-        console.error('Predictions not found in response data');
+
+    setupWorker(locationWorker, '#location-list', '#pickup-location', '#pickup-icon');
+    setupWorker(destinationWorker, '#destination-list', '#destination', '#destination-icon');
+
+    function clearAndHideList(list) {
+      if (list) {
+        list.innerHTML = '';
+        list.style.display = 'none';
       }
-    }, false);
-    destinationWorker.addEventListener('message', function(e) {
-      const processedData = e.data;
-      if (processedData) {
-        updateDestinationList(processedData);
-      } else {
-        console.error('Predictions not found in response data');
-      }
-    }, false);
+    }
     document.addEventListener('click', function(event) {
-      const locationList = document.querySelector('#location-list');
-      const destinationList = document.querySelector('#destination-list');
-    
       if (!event.target.closest('.autocomplete')) {
-        if (locationList) {
-          while (locationList.firstChild) {
-            locationList.removeChild(locationList.firstChild);
-          }
-          locationList.style.display = 'none';
-        }
-        if (destinationList) {
-          while (destinationList.firstChild) {
-            destinationList.removeChild(destinationList.firstChild);
-          }
-          destinationList.style.display = 'none';
-        }
+        clearAndHideList(document.querySelector('#location-list'));
+        clearAndHideList(document.querySelector('#destination-list'));
       }
     });
     const oneWeekFromNow = new Date();
@@ -238,187 +72,143 @@ const destinationWorker = new Worker('worker/destinationWorker.js');
       }
     }
   
-    const pickupInput = document.querySelector('#pickup-location');
-    const destinationInput = document.querySelector('#destination');
+      const inputs = [
+      {
+        id: '#pickup-location',
+        worker: locationWorker,
+        iconSelector: '#pickup-icon',
+        listSelector: '#location-list'
+      },
+      {
+        id: '#destination',
+        worker: destinationWorker,
+        iconSelector: '#destination-icon',
+        listSelector: '#destination-list'
+      }
+    ];
+
     let isPasting = false;
+    let enterPressed = false;
 
-    pickupInput.addEventListener('paste', (event) => {
-      isPasting = true;
-      const pasteData = event.clipboardData || window.clipboardData;
-      if (pasteData) {
-        const pastedText = pasteData.getData('text');
-        searchLocation(pastedText);
-      }
+    inputs.forEach(({ id, worker, iconSelector, listSelector }) => {
+      const input = document.querySelector(id);
+
+      input.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+          enterPressed = true;
+          event.preventDefault();
+          const firstItem = document.querySelector(`${listSelector} .list-item`);
+          if (firstItem) {
+            firstItem.click();
+          }
+        }
+      });
+
+      input.addEventListener('paste', (event) => {
+        isPasting = true;
+        const pasteData = event.clipboardData || window.clipboardData;
+        if (pasteData) {
+          const pastedText = pasteData.getData('text');
+          search(pastedText, iconSelector, listSelector, worker);
+        }
+      });
+
+      input.addEventListener('input', debounce(() => {
+        if (isPasting) {
+          isPasting = false;
+          return;
+        }
+        search(input.value, iconSelector, listSelector, worker);
+      }, 150));
+
+      input.addEventListener('change', function() {
+        if (!enterPressed) {
+          const items = document.querySelectorAll(`${listSelector} .autocomplete-item`);
+          const match = Array.from(items).find(item => item.textContent === this.value);
+          if (!match) {
+            this.setAttribute('data-placeid', '');
+          }
+        } else {
+          enterPressed = false;
+        }
+      });
     });
 
-    destinationInput.addEventListener('paste', (event) => {
-      isPasting = true;
-      const pasteData = event.clipboardData || window.clipboardData;
-      if (pasteData) {
-        const pastedText = pasteData.getData('text');
-        searchDestination(pastedText);
-      }
-    });
-
-    pickupInput.addEventListener('input', debounce(() => {
-      if (isPasting) {
-        isPasting = false;
-        return;
-      }
-      searchLocation(pickupInput.value);
-    }, 150));
-
-    destinationInput.addEventListener('input', debounce(() => {
-      if (isPasting) {
-        isPasting = false;
-        return;
-      }
-      searchDestination(destinationInput.value);
-    }, 150));
-
-    const locationListItems = document.querySelectorAll('#location-list .autocomplete-item');
-    const destinationListItems = document.querySelectorAll('#destination-list .autocomplete-item');
-
-    pickupInput.addEventListener('change', function() {
-      const match = Array.from(locationListItems).find(item => item.textContent === this.value);
-      if (!match) {
-        this.setAttribute('data-placeid', '');
-      }
-    });
-
-    destinationInput.addEventListener('change', function() {
-      const match = Array.from(destinationListItems).find(item => item.textContent === this.value);
-      if (!match) {
-        this.setAttribute('data-placeid', '');
-      }
-    });
+    function swapInputs(input1, input2, icon1Selector, icon2Selector) {
+      const tempValue = input1.value;
+      const tempPlaceId = input1.getAttribute('data-placeid');
+      const tempIconSrc = document.querySelector(icon1Selector).src;
     
-
+      input1.value = input2.value;
+      input1.setAttribute('data-placeid', input2.getAttribute('data-placeid'));
+      document.querySelector(icon1Selector).src = document.querySelector(icon2Selector).src;
+    
+      input2.value = tempValue;
+      input2.setAttribute('data-placeid', tempPlaceId);
+      document.querySelector(icon2Selector).src = tempIconSrc;
+    }
+    
     document.querySelector('#swap-button').addEventListener('click', function(event) {
       event.preventDefault();
-      if (!pickupInput.value && !destinationInput.value) {
+      const [input1, input2] = inputs.map(({ id }) => document.querySelector(id));
+      if (!input1.value && !input2.value) {
         return;
       }
-      const tempValue = pickupInput.value;
-      const tempPlaceId = pickupInput.getAttribute('data-placeid');
-      const tempIconSrc = document.querySelector('#pickup-icon').src;
-      
-      pickupInput.value = destinationInput.value;
-      pickupInput.setAttribute('data-placeid', destinationInput.getAttribute('data-placeid'));
-      document.querySelector('#pickup-icon').src = document.querySelector('#destination-icon').src;
-      
-      destinationInput.value = tempValue;
-      destinationInput.setAttribute('data-placeid', tempPlaceId);
-      document.querySelector('#destination-icon').src = tempIconSrc;
+      swapInputs(input1, input2, inputs[0].iconSelector, inputs[1].iconSelector);
     });
 
 
     const submitButton = document.querySelector('#submit-button');
-    // const spinner = document.createElement("div");
-    // spinner.classList.add("loader");
-
-    // function showLoadingSpinner() {
-    //   submitButton.textContent = '';
-    //   if (!submitButton.contains(spinner)) {
-    //     submitButton.appendChild(spinner);
-    //   }
-    // }
-    
-    // function hideLoadingSpinner() {
-    //   submitButton.textContent = 'Search';
-    //   if (submitButton.contains(spinner)) {
-    //     submitButton.removeChild(spinner);
-    //   }
-    // }
     submitButton.addEventListener('click', function(event) {
       event.preventDefault();
-      if (!navigator.onLine) {
-        showWarning('You are offline.');
+    
+      const showErrorAndReturn = (message) => {
+        showWarning(message);
+        hideLoadingSpinner();
         return;
+      };
+    
+      if (!navigator.onLine) {
+        return showErrorAndReturn('You are offline.');
       }
       if (submitButton.textContent === '') {
         return;
       }
-
+    
       showLoadingSpinner();
-
-      const pickupPlaceId = document.querySelector('#pickup-location').getAttribute('data-placeid');
-      if (!pickupPlaceId) {
-        showWarning('Please select a pickup location from the list');
-        hideLoadingSpinner();
-        return;
+    
+      const pickupLocation = document.querySelector('#pickup-location');
+      const destination = document.querySelector('#destination');
+      const passenger = document.querySelector('#passenger');
+    
+      const pickupPlaceId = pickupLocation.getAttribute('data-placeid');
+      if (!pickupPlaceId || !pickupLocation.value) {
+        return showErrorAndReturn('Please select a pickup location from the list');
       }
-
-      const destinationPlaceId = document.querySelector('#destination').getAttribute('data-placeid');
-      if (!destinationPlaceId) {
-        showWarning('Please select a destination from the list');
-        hideLoadingSpinner();
-        return;
+    
+      const destinationPlaceId = destination.getAttribute('data-placeid');
+      if (!destinationPlaceId || !destination.value) {
+        return showErrorAndReturn('Please select a destination from the list');
       }
-
+    
       const date = fp.formatDate(fp.selectedDates[0], "Y-m-d");
       if (!date) {
-        showWarning('Please select a date');
-        hideLoadingSpinner();
-        return;
+        return showErrorAndReturn('Please select a date');
       }
-
+    
       const time = fp.formatDate(fp.selectedDates[0], "H:i");
       if (!time) {
-        showWarning('Please select a time');
-        hideLoadingSpinner();
-        return;
+        return showErrorAndReturn('Please select a time');
       }
-
-      const passenger = document.querySelector('#passenger').value;
-      if (!passenger) {
-        showWarning('Please select a passenger');
-        hideLoadingSpinner();
-        return;
+    
+      if (!passenger.value) {
+        return showErrorAndReturn('Please select a passenger');
       }
+    
       hideAllTables();
       showInstructions('Loading...');
-      fetchDataWorker.postMessage(generateNewDynamicLink(pickupPlaceId, destinationPlaceId, date, time, passenger))
+      fetchDataWorker.postMessage(generateDynamicLinks(pickupPlaceId, destinationPlaceId, date, time, passenger.value));
     });
   });
-
-  function showLoadingSpinner() {
-    const submitButton = document.querySelector('#submit-button');
-    const spinner = document.createElement("div");
-    spinner.classList.add("loader");
-    submitButton.textContent = '';
-    if (!submitButton.contains(spinner)) {
-      submitButton.appendChild(spinner);
-    }
-  }
-  
-  function hideLoadingSpinner() {
-    const submitButton = document.querySelector('#submit-button');
-    const spinner = document.createElement("div");
-    spinner.classList.add("loader");
-    submitButton.textContent = 'Search';
-    if (submitButton.contains(spinner)) {
-      submitButton.removeChild(spinner);
-    }
-  }
-
-  function generateNewDynamicLink(pickupPlaceId, destinationPlaceId, date, time, passenger) {
-    const baseURL = "https://taxi.booking.com/search-results-mfe/rates?format=envelope";
-    const queryParams = {
-      passenger: passenger,
-      pickup: pickupPlaceId,
-      pickupDateTime: `${date}T${time}`,
-      dropoff: destinationPlaceId,
-      affiliate: "booking-taxi",
-      language: "en-gb",
-      currency: "USD",
-    };
-  
-    const queryString = Object.keys(queryParams)
-      .map((key) => `${key}=${queryParams[key]}`)
-      .join("&");
-  
-    return `${baseURL}&${queryString}`;
-  }
 
   

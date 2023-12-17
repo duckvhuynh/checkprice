@@ -2,12 +2,6 @@
 .leaflet-top.leaflet-right {
   display: none;
 }
-#destinations-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
 
 #jayride-container-header {
   width: 100%;
@@ -113,7 +107,7 @@ tr:nth-child(even) {
 td:hover {
   background-color: #ddd; 
   border-radius: 5px;
-} 
+}
 
 #data-table td:nth-child(1),
 #data-table td:nth-child(4),
@@ -482,7 +476,7 @@ form, #data-table-route, #data-table, #data-table-elifelimo, #data-table-mytrans
   background-color: #f1f1f1; 
 }
 
-#destination-list, #destination-list-one, #destination-list-two, #destination-list-three {
+#destination-list {
   border-radius: 15px;
   position: absolute;
   width: 98%;
@@ -496,10 +490,7 @@ form, #data-table-route, #data-table, #data-table-elifelimo, #data-table-mytrans
   display: none; 
 }
 
-#destination-list li,
-#destination-list-one li,
-#destination-list-two li,
-#destination-list-three li {
+#destination-list li {
   display: flex;
   align-items: center;
   font-size: 12px;
@@ -509,13 +500,10 @@ form, #data-table-route, #data-table, #data-table-elifelimo, #data-table-mytrans
   transition: background-color 0.1s ease;
 }
 
-#destination-list li:hover,
-#destination-list-one li:hover,
-#destination-list-two li:hover,
-#destination-list-three li:hover {
+#destination-list li:hover {
   background-color: #f1f1f1; 
 }
-#location-list, #destination-list, #destination-list-one, #destination-list-two, #destination-list-three {
+#location-list, #destination-list {
   z-index: 2;
 }
 #history-container {

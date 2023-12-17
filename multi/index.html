@@ -5,32 +5,55 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" type="text/css" href="../style.css">
+  <link rel="stylesheet" type="text/css" href="style.css">
   <link rel="shortcut icon" type="image/png" href="../icon/icon16.png">
   <script type="text/javascript" src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script type="text/javascript" src="../js/handler.js"></script>
   <script type="text/javascript" src="multi.js"></script>
+  <script type="text/javascript" src="table.js"></script>
 </head>
 <body>
-  <!-- <div id="map"></div> -->
+  <div class="spacer"></div>
   <div id="notification-container"></div>
   <div id="top-container"></div>
   <form id="search-form">
     <div class="input-group">
-      <label for="pickup-location">Pickup Location:</label>
-      <div class="autocomplete">
-        <div class="input-container">
-          <input type="text" id="pickup-location" name="pickup-location" placeholder="Enter Pickup" autocomplete="off" required>
-          <div class="icon-container">
-            <img id="pickup-icon" src="/icon/location.svg" alt="location icon">
+      <div class="locations-container">
+        <label for="pickup-location">Pickup Location:</label>
+        <div class="autocomplete">
+          <div class="pickup-container-one">
+            <input type="text" id="pickup-location-one" name="pickup-location" placeholder="Enter Pickup" autocomplete="off" required>
+            <div class="icon-container">
+              <img id="pickup-icon-one" src="/icon/location.svg" alt="location icon">
+            </div>
           </div>
+          <ul id="location-list-one"></ul>
         </div>
-        <ul id="location-list"></ul>
+        <div class="autocomplete">
+          <div class="pickup-container-two">
+            <input type="text" id="pickup-location-two" name="pickup-location" placeholder="Enter Pickup" autocomplete="off" required>
+            <div class="icon-container">
+              <img id="pickup-icon-two" src="/icon/location.svg" alt="location icon">
+            </div>
+          </div>
+          <ul id="location-list-two"></ul>
+        </div>
+        <div class="autocomplete">
+          <div class="pickup-container-three">
+            <input type="text" id="pickup-location-three" name="pickup-location" placeholder="Enter Pickup" autocomplete="off" required>
+            <div class="icon-container">
+              <img id="pickup-icon-three" src="/icon/location.svg" alt="location icon">
+            </div>
+          </div>
+          <ul id="location-list-three"></ul>
+        </div>
       </div>
       <button id="swap-button"></button>
       <div class="destinations-container">
         <label for="destination">Destination:</label>
         <div class="autocomplete">
-            <div class="input-container">
+            <div class="dropoff-container-one">
             <input type="text" id="destination-one" name="destination" placeholder="Enter Destination" autocomplete="off" required>
             <div class="icon-container">
                 <img id="destination-icon-one" src="/icon/location.svg" alt="location icon">
@@ -39,7 +62,7 @@
             <ul id="destination-list-one"></ul>
         </div>
         <div class="autocomplete">
-            <div class="input-container">
+            <div class="dropoff-container-two">
             <input type="text" id="destination-two" name="destination" placeholder="Enter Destination" autocomplete="off" required>
             <div class="icon-container">
                 <img id="destination-icon-two" src="/icon/location.svg" alt="location icon">
@@ -48,7 +71,7 @@
             <ul id="destination-list-two"></ul>
         </div>
         <div class="autocomplete">
-            <div class="input-container">
+            <div class="dropoff-container-three">
             <input type="text" id="destination-three" name="destination" placeholder="Enter Destination" autocomplete="off" required>
             <div class="icon-container">
                 <img id="destination-icon-three" src="/icon/location.svg" alt="location icon">
@@ -60,7 +83,6 @@
     </div>
     <label for="date">Date:</label>
     <input type="text" id="date" name="date" autocomplete="off" required readonly>
-
     <label for="passenger">Passenger:</label>
     <select id="passenger" name="passenger" required>
         <option value="">Pax</option>
@@ -89,7 +111,7 @@
       </button>
     </div>
   </form>
-  <p id="placeholder-text">Please enter a route</p>
+  <p id="placeholder-text">Please fill all pickup and dropoff locations</p>
   <table id="data-table-route">
     <thead>
       <tr>
@@ -102,16 +124,21 @@
     </thead>
     <tbody></tbody>
   </table>
-  <div id="booking-containerr">
-    <p id="booking-table-name" class="table-name">Booking.com</p>
-    <table id="data-tablea">
+  <div id="booking-container-multi">
+    <div id="multi-container-header">
+      <button id="copy-multi">Copy prices</button>
+    </div>
+    <table id="data-table-multi">
       <thead>
         <tr>
           <th>NO.</th>
           <th>CAR DECRIPTION</th>
           <th>PRICE ONE</th>
+          <th>KM</th>
           <th>PRICE TWO</th>
+          <th>KM</th>
           <th>PRICE THREE</th>
+          <th>KM</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -119,7 +146,7 @@
   </div>
   <div class="spacer"></div>
   <footer>
-    <p>© 2023 duckvhuynh for education purpose only.</p>
+    <p>&copy 2023 duckvhuynh for education purpose only.</p>
   </footer>
 </body>
 </html>

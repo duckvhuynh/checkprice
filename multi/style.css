@@ -1,0 +1,127 @@
+.pickup-container-one,
+.pickup-container-three {
+    display: none;
+}
+
+#locations-container,
+#destinations-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#data-table-multi th:nth-child(2) {
+    text-align: left;
+}
+#data-table-multi td:nth-child(odd) {
+    text-align: center;
+}
+
+#destination-list-one,
+#destination-list-two,
+#destination-list-three {
+    border-radius: 15px;
+    position: absolute;
+    width: 98%;
+    background: white;
+    list-style: none;
+    margin-top: -21.5px;
+    margin-left: 1.5px;
+    padding: 0;
+    border: 0.1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    display: none; 
+}
+#location-list-one,
+#location-list-two,
+#location-list-three {
+    border-radius: 15px;
+    position: absolute;
+    width: 98%;
+    background: white;
+    list-style: none;
+    margin-top: -21.5px;
+    margin-left: 1.5px;
+    padding: 0;
+    border: 0.1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    display: none; 
+}
+  
+#location-list-one li,
+#location-list-two li,
+#location-list-three li {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    border-radius: 15px;
+    padding: 5px 10px;
+    cursor: pointer; 
+    transition: background-color 0.1s ease;
+}
+  
+#location-list-one li:hover,
+#location-list-two li:hover,
+#location-list-three li:hover {
+    background-color: #f1f1f1; 
+}
+#destination-list-one li,
+#destination-list-two li,
+#destination-list-three li {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    border-radius: 15px;
+    padding: 5px 10px;
+    cursor: pointer; 
+    transition: background-color 0.1s ease;
+}
+#destination-list-one li:hover,
+#destination-list-two li:hover,
+#destination-list-three li:hover {
+    background-color: #f1f1f1; 
+}
+#location-list-one,
+#location-list-two,
+#location-list-three,
+#destination-list-one,
+#destination-list-two,
+#destination-list-three {
+    z-index: 2;
+}
+#data-table-multi {
+    margin-left: auto;
+    margin-right: auto;
+}
+#booking-container-multi {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    display: none;
+}
+#multi-container-header {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#copy-multi {
+    font-size: 12px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+    width: 90px;
+    height: 30px;
+    padding: 5px 10px;
+    background-color: rgba(248, 249, 250, 0.427);
+    color: #000;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    margin-bottom: -5px;
+    font-family: 'Montserrat', sans-serif;
+    transition: background-color 0.3s ease;  
+}
+#copy-multi:hover {
+    background-color: rgba(248, 249, 250, 0.929);
+}

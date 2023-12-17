@@ -1,30 +1,34 @@
+const fetchDistancesWorker = new Worker('../worker/fetchDistancesWorker.js');
 self.addEventListener('message', function(e) {
-    const urls = e.data; // Assuming you're passing an array of URLs
+    const urls = e.data;
+    console.log(urls);
     Promise.all(urls.map(url => fetch(url).then(response => response.json())))
       .then(data => {
-
         data.forEach(sortCarDecription);
-        // self.postMessage(data);
-        // console.log(data);
-        var newData = {cars: [], prices: {'priceOne': [], 'priceTwo': [], 'priceThree': []}}
-        var cars = [];
-        var prices = {'priceOne': [], 'priceTwo': [], 'priceThree': []};
-        console.log(data[0]);
-        console.log(data);
+        let latLngs = {
+          'latLngOne': {'from': {'lat': 0, 'lng': 0}, 'to': {'lat' : 0, 'lng': 0}}, 
+          'latLngTwo': {'from': {'lat': 0, 'lng': 0}, 'to': {'lat' : 0, 'lng': 0}}, 
+          'latLngThree': {'from': {'lat': 0, 'lng': 0}, 'to': {'lat' : 0, 'lng': 0}}
+        };
+        let cars = [];
+        let prices = {'priceOne': [], 'priceTwo': [], 'priceThree': []};
+        let newData = {cars: [], prices: {'priceOne': [], 'priceTwo': [], 'priceThree': []}, distances: {'distanceOne': 0, 'distanceTwo': 0, 'distanceThree': 0}};
+        
         data[0].journeys.forEach(({legs}) => {
           legs[0].results.forEach(({carDetails}) => {
             cars.push(carDetails.description);
           });
         });
-        //console.log(data[0]);
-        console.log(cars);
-
-        data.forEach((data, index) => {
-          var i = index === 0 ? 'One' : index === 1 ? 'Two' : 'Three';
-          index++;
-          console.log(data);
-          data.journeys.forEach(({legs}) => {
-            legs[0].results.forEach(({price}) => {
+        data.forEach((dataItem, index) => {
+          const i = index === 0 ? 'One' : index === 1 ? 'Two' : 'Three';
+          dataItem.journeys.forEach(({legs}) => {
+            const leg = legs[0];
+            latLngs[`latLng${i}`]['from']['lat'] = leg.pickupLocation.latLng.latitude;
+            latLngs[`latLng${i}`]['from']['lng'] = leg.pickupLocation.latLng.longitude;
+            latLngs[`latLng${i}`]['to']['lat'] = leg.dropoffLocation.latLng.latitude;
+            latLngs[`latLng${i}`]['to']['lng'] = leg.dropoffLocation.latLng.longitude;
+            
+            leg.results.forEach(({price}) => {
               prices[`price${i}`].push(price);
             });
           });
@@ -32,9 +36,23 @@ self.addEventListener('message', function(e) {
 
         newData.cars = cars;
         newData.prices = prices;
-        
-        self.postMessage(newData);
-        console.log(newData);
+        fetchDistancesWorker.postMessage(latLngs);
+        new Promise((resolve, reject) => {
+          fetchDistancesWorker.onmessage = function(e) {
+            if (e.data.error) {
+              reject(e.data.error);
+            } else {
+              resolve(e.data);
+            }
+          };
+        })
+        .then(distancesData => {
+          newData.distances = distancesData;
+          self.postMessage(newData);
+        })
+        .catch(error => {
+          console.error('Error fetching distances:', error);
+        });
       })
       .catch(error => {
         self.postMessage({ error: error.message });
