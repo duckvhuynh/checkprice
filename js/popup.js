@@ -97,6 +97,7 @@ const destinationWorker = new Worker('worker/destinationWorker.js');
         if (event.key === 'Enter') {
           enterPressed = true;
           event.preventDefault();
+          event.stopPropagation();
           const firstItem = document.querySelector(`${listSelector} .list-item`);
           if (firstItem) {
             firstItem.click();
@@ -160,6 +161,11 @@ const destinationWorker = new Worker('worker/destinationWorker.js');
 
 
     const submitButton = document.querySelector('#submit-button');
+    document.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') {
+        submitButton.click();
+      }
+    });
     submitButton.addEventListener('click', function(event) {
       event.preventDefault();
     
