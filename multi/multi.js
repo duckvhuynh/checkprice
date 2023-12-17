@@ -317,14 +317,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const data = document.querySelector(id);
         const dataValue = data.value;
         const dataPlaceId = data.getAttribute('data-placeid');
-        console.log(dataValue);
-        console.log(dataPlaceId);
-        if (dataValue === '') {
+        if (!dataValue) {
           showWarning('Please fill all the fields');
           hideLoadingSpinner();
           return;
         }
-        if (dataPlaceId === '') {
+        if (!dataPlaceId) {
           showWarning('Please fill all the fields');
           hideLoadingSpinner();
           return;

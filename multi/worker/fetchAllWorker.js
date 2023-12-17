@@ -1,7 +1,6 @@
 const fetchDistancesWorker = new Worker('../worker/fetchDistancesWorker.js');
 self.addEventListener('message', function(e) {
     const urls = e.data;
-    console.log(urls);
     Promise.all(urls.map(url => fetch(url).then(response => response.json())))
       .then(data => {
         data.forEach(sortCarDecription);
