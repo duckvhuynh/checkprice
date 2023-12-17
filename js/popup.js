@@ -100,6 +100,7 @@ const destinationWorker = new Worker('worker/destinationWorker.js');
           const firstItem = document.querySelector(`${listSelector} .list-item`);
           if (firstItem) {
             firstItem.click();
+            input.blur();
           }
         }
       });
