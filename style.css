@@ -1,4 +1,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap');
+
+#switch-to-multi {
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+  width: 70px;
+  height: 40px;
+  padding: 5px 10px;
+  background-color: #e14d20;
+  color: #fff;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-bottom: 40px;
+  font-family: 'Montserrat', sans-serif;
+  transition: background-color 0.3s ease;
+}
+
+#switch-to-multi:hover {
+  background-color: #e14d20;
+}
+
 .leaflet-top.leaflet-right {
   display: none;
 }
@@ -367,7 +388,7 @@ form input[type="number"] {
 }
 form input[type="text"] {
   padding: 11px;
-  width: 240px;
+  width: 225px;
 }
 
 form input[type="date"] {
@@ -380,13 +401,10 @@ form input[type="time"] {
   width: 90px;
 }
 
-form button[type="submit"] {
+form button[type="submit"],
+form button[type="multi"] {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
-  width: 70px;
-  height: 40px;
   padding: 5px 10px;
-  background-color: #e14d20;
-  color: #fff;
   border: none;
   border-radius: 15px;
   cursor: pointer;
@@ -404,7 +422,25 @@ form select:focus {
   outline: 2px solid #f15a22;
 }
 
+form button[type="submit"] {
+  color: #fff;
+  background-color: #e14d20;
+  width: 70px;
+  height: 40px;
+}
+form button[type="multi"] {
+  margin-right: 5px;
+  color: #000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+  background-color: rgba(248, 249, 250, 0.427);
+  width: 35px;
+  height: 40px;
+}
+
 form button[type="submit"]:hover {
+  background-color: #f88a4b;
+}
+form button[type="multi"]:hover {
   background-color: #f88a4b;
 }
 

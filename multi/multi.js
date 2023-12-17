@@ -266,8 +266,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.addEventListener('keydown', function(event) {
       if (event.key === 'Enter') {
+        event.preventDefault();
         submitButton.click();
       }
+    });
+
+    document.querySelector('#multi-button').addEventListener('click', function(event) {
+      event.preventDefault();
+      window.open('../index.html', '_self');
     });
 
     submitButton.addEventListener('click', function(event) {

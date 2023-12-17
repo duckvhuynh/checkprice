@@ -163,8 +163,13 @@ const destinationWorker = new Worker('worker/destinationWorker.js');
     const submitButton = document.querySelector('#submit-button');
     document.addEventListener('keydown', function(event) {
       if (event.key === 'Enter') {
+        event.preventDefault();
         submitButton.click();
       }
+    });
+    document.querySelector('#multi-button').addEventListener('click', function(event) {
+      event.preventDefault();
+      window.open('multi/index.html', '_self');
     });
     submitButton.addEventListener('click', function(event) {
       event.preventDefault();
