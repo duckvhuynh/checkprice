@@ -273,7 +273,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.querySelector('#multi-button').addEventListener('click', function(event) {
       event.preventDefault();
-      window.open('../index.html', '_self');
+      window.open('..', '_self');
     });
 
     submitButton.addEventListener('click', function(event) {

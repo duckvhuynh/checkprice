@@ -169,7 +169,7 @@ const destinationWorker = new Worker('worker/destinationWorker.js');
     });
     document.querySelector('#multi-button').addEventListener('click', function(event) {
       event.preventDefault();
-      window.open('multi/index.html', '_self');
+      window.open('multi', '_self');
     });
     submitButton.addEventListener('click', function(event) {
       event.preventDefault();
