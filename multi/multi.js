@@ -259,6 +259,7 @@ document.addEventListener('DOMContentLoaded', function() {
           enterPressed = false;
         }
       });
+      
     });
 
     const submitButton = document.querySelector('#submit-button');
@@ -271,10 +272,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     submitButton.addEventListener('click', function(event) {
       event.preventDefault();
-      if (!navigator.onLine) {
-        showWarning('You are offline.');
+
+      const showErrorAndReturn = (message) => {
+        showWarning(message);
+        hideLoadingSpinner();
         return;
+      };
+
+      if (!navigator.onLine) {
+        return showErrorAndReturn('You are offline.');
       }
+
       if (submitButton.textContent === '') {
         return;
       }
@@ -282,23 +290,17 @@ document.addEventListener('DOMContentLoaded', function() {
       showLoadingSpinner();
       const date = fp.formatDate(fp.selectedDates[0], "Y-m-d");
       if (!date) {
-        showWarning('Please select a date');
-        hideLoadingSpinner();
-        return;
+        return showErrorAndReturn('Please select a date');
       }
     
       const time = fp.formatDate(fp.selectedDates[0], "H:i");
       if (!time) {
-        showWarning('Please select a time');
-        hideLoadingSpinner();
-        return;
+        return showErrorAndReturn('Please select a time');
       }
     
       const passenger = document.querySelector('#passenger').value;
       if (!passenger) {
-        showWarning('Please select a passenger');
-        hideLoadingSpinner();
-        return;
+        return showErrorAndReturn('Please select a passenger');
       }
     
       const locations = toggle ? [
@@ -314,18 +316,12 @@ document.addEventListener('DOMContentLoaded', function() {
       ];
     
       const placeIds = locations.map(({ id }) => {
-        const data = document.querySelector(id);
-        const dataValue = data.value;
-        const dataPlaceId = data.getAttribute('data-placeid');
-        if (!dataValue) {
-          showWarning('Please fill all the fields');
-          hideLoadingSpinner();
-          return;
-        }
-        if (!dataPlaceId) {
-          showWarning('Please fill all the fields');
-          hideLoadingSpinner();
-          return;
+        const input = document.querySelector(id);
+        const dataValue = input.value;
+        const dataPlaceId = input.getAttribute('data-placeid');
+        if (!dataValue || !dataPlaceId) {
+          input.focus();
+          return showErrorAndReturn('Please select a valid location from the list');
         }
         return dataPlaceId;
       });

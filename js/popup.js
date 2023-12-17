@@ -190,12 +190,14 @@ const destinationWorker = new Worker('worker/destinationWorker.js');
     
       const pickupPlaceId = pickupLocation.getAttribute('data-placeid');
       if (!pickupPlaceId || !pickupLocation.value) {
-        return showErrorAndReturn('Please select a pickup location from the list');
+        pickupLocation.focus();
+        return showErrorAndReturn('Please select a valid pickup location from the list');
       }
     
       const destinationPlaceId = destination.getAttribute('data-placeid');
       if (!destinationPlaceId || !destination.value) {
-        return showErrorAndReturn('Please select a destination from the list');
+        destination.focus();
+        return showErrorAndReturn('Please select a valid destination from the list');
       }
     
       const date = fp.formatDate(fp.selectedDates[0], "Y-m-d");
