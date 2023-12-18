@@ -5,8 +5,9 @@ const destinationOneWorker = new Worker('worker/destinationOneWorker.js');
 const destinationTwoWorker = new Worker('worker/destinationTwoWorker.js');
 const destinationThreeWorker = new Worker('worker/destinationThreeWorker.js');
 const fetchAllWorker = new Worker('worker/fetchAllWorker.js');
-const fetchDistancesWorker = new Worker('worker/fetchDistancesWorker.js');
-function updateTable(data) {
+const fetchAllWorkerTwo = new Worker('worker/fetchAllWorkerTwo.js');
+
+function updateTable(data, type) {
   const table = document.querySelector('#data-table-multi');
 
   if (!table) {
@@ -24,12 +25,12 @@ function updateTable(data) {
     cells[1].textContent = data.cars[i];
     cells[2].textContent = data.prices.priceOne[i];
     cells[4].textContent = data.prices.priceTwo[i];
-    cells[6].textContent = data.prices.priceThree[i];
+    cells[6].textContent = type === 'Three' ? data.prices.priceThree[i] : '';
 
     if (i === 0) {
       cells[3].textContent = (data.distances.distanceOne / 1000).toFixed(2);
       cells[5].textContent = (data.distances.distanceTwo / 1000).toFixed(2);
-      cells[7].textContent = (data.distances.distanceThree / 1000).toFixed(2);
+      cells[7].textContent = type === 'Three' ? (data.distances.distanceThree / 1000).toFixed(2) : '';
     }
   }
   showMultiTable();
@@ -127,11 +128,28 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchAllWorker.addEventListener('message', function(e) {
       const data = e.data;
       if (data.error) {
+        showWarning('Error fetching data! Re-check\n your inputs and try again.');
+        hideLoadingSpinner();
+        showDefaultInstructions();
         console.error('Error fetching data:', data.error);
       } else {
         clearTable('#data-table-multi');
         updateCarDescription(data.cars);
-        updateTable(data);
+        updateTable(data, 'Three');
+      }
+    });
+
+    fetchAllWorkerTwo.addEventListener('message', function(e) {
+      const data = e.data;
+      if (data.error) {
+        showWarning('Error fetching data! Re-check\n your inputs and try again.');
+        hideLoadingSpinner();
+        showDefaultInstructions();
+        console.error('Error fetching data:', data.error);
+      } else {
+        clearTable('#data-table-multi');
+        updateCarDescription(data.cars);
+        updateTable(data, 'Two');
       }
     });
 
@@ -298,17 +316,14 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!date) {
         return showErrorAndReturn('Please select a date');
       }
-    
       const time = fp.formatDate(fp.selectedDates[0], "H:i");
       if (!time) {
         return showErrorAndReturn('Please select a time');
       }
-    
       const passenger = document.querySelector('#passenger').value;
       if (!passenger) {
         return showErrorAndReturn('Please select a passenger');
       }
-    
       const locations = toggle ? [
         { id: '#pickup-location-two' },
         { id: '#destination-one' },
@@ -320,31 +335,39 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: '#pickup-location-three' },
         { id: '#destination-two' },
       ];
-    
       const placeIds = locations.map(({ id }) => {
         const input = document.querySelector(id);
         const dataValue = input.value;
         const dataPlaceId = input.getAttribute('data-placeid');
-        if (!dataValue || !dataPlaceId) {
+        if ((!id.includes('three')) && (!dataValue || !dataPlaceId)) {
           input.focus();
           return showErrorAndReturn('Please select a valid location from the list');
         }
         return dataPlaceId;
       });
     
-      if (placeIds.some(id => !id)) {
+      if (placeIds.some((id, index) => !id && !locations[index].id.includes('three'))) {
+        showErrorAndReturn('Please select a valid location from the list');
         return;
       }
-    
+
       hideMultiTable();
       showInstructions('Loading...');
     
       if (toggle) {
         const [pickupPlaceIdTwo, ...destinations] = placeIds;
-        fetchAllWorker.postMessage(generateDynamicLinks(pickupPlaceIdTwo, destinations, date, time, passenger));
+        if (!destinations[2]) {
+          fetchAllWorkerTwo.postMessage(generateDynamicLinks(pickupPlaceIdTwo, destinations, date, time, passenger));
+        } else {
+          fetchAllWorker.postMessage(generateDynamicLinks(pickupPlaceIdTwo, destinations, date, time, passenger));
+        }
       } else {
         const destinationPlaceIdTwo = placeIds.pop();
-        fetchAllWorker.postMessage(generateDynamicLinks(placeIds, destinationPlaceIdTwo, date, time, passenger));
+        if (!placeIds[2]) {
+          fetchAllWorkerTwo.postMessage(generateDynamicLinks(placeIds, destinationPlaceIdTwo, date, time, passenger));
+        } else {
+          fetchAllWorker.postMessage(generateDynamicLinks(placeIds, destinationPlaceIdTwo, date, time, passenger));
+        }
       }
     });
 });

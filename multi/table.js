@@ -114,6 +114,10 @@ function showInstructions(text) {
     intructions.style.display = 'block';
 }
 
+function showDefaultInstructions() {
+    showInstructions('🛈 Please fill all pickup and dropoff locations');
+}
+
 function showMultiTable() {
     document.querySelector('#booking-container-multi').style.display = 'block';
 }

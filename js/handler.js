@@ -71,38 +71,38 @@ function updateList(predictions, listId, inputId, iconId) {
     });
 }
 function generateDynamicLinks(pickup, destination, date, time, passenger) {
-    const baseURL = "https://taxi.booking.com/search-results-mfe/rates?format=envelope";
-  
-    const generateLink = (pickup, dropoff) => {
-      const queryParams = {
-        passenger: passenger,
-        pickup: pickup,
-        pickupDateTime: `${date}T${time}`,
-        dropoff: dropoff,
-        affiliate: "booking-taxi",
-        language: "en-gb",
-        currency: "USD",
-      };
-  
-      const queryString = Object.keys(queryParams)
-        .map((key) => `${key}=${queryParams[key]}`)
-        .join("&");
-  
-      return `${baseURL}&${queryString}`;
+  const baseURL = "https://taxi.booking.com/search-results-mfe/rates?format=envelope";
+
+  const generateLink = (pickup, dropoff) => {
+    const queryParams = {
+      passenger: passenger,
+      pickup: pickup,
+      pickupDateTime: `${date}T${time}`,
+      dropoff: dropoff,
+      affiliate: "booking-taxi",
+      language: "en-gb",
+      currency: "USD",
     };
-  
-    // If pickup is an array, map over it and generate a link for each pickup location
-    if (Array.isArray(pickup)) {
-      return pickup.map(pickupLocation => generateLink(pickupLocation, destination));
-    }
-  
-    // If destination is an array, map over it and generate a link for each destination
-    if (Array.isArray(destination)) {
-      return destination.map(destinationLocation => generateLink(pickup, destinationLocation));
-    }
-  
-    // If neither pickup nor destination is an array, just generate a single link
-    return [generateLink(pickup, destination)];
+
+    const queryString = Object.keys(queryParams)
+      .map((key) => `${key}=${queryParams[key]}`)
+      .join("&");
+
+    return `${baseURL}&${queryString}`;
+  };
+
+  // If pickup is an array, map over it and generate a link for each pickup location
+  if (Array.isArray(pickup)) {
+    return pickup.filter(Boolean).map(pickupLocation => generateLink(pickupLocation, destination));
+  }
+
+  // If destination is an array, map over it and generate a link for each destination
+  if (Array.isArray(destination)) {
+    return destination.filter(Boolean).map(destinationLocation => generateLink(pickup, destinationLocation));
+  }
+
+  // If neither pickup nor destination is an array, just generate a single link
+  return [generateLink(pickup, destination)];
 }
   
 function showLoadingSpinner() {

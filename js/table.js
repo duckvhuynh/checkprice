@@ -222,6 +222,10 @@ function showInstructions(text) {
     intructions.style.display = 'block';
 }
 
+function showDefaultInstructions() {
+  showInstructions('🛈 Please fill all pickup and dropoff locations');
+}
+
 function showElifeLimo() {
     document.querySelector('#elifelimo-container').style.display = 'block';
 }
