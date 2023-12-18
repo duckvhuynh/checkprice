@@ -118,6 +118,7 @@ function sortDescriptionElifeLimo(vehicleClasses) {
       return aOrderIndex - bOrderIndex;
   });
 }
+
 function sortDescriptionJayride(quotes) {
   const groupedQuotes = quotes.reduce((groups, quote) => {
       const vehicleType = quote.service_info.vehicle_type;
@@ -128,12 +129,17 @@ function sortDescriptionJayride(quotes) {
       return groups;
   }, {});
 
-  Object.keys(groupedQuotes).forEach(vehicleType => {
+  // Sort car types according to carDescriptionOrderJayRide
+  const sortedVehicleTypes = carDescriptionOrderJayRide.filter(type => groupedQuotes.hasOwnProperty(type));
+
+  sortedVehicleTypes.forEach(vehicleType => {
+      // Sort quotes by price within each car type
       groupedQuotes[vehicleType].sort((a, b) => a.fare.price - b.fare.price);
       groupedQuotes[vehicleType] = groupedQuotes[vehicleType].slice(0, 3);
   });
 
-  const sortedQuotes = [].concat(...Object.values(groupedQuotes));
+  // Flatten the sorted quotes into a single array
+  const sortedQuotes = sortedVehicleTypes.flatMap(vehicleType => groupedQuotes[vehicleType]);
 
   return sortedQuotes;
 }
