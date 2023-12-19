@@ -1,11 +1,10 @@
-const hotelKeywords = ['hôtel', 'hotel', 'inn', 'resort', 'lodge', 'suites', 'motel', 'b&b', 'bed and breakfast', 'guesthouse', 'hostel', 'boutique', 'serviced apartments', 'villa'];
+const icons = {
+  'airport': 'https://raw.githubusercontent.com/duckvhuynh/checkprice/main/icon/airport.svg',
+  'hotel': 'https://raw.githubusercontent.com/duckvhuynh/checkprice/main/icon/hotel.svg',
+  'default': 'https://raw.githubusercontent.com/duckvhuynh/checkprice/main/icon/location.svg'
+};
 
-const hotel = 'https://www.svgrepo.com/show/533493/hotel.svg';
-const airport = 'https://www.svgrepo.com/show/522353/airplane.svg';
-const geo = 'https://www.svgrepo.com/show/532539/location-pin.svg';
-
-self.addEventListener('message', async (e) => {
-  const { input, placeid, lat, lon } = e.data;
+self.addEventListener('message', async ({ data: { input, placeid, lat, lon } }) => {
   const placeId = placeid ? `&radiusSearchPlaceId=${placeid}` : '';
   const latitude = lat ? `&lat=${lat}` : '';
   const longitude = lon ? `&lon=${lon}` : '';
@@ -15,9 +14,7 @@ self.addEventListener('message', async (e) => {
     const data = await response.json();
 
     const modifiedData = data.map(prediction => {
-      const type = prediction.types[0];
-      const icon = (type.includes('airport') ? airport : (hotelKeywords.some(keyword => type.includes(keyword)) ? hotel : geo));
-      //const icon = '../icon/' + (type.includes('airport') ? 'airport' : (hotelKeywords.some(keyword => type.includes(keyword)) ? 'hotel' : 'location')) + '.svg';
+      const icon = icons[prediction.types[0]] || icons.default;
       return { ...prediction, 'location-icon': icon };
     });
 
