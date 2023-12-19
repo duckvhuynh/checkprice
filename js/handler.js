@@ -1,3 +1,5 @@
+const path = window.location.pathname.includes('multi') ? '../icon/' : 'icon/';
+
 function search(input, iconId, listId, worker, pickupLocationId, destinationId) {
   const locationIcon = document.querySelector(iconId);
   const list = document.querySelector(listId);
@@ -5,7 +7,7 @@ function search(input, iconId, listId, worker, pickupLocationId, destinationId) 
   const data = {input: input, placeid: '', lat: 0, lon: 0};
 
   if (!input) {
-    locationIcon.src = '../icon/location.svg';
+    locationIcon.src = `${path}geo-pin.svg`;
     if (list) {
       list.innerHTML = '';
       list.style.display = 'none';
@@ -21,7 +23,6 @@ function search(input, iconId, listId, worker, pickupLocationId, destinationId) 
 function updateList(predictions, listId, inputId, iconId) {
   const list = document.querySelector(listId);
   const input = document.querySelector(inputId);
-
 
   if (!list) {
       console.error(`Element with id "${listId}" not found`);
@@ -44,7 +45,7 @@ function updateList(predictions, listId, inputId, iconId) {
     secondaryText.textContent = `\n${prediction.city}, ${prediction.country}`;
   
     const icon = document.createElement('img');
-    icon.src = prediction['location-icon'];
+    icon.src = `${path}${prediction['icon']}`;
     icon.alt = 'Location icon';
     icon.classList.add('location-icon');
   
@@ -137,7 +138,7 @@ function hideLoadingSpinner() {
 function setupWorker(worker, listSelector, inputSelector, iconSelector) {
     worker.addEventListener('message', function(e) {
       const processedData = e.data;
-      if (processedData) {
+      if (processedData.filter(Boolean).length > 0) {
         updateList(processedData, listSelector, inputSelector, iconSelector);
       } else {
         console.error('Predictions not found in response data');
