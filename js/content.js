@@ -25,56 +25,11 @@ function processWebsiteData(websiteData) {
   showAllTables();
 }
 
-const carDescriptionOrder = [
-  'Standard',
-  'People Carrier',
-  'Minibus',
-  'Large People Carrier',
-  'Executive People Carrier',
-  'Luxury',
-  'Executive',
-  'Electric Standard',
-  'Electric Luxury'
-];
-
-const carDescriptionOrderElifeLimo = [
-  'Sedan',
-  'MPV-4',
-  'Minibus-8',
-  'MPV-5',
-  'Business MPV-5',
-  'First Class',
-  'Business Sedan'
-];
-
-const carDescriptionOrderJayRide = [
-  'sedan',
-  'suv',
-  'van',
-  'bus'
-];
-
-const carOrderIndexes = carDescriptionOrder.reduce((acc, description, index) => {
-  acc[description] = index;
-  return acc;
-}, {});
-
-const carOrderIndexesJayRide = carDescriptionOrderJayRide.reduce((acc, description, index) => {
-  acc[description] = index;
-  return acc;
-}, {});
-
-const carOrderIndexesElifeLimo = carDescriptionOrderElifeLimo.reduce((acc, description, index) => {
-  acc[description] = index;
-  return acc;
-}, {});
-
 function processMain(websiteData) {
   processBooking(websiteData);
   processElfieLimo(websiteData);
 }
 
-let cellTime;
 function processRoute(websiteData) {
   const dataTableRoute = document.querySelector("#data-table-route tbody");
   const leg = websiteData.journeys[0].legs[0];
@@ -82,66 +37,21 @@ function processRoute(websiteData) {
   const dropoff = leg.dropoffLocation.name.split(',')[0];
   const dateTime = leg.requestedPickupDateTime;
   const currency = leg.results[0].currency;
+  const distance = leg.results[0].drivingDistance;
+  const time = leg.results[0].duration;
   const rowRoute = dataTableRoute.insertRow();
   const cellPickup = rowRoute.insertCell(0);
   const cellDropoff = rowRoute.insertCell(1);
   const cellDateTime = rowRoute.insertCell(2);
   const cellCurrency = rowRoute.insertCell(3);
-  cellTime = rowRoute.insertCell(4);
+  const cellDistance = rowRoute.insertCell(4);
   cellPickup.textContent = pickup;
   cellDropoff.textContent = dropoff;
   cellDateTime.textContent = dateTime.substring(0, 16);
   cellCurrency.textContent = currency;
+  cellDistance.textContent = distance.toFixed(2) + " km" + " (" + time.toFixed(0) + " min)";
   addCopyOnClickRoute();
-}
-
-function sortCarDecription(websiteData) {
-  websiteData.journeys.forEach((journey) => {
-    journey.legs[0].results.sort((a, b) => {
-      const aOrderIndex = carOrderIndexes[a.carDetails.description];
-      const bOrderIndex = carOrderIndexes[b.carDetails.description];
-      if (aOrderIndex === undefined && bOrderIndex === undefined) return 0;
-      if (aOrderIndex === undefined) return 1;
-      if (bOrderIndex === undefined) return -1;
-      return aOrderIndex - bOrderIndex;
-    });
-  });
-}
-
-function sortDescriptionElifeLimo(vehicleClasses) {
-  return vehicleClasses.sort((a, b) => {
-      const aOrderIndex = carOrderIndexesElifeLimo[a.vehicle_class];
-      const bOrderIndex = carOrderIndexesElifeLimo[b.vehicle_class];
-      if (aOrderIndex === undefined && bOrderIndex === undefined) return 0;
-      if (aOrderIndex === undefined) return 1;
-      if (bOrderIndex === undefined) return -1;
-      return aOrderIndex - bOrderIndex;
-  });
-}
-
-function sortDescriptionJayride(quotes) {
-  const groupedQuotes = quotes.reduce((groups, quote) => {
-      const vehicleType = quote.service_info.vehicle_type;
-      if (!groups[vehicleType]) {
-          groups[vehicleType] = [];
-      }
-      groups[vehicleType].push(quote);
-      return groups;
-  }, {});
-
-  // Sort car types according to carDescriptionOrderJayRide
-  const sortedVehicleTypes = carDescriptionOrderJayRide.filter(type => groupedQuotes.hasOwnProperty(type));
-
-  sortedVehicleTypes.forEach(vehicleType => {
-      // Sort quotes by price within each car type
-      groupedQuotes[vehicleType].sort((a, b) => a.fare.price - b.fare.price);
-      groupedQuotes[vehicleType] = groupedQuotes[vehicleType].slice(0, 3);
-  });
-
-  // Flatten the sorted quotes into a single array
-  const sortedQuotes = sortedVehicleTypes.flatMap(vehicleType => groupedQuotes[vehicleType]);
-
-  return sortedQuotes;
+  addCopyOnClickDistance();
 }
 
 fetchMytransfersWorker.addEventListener('message', function(e) {
@@ -240,14 +150,6 @@ function processElfieLimo(websiteData) {
     .then(response => response.json())
     .then(data => {
         const distance = data.distance;
-        if (data) {
-            const time = data.time / 60;
-            const distance = data.distance / 1000;
-            cellTime.textContent = distance.toFixed(2) + " km" + " (" + time.toFixed(0) + " min)";
-            addCopyOnClickDistance();
-        } else {
-            console.log('No data found');
-        }
         url = `https://k3zdvi12m6.execute-api.us-east-2.amazonaws.com/prod/ride-pricings?currency=USD&from_lat=${pickupLatitude}&from_lng=${pickupLongitude}&to_lat=${dropoffLatitude}&to_lng=${dropoffLongitude}&distance=${distance}&from_utc=${utcFormat}&from_time_str=${dateTimeURL}&passenger_count=${passenger}`;
         fetchElifeLimoWorker.postMessage(url);
     })

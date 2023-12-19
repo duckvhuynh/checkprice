@@ -1,5 +1,5 @@
 const locationWorker = new Worker('worker/locationWorker.js');
-const destinationWorker = new Worker('worker/destinationWorker.js');
+const destinationWorker = new Worker('worker/locationWorker.js');
   document.addEventListener("DOMContentLoaded", function() {
     // initMap(14.0583, 108.2772, 6);
     //drawCircleAndTriangle(15.887746792486352, 107.95146650372304, 1000);
@@ -111,7 +111,7 @@ const destinationWorker = new Worker('worker/destinationWorker.js');
         const pasteData = event.clipboardData || window.clipboardData;
         if (pasteData) {
           const pastedText = pasteData.getData('text');
-          search(pastedText, iconSelector, listSelector, worker);
+          search(pastedText, iconSelector, listSelector, worker, '#pickup-location', '#destination');
         }
       });
 
@@ -120,7 +120,7 @@ const destinationWorker = new Worker('worker/destinationWorker.js');
           isPasting = false;
           return;
         }
-        search(input.value, iconSelector, listSelector, worker);
+        search(input.value, iconSelector, listSelector, worker, '#pickup-location', '#destination');
       }, 150));
 
       input.addEventListener('change', function() {

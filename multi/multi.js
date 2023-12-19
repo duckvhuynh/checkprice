@@ -1,11 +1,10 @@
-const locationOneWorker = new Worker('worker/locationOneWorker.js');
-const locationTwoWorker = new Worker('worker/locationTwoWorker.js');
-const locationThreeWorker = new Worker('worker/locationThreeWorker.js');
-const destinationOneWorker = new Worker('worker/destinationOneWorker.js');
-const destinationTwoWorker = new Worker('worker/destinationTwoWorker.js');
-const destinationThreeWorker = new Worker('worker/destinationThreeWorker.js');
-const fetchAllWorker = new Worker('worker/fetchAllWorker.js');
-const fetchAllWorkerTwo = new Worker('worker/fetchAllWorkerTwo.js');
+const locationOneWorker = new Worker('../worker/locationWorker.js');
+const locationTwoWorker = new Worker('../worker/locationWorker.js');
+const locationThreeWorker = new Worker('../worker/locationWorker.js');
+const destinationOneWorker = new Worker('../worker/locationWorker.js');
+const destinationTwoWorker = new Worker('../worker/locationWorker.js');
+const destinationThreeWorker = new Worker('../worker/locationWorker.js');
+const fetchAllWorker = new Worker('../worker/fetchAllWorker.js');
 
 function updateTable(data, type) {
   const table = document.querySelector('#data-table-multi');
@@ -14,25 +13,28 @@ function updateTable(data, type) {
     console.error('Element with id "data-table" not found');
     return;
   }
-  let dataTable = document.querySelector('#data-table-multi tbody');
 
-  for (let i = 0; i < data.cars.length; i++) {
+  let dataTable = document.querySelector('#data-table-multi tbody');
+  dataTable.innerHTML = '';
+
+  data.cars.forEach((car, i) => {
     let row = dataTable.insertRow();
 
     const cells = Array.from({ length: 8 }, () => row.insertCell());
 
     cells[0].textContent = i + 1;
-    cells[1].textContent = data.cars[i];
+    cells[1].textContent = car;
     cells[2].textContent = data.prices.priceOne[i];
     cells[4].textContent = data.prices.priceTwo[i];
     cells[6].textContent = type === 'Three' ? data.prices.priceThree[i] : '';
 
     if (i === 0) {
-      cells[3].textContent = (data.distances.distanceOne / 1000).toFixed(2);
-      cells[5].textContent = (data.distances.distanceTwo / 1000).toFixed(2);
-      cells[7].textContent = type === 'Three' ? (data.distances.distanceThree / 1000).toFixed(2) : '';
+      cells[3].textContent = data.distances[0];
+      cells[5].textContent = data.distances[1];
+      cells[7].textContent = type === 'Three' ? data.distances[2] : '';
     }
-  }
+  });
+
   showMultiTable();
   hideInstructions();
   hideLoadingSpinner();
@@ -133,23 +135,9 @@ document.addEventListener('DOMContentLoaded', function() {
         showDefaultInstructions();
         console.error('Error fetching data:', data.error);
       } else {
-        clearTable('#data-table-multi');
         updateCarDescription(data.cars);
-        updateTable(data, 'Three');
-      }
-    });
-
-    fetchAllWorkerTwo.addEventListener('message', function(e) {
-      const data = e.data;
-      if (data.error) {
-        showWarning('Error fetching data! Re-check\n your inputs and try again.');
-        hideLoadingSpinner();
-        showDefaultInstructions();
-        console.error('Error fetching data:', data.error);
-      } else {
-        clearTable('#data-table-multi');
-        updateCarDescription(data.cars);
-        updateTable(data, 'Two');
+        const type = Object.keys(data.prices).length === 3 ? 'Three' : 'Two';
+        updateTable(data, type);
       }
     });
 
@@ -239,12 +227,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const inputs = [
-      { id: '#pickup-location-one', event: 'input', handler: (input) => search(input, '#pickup-icon-one', '#location-list-one', locationOneWorker), list: '#location-list-one .autocomplete-item', listSelector: '#location-list-one' },
-      { id: '#pickup-location-two', event: 'input', handler: (input) => search(input, '#pickup-icon-two', '#location-list-two', locationTwoWorker), list: '#location-list-two .autocomplete-item', listSelector: '#location-list-two' },
-      { id: '#pickup-location-three', event: 'input', handler: (input) => search(input, '#pickup-icon-three', '#location-list-three', locationThreeWorker), list: '#location-list-three .autocomplete-item', listSelector: '#location-list-three' },
-      { id: '#destination-one', event: 'input', handler: (input) => search(input, '#destination-icon-one', '#destination-list-one', destinationOneWorker), list: '#destination-list-one .autocomplete-item', listSelector: '#destination-list-one' },
-      { id: '#destination-two', event: 'input', handler: (input) => search(input, '#destination-icon-two', '#destination-list-two', destinationTwoWorker), list: '#destination-list-two .autocomplete-item', listSelector: '#destination-list-two' },
-      { id: '#destination-three', event: 'input', handler: (input) => search(input, '#destination-icon-three', '#destination-list-three', destinationThreeWorker), list: '#destination-list-three .autocomplete-item', listSelector: '#destination-list-three' },
+      { id: '#pickup-location-one', event: 'input', handler: (input) => search(input, '#pickup-icon-one', '#location-list-one', locationOneWorker, '#pickup-location-two', '#destination-two'), list: '#location-list-one .autocomplete-item', listSelector: '#location-list-one' },
+      { id: '#pickup-location-two', event: 'input', handler: (input) => search(input, '#pickup-icon-two', '#location-list-two', locationTwoWorker, '#pickup-location-two', '#destination-two'), list: '#location-list-two .autocomplete-item', listSelector: '#location-list-two' },
+      { id: '#pickup-location-three', event: 'input', handler: (input) => search(input, '#pickup-icon-three', '#location-list-three', locationThreeWorker, '#pickup-location-two', '#destination-two'), list: '#location-list-three .autocomplete-item', listSelector: '#location-list-three' },
+      { id: '#destination-one', event: 'input', handler: (input) => search(input, '#destination-icon-one', '#destination-list-one', destinationOneWorker, '#pickup-location-two', '#destination-two'), list: '#destination-list-one .autocomplete-item', listSelector: '#destination-list-one' },
+      { id: '#destination-two', event: 'input', handler: (input) => search(input, '#destination-icon-two', '#destination-list-two', destinationTwoWorker, '#pickup-location-two', '#destination-two'), list: '#destination-list-two .autocomplete-item', listSelector: '#destination-list-two' },
+      { id: '#destination-three', event: 'input', handler: (input) => search(input, '#destination-icon-three', '#destination-list-three', destinationThreeWorker, '#pickup-location-two', '#destination-two'), list: '#destination-list-three .autocomplete-item', listSelector: '#destination-list-three' },
     ];
 
     let enterPressed = false;
@@ -353,21 +341,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
       hideMultiTable();
       showInstructions('Loading...');
-    
+
       if (toggle) {
         const [pickupPlaceIdTwo, ...destinations] = placeIds;
-        if (!destinations[2]) {
-          fetchAllWorkerTwo.postMessage(generateDynamicLinks(pickupPlaceIdTwo, destinations, date, time, passenger));
-        } else {
-          fetchAllWorker.postMessage(generateDynamicLinks(pickupPlaceIdTwo, destinations, date, time, passenger));
-        }
+        fetchAllWorker.postMessage(generateDynamicLinks(pickupPlaceIdTwo, destinations, date, time, passenger));
       } else {
         const destinationPlaceIdTwo = placeIds.pop();
-        if (!placeIds[2]) {
-          fetchAllWorkerTwo.postMessage(generateDynamicLinks(placeIds, destinationPlaceIdTwo, date, time, passenger));
-        } else {
-          fetchAllWorker.postMessage(generateDynamicLinks(placeIds, destinationPlaceIdTwo, date, time, passenger));
-        }
+        fetchAllWorker.postMessage(generateDynamicLinks(placeIds, destinationPlaceIdTwo, date, time, passenger));
       }
+
     });
 });
