@@ -49,7 +49,7 @@ function processRoute(websiteData) {
   cellDropoff.textContent = dropoff;
   cellDateTime.textContent = dateTime.substring(0, 16);
   cellCurrency.textContent = currency;
-  cellDistance.textContent = distance.toFixed(2) + " km" + " (" + time.toFixed(0) + " min)";
+  cellDistance.textContent = distance.toFixed(2) + " km" + " (" + time + " min)";
   addCopyOnClickRoute();
   addCopyOnClickDistance();
 }
