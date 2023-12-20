@@ -2,7 +2,8 @@ const fetchMytransfersWorker = new Worker('worker/fetchMytransfersWorker.js');
 const fetchElifeLimoWorker = new Worker('worker/fetchElifeLimoWorker.js');
 const fetchDataWorker = new Worker('worker/fetchDataWorker.js');
 const fetchJayRideWorker = new Worker('worker/fetchJayRideWorker.js');
-
+let pickup = '';
+let dropoff = '';
 fetchDataWorker.addEventListener('message', function(e) {
   const data = e.data;
   if (data.error) {
@@ -33,8 +34,8 @@ function processMain(websiteData) {
 function processRoute(websiteData) {
   const dataTableRoute = document.querySelector("#data-table-route tbody");
   const leg = websiteData.journeys[0].legs[0];
-  const pickup = leg.pickupLocation.name.split(',')[0];
-  const dropoff = leg.dropoffLocation.name.split(',')[0];
+  pickup = leg.pickupLocation.name.split(',')[0];
+  dropoff = leg.dropoffLocation.name.split(',')[0];
   const dateTime = leg.requestedPickupDateTime;
   const currency = leg.results[0].currency;
   const distance = leg.results[0].drivingDistance;
@@ -207,13 +208,16 @@ function populateVehicleTable(tableSelector, quotes) {
 
 fetchJayRideWorker.addEventListener('message', function(e) {
   clearTable("#data-table-jayride");
+  clearTable("#data-table-jayride2");
 
   const data = e.data;
 
   if (data.results.quotes) {
     const dataTable = document.querySelector("#data-table-jayride tbody");
 
+    console.log(data);
     const sortedQuotes = sortAndCategorizeQuotes(data.results.quotes);
+    console.log(sortedQuotes);
 
     for (let index = 0; index < 3; index++) {
       const quoteGroup = sortedQuotes[index] || {};
@@ -234,6 +238,36 @@ fetchJayRideWorker.addEventListener('message', function(e) {
         }
       });
     }
+    const dataTable2 = document.querySelector("#data-table-jayride2 tbody");
+
+    ['SEDAN', 'SUV', 'VAN', 'BUS'].forEach((type, typeIndex) => {
+      const row = dataTable2.insertRow();
+
+      // Insert the "Route" cell only for the first row
+      if (typeIndex === 0) {
+        const routeCell = row.insertCell(0);
+        routeCell.textContent = `${pickup} - ${dropoff}`;
+        routeCell.rowSpan = 4;  // Make the cell span across 4 rows
+      }
+
+      const vehicleCell = row.insertCell(typeIndex === 0 ? 1 : 0);
+      vehicleCell.textContent = type;
+
+      for (let index = 0; index < 3; index++) {
+        const quoteGroup = sortedQuotes[index] || {};
+        const supplierCell = row.insertCell(typeIndex === 0 ? 2 + index * 2 : 1 + index * 2);
+        const priceCell = row.insertCell(typeIndex === 0 ? 3 + index * 2 : 2 + index * 2);
+        const quote = quoteGroup[type];
+
+        if (quote) {
+          supplierCell.textContent = quote.service_info.supplier.name;
+          priceCell.textContent = (quote.fare.price / 1.44).toFixed(2);
+        } else {
+          supplierCell.textContent = '-';
+          priceCell.textContent = '-';
+        }
+      }
+    });
     showJayride();
   } else {
     console.log('No data found for Jayride');
@@ -256,6 +290,8 @@ function hideJayride() {
   document.getElementById('jayride-container').style.display = 'none';
 }
 function sortAndCategorizeQuotes(quotes) {
+
+  console.log(quotes);
 
   const sedans = [];
   const suvs = [];

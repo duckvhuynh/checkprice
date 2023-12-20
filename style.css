@@ -43,7 +43,8 @@
   flex-direction: column;
   align-items: center;
 }
-#copyJayrideTable {
+#copyJayrideTable,
+#copyJayrideTable2 {
   font-size: 12px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
   width: 90px;
@@ -58,7 +59,8 @@
   font-family: 'Montserrat', sans-serif;
   transition: background-color 0.3s ease;  
 }
-#copyJayrideTable:hover {
+#copyJayrideTable:hover,
+#copyJayrideTable2:hover {
   background-color: rgba(248, 249, 250, 0.929);
 }
 #map {
@@ -95,7 +97,7 @@ body {
   height: auto;
 }
 
-#data-table thead, #data-table-route thead, #data-table-elifelimo thead, #data-table-mytransfers thead, #data-table-jayride thead {
+#data-table thead, #data-table-route thead, #data-table-elifelimo thead, #data-table-mytransfers thead, #data-table-jayride thead, #data-table-jayride thead {
   display: none;
 }
 
@@ -175,7 +177,8 @@ td:hover {
 #data-table-mytransfers td:nth-child(3) {
   text-align: center;
 }
-#data-table-jayride td {
+#data-table-jayride td,
+#data-table-jayride2 td {
   text-align: center;
 }
 
@@ -482,7 +485,7 @@ form select option {
   font-weight: 400;
 }
 
-form, #data-table-route, #data-table, #data-table-elifelimo, #data-table-mytransfers, #data-table-jayride {
+form, #data-table-route, #data-table, #data-table-elifelimo, #data-table-mytransfers, #data-table-jayride, #data-table-jayride2 {
   width: 100%;
   max-width: 910px;
   margin: 0 auto;
