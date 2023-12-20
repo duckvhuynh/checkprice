@@ -117,7 +117,7 @@ function processElfieLimo(websiteData) {
   const dropoffLongitude = locationData.dropoffLocation.latLng.longitude;
   // routeMap(pickupLatitude, pickupLongitude, dropoffLatitude, dropoffLongitude);
   const dateTime = locationData.requestedPickupDateTime;
-  const dateTimeURL = encodeURI(dateTime.substring(0, 16));
+  const dateTimeURL = encodeURIComponent(dateTime.substring(0, 16));
   const dateTimeUTC = new Date(dateTime);
   const urlSixt = `https://www.sixt.com/ride/new/offers?datetime=${dateTimeUTC.getTime()}&destination=${dropoffID}&pickup=${pickupID}&type=DISTANCE`;
   const urlMyTransfers = `https://www.mytransfers.com/api/list?adults=2&arrival_date=${dateTimeURL}&arrival_lat=${pickupLatitude}&arrival_lng=${pickupLongitude}&departure_lat=${dropoffLatitude}&departure_lng=${dropoffLongitude}&lang=en&type=oneway`;
