@@ -3,6 +3,37 @@ const destinationWorker = new Worker('worker/locationWorker.js');
   document.addEventListener("DOMContentLoaded", function() {
     // initMap(14.0583, 108.2772, 6);
     //drawCircleAndTriangle(15.887746792486352, 107.95146650372304, 1000);
+    function smoothScroll(target, duration) {
+      var targetPosition = target === 'top' ? 0 : document.body.scrollHeight;
+      var startPosition = window.pageYOffset;
+      var distance = targetPosition - startPosition;
+      var startTime = null;
+
+      function animation(currentTime) {
+        if (startTime === null) startTime = currentTime;
+        var timeElapsed = currentTime - startTime;
+        var run = ease(timeElapsed, startPosition, distance, duration);
+        window.scrollTo(0, run);
+        if (timeElapsed < duration) requestAnimationFrame(animation);
+      }
+
+      function ease(t, b, c, d) {
+        t /= d / 2;
+        if (t < 1) return c / 2 * t * t + b;
+        t--;
+        return -c / 2 * (t * (t - 2) - 1) + b;
+      }
+
+      requestAnimationFrame(animation);
+    }
+
+    document.getElementById('scrollToTop').addEventListener('click', function() {
+      smoothScroll('top', 1000);
+    });
+
+    document.getElementById('scrollToBottom').addEventListener('click', function() {
+      smoothScroll('bottom', 1000);
+    });
     document.querySelector('#copyJayrideTable').addEventListener('click', function() {
       var range = document.createRange(); 
       range.selectNode(document.querySelector('#data-table-jayride'));

@@ -1,4 +1,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap');
+#scrollToTop, #scrollToBottom {
+  font-family: 'Montserrat', sans-serif;
+  position: fixed;
+  right: 5px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  background-color: #f15a22;
+  color: #fff;
+  font-size: 20px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+#scrollToTop {
+  bottom: 87px;
+}
+
+#scrollToBottom {
+  bottom: 40px;
+}
+
+#scrollToTop:hover, #scrollToBottom:hover {
+  background-color: #f88a4b;
+  transform: scale(1.1);
+}
 .text-container {
   display: flex;
   flex-direction: column;
