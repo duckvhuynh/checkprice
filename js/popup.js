@@ -12,45 +12,16 @@ const destinationWorker = new Worker('worker/locationWorker.js');
       window.getSelection().removeAllRanges();
       showNotification('Copied whole table to clipboard');
     });
+
     document.querySelector('#copyJayrideTable2').addEventListener('click', function() {
-      const table = document.querySelector('#data-table-jayride2 tbody');
-      let route = '';
-      let rowspanCount = 0;
-      const text = Array.from(table.rows)
-        .map(row => {
-          const cells = Array.from(row.cells);
-          if (cells.length > 7) {
-            route = cells.shift().textContent;
-            rowspanCount = cells[0].hasAttribute('rowspan') ? parseInt(cells[0].getAttribute('rowspan')) : 1;
-            return [route, ...cells.map(cell => cell.textContent)].join('\t');
-          } else if (rowspanCount > 1) {
-            rowspanCount--;
-            return ['', ...cells.map(cell => cell.textContent)].join('\t');
-          } else {
-            return ['', ...cells.map(cell => cell.textContent)].join('\t');
-          }
-        })
-        .join('\n');
-    
-      const textarea = document.createElement('textarea');
-      textarea.textContent = text;
-      document.body.appendChild(textarea);
-    
-      textarea.select();
-      document.execCommand('copy');
-    
-      document.body.removeChild(textarea);
+      var range = document.createRange(); 
+      range.selectNode(document.querySelector('#data-table-jayride2 tbody'));
+      window.getSelection().removeAllRanges(); 
+      window.getSelection().addRange(range); 
+      document.execCommand('copy'); 
+      window.getSelection().removeAllRanges();
       showNotification('Copied whole table to clipboard');
     });
-    // document.querySelector('#copyJayrideTable2').addEventListener('click', function() {
-    //   var range = document.createRange(); 
-    //   range.selectNode(document.querySelector('#data-table-jayride2 tbody'));
-    //   window.getSelection().removeAllRanges(); 
-    //   window.getSelection().addRange(range); 
-    //   document.execCommand('copy'); 
-    //   window.getSelection().removeAllRanges();
-    //   showNotification('Copied whole table to clipboard');
-    // });
 
 
 

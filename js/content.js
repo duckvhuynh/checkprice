@@ -214,10 +214,8 @@ fetchJayRideWorker.addEventListener('message', function(e) {
 
   if (data.results.quotes) {
     const dataTable = document.querySelector("#data-table-jayride tbody");
-
-    console.log(data);
+    
     const sortedQuotes = sortAndCategorizeQuotes(data.results.quotes);
-    console.log(sortedQuotes);
 
     for (let index = 0; index < 3; index++) {
       const quoteGroup = sortedQuotes[index] || {};
@@ -243,25 +241,18 @@ fetchJayRideWorker.addEventListener('message', function(e) {
     ['SEDAN', 'SUV', 'VAN', 'BUS'].forEach((type, typeIndex) => {
       const row = dataTable2.insertRow();
 
-      // Insert the "Route" cell only for the first row
-      if (typeIndex === 0) {
-        const routeCell = row.insertCell(0);
-        routeCell.textContent = `${pickup} - ${dropoff}`;
-        routeCell.rowSpan = 4;  // Make the cell span across 4 rows
-      }
-
-      const vehicleCell = row.insertCell(typeIndex === 0 ? 1 : 0);
+      const vehicleCell = row.insertCell(0);
       vehicleCell.textContent = type;
 
       for (let index = 0; index < 3; index++) {
         const quoteGroup = sortedQuotes[index] || {};
-        const priceCell = row.insertCell(typeIndex === 0 ? 2 + index * 2 : 1 + index * 2);
-        const supplierCell = row.insertCell(typeIndex === 0 ? 3 + index * 2 : 2 + index * 2);
+        const priceCell = row.insertCell(1 + index * 2);
+        const supplierCell = row.insertCell(2 + index * 2);
         const quote = quoteGroup[type];
 
         if (quote) {
           priceCell.textContent = (quote.fare.price / 1.44).toFixed(2);
-          supplierCell.textContent = quote.service_info.supplier.name; 
+          supplierCell.textContent = quote.service_info.supplier.name;
         } else {
           priceCell.textContent = '-';
           supplierCell.textContent = '-';
@@ -290,9 +281,6 @@ function hideJayride() {
   document.getElementById('jayride-container').style.display = 'none';
 }
 function sortAndCategorizeQuotes(quotes) {
-
-  console.log(quotes);
-
   const sedans = [];
   const suvs = [];
   const vans = [];
