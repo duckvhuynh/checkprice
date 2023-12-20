@@ -175,14 +175,9 @@ td:hover {
 #data-table-mytransfers td:nth-child(3) {
   text-align: center;
 }
-/* #data-table-jayride th:nth-child(3) {
-  text-align: left;
-}
-#data-table-jayride td:nth-child(1),
-#data-table-jayride td:nth-child(2),
-#data-table-jayride td:nth-child(4) {
+#data-table-jayride td {
   text-align: center;
-} */
+}
 
 #data-table-route th:nth-child(1),
 #data-table-route th:nth-child(2) {
