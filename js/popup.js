@@ -14,16 +14,23 @@ const destinationWorker = new Worker('worker/locationWorker.js');
     });
 
     document.querySelector('#copyJayrideTable2').addEventListener('click', function() {
-      var range = document.createRange(); 
-      range.selectNode(document.querySelector('#data-table-jayride2 tbody'));
-      window.getSelection().removeAllRanges(); 
-      window.getSelection().addRange(range); 
-      document.execCommand('copy'); 
-      window.getSelection().removeAllRanges();
+      const table = document.querySelector('#data-table-jayride2 tbody');
+      const text = Array.from(table.rows)
+        .map(row => Array.from(row.cells)
+          .map(cell => cell.textContent)
+          .join('\t'))
+        .join('\n');
+    
+      const textarea = document.createElement('textarea');
+      textarea.textContent = text;
+      document.body.appendChild(textarea);
+    
+      textarea.select();
+      document.execCommand('copy');
+    
+      document.body.removeChild(textarea);
       showNotification('Copied whole table to clipboard');
     });
-
-
 
     setupWorker(locationWorker, '#location-list', '#pickup-location', '#pickup-icon');
     setupWorker(destinationWorker, '#destination-list', '#destination', '#destination-icon');
