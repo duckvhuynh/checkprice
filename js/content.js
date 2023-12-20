@@ -255,16 +255,16 @@ fetchJayRideWorker.addEventListener('message', function(e) {
 
       for (let index = 0; index < 3; index++) {
         const quoteGroup = sortedQuotes[index] || {};
-        const supplierCell = row.insertCell(typeIndex === 0 ? 2 + index * 2 : 1 + index * 2);
-        const priceCell = row.insertCell(typeIndex === 0 ? 3 + index * 2 : 2 + index * 2);
+        const priceCell = row.insertCell(typeIndex === 0 ? 2 + index * 2 : 1 + index * 2);
+        const supplierCell = row.insertCell(typeIndex === 0 ? 3 + index * 2 : 2 + index * 2);
         const quote = quoteGroup[type];
 
         if (quote) {
-          supplierCell.textContent = quote.service_info.supplier.name;
           priceCell.textContent = (quote.fare.price / 1.44).toFixed(2);
+          supplierCell.textContent = quote.service_info.supplier.name; 
         } else {
-          supplierCell.textContent = '-';
           priceCell.textContent = '-';
+          supplierCell.textContent = '-';
         }
       }
     });
