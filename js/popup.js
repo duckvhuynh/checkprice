@@ -3,9 +3,18 @@ const destinationWorker = new Worker('worker/locationWorker.js');
   document.addEventListener("DOMContentLoaded", function() {
     // initMap(14.0583, 108.2772, 6);
     //drawCircleAndTriangle(15.887746792486352, 107.95146650372304, 1000);
+    // document.querySelector('#copyJayrideTable').addEventListener('click', function() {
+    //   var range = document.createRange(); 
+    //   range.selectNode(document.querySelector('#data-table-jayride')); 
+    //   window.getSelection().removeAllRanges(); 
+    //   window.getSelection().addRange(range); 
+    //   document.execCommand('copy'); 
+    //   window.getSelection().removeAllRanges();
+    //   showNotification('Copied whole table to clipboard');
+    // });
     document.querySelector('#copyJayrideTable').addEventListener('click', function() {
       var range = document.createRange(); 
-      range.selectNode(document.querySelector('#data-table-jayride')); 
+      range.selectNode(document.querySelector('#data-table-jayride')); // This line selects the new table
       window.getSelection().removeAllRanges(); 
       window.getSelection().addRange(range); 
       document.execCommand('copy'); 

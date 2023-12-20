@@ -184,21 +184,56 @@ function fetchWithHeadersAndPayload(url, headers, payload) {
   });
 }
 
+function clearTable(selector) {
+  const tableBody = document.querySelector(selector + " tbody");
+  while (tableBody.firstChild) {
+    tableBody.removeChild(tableBody.firstChild);
+  }
+}
+
+function filterQuotesByType(quotes, type) {
+  return quotes.filter(quote => quote.service_info.vehicle_type === type);
+}
+
+function populateVehicleTable(tableSelector, quotes) {
+  const dataTable = document.querySelector(tableSelector + " tbody");
+  quotes.forEach((quote, index) => {
+    const row = dataTable.insertRow();
+    row.insertCell(0).textContent = index + 1;
+    row.insertCell(1).textContent = quote.service_info.supplier.name;
+    row.insertCell(2).textContent = (quote.fare.price / 1.44).toFixed(2);
+  });
+}
 
 fetchJayRideWorker.addEventListener('message', function(e) {
   clearTable("#data-table-jayride");
+
   const data = e.data;
 
   if (data.results.quotes) {
-    const dataTableJayRide = document.querySelector("#data-table-jayride tbody");
-    const sortedQuotes = sortDescriptionJayride(data.results.quotes);
-    sortedQuotes.forEach((quote, index) => {
-      const row = dataTableJayRide.insertRow();
-      row.insertCell(0).textContent = ++index;
-      row.insertCell(1).textContent = quote.service_info.vehicle_type;
-      row.insertCell(2).textContent = quote.service_info.supplier.name;
-      row.insertCell(3).textContent = (quote.fare.price / 1.44).toFixed(2);
-    });
+    const dataTable = document.querySelector("#data-table-jayride tbody");
+
+    const sortedQuotes = sortAndCategorizeQuotes(data.results.quotes);
+
+    for (let index = 0; index < 3; index++) {
+      const quoteGroup = sortedQuotes[index] || {};
+      const row = dataTable.insertRow();
+      row.insertCell(0).textContent = index + 1;
+
+      ['SEDAN', 'SUV', 'VAN', 'BUS'].forEach((type, typeIndex) => {
+        const supplierCell = row.insertCell(1 + typeIndex * 2);
+        const priceCell = row.insertCell(2 + typeIndex * 2);
+        const quote = quoteGroup[type];
+
+        if (quote) {
+          supplierCell.textContent = quote.service_info.supplier.name;
+          priceCell.textContent = (quote.fare.price / 1.44).toFixed(2);
+        } else {
+          supplierCell.textContent = '-';
+          priceCell.textContent = '-';
+        }
+      });
+    }
     showJayride();
   } else {
     console.log('No data found for Jayride');
@@ -206,3 +241,61 @@ fetchJayRideWorker.addEventListener('message', function(e) {
     hideJayride();
   }
 });
+
+function showJayride() {
+  document.getElementById('jayride-container').style.display = 'block';
+}
+
+function showWarning(message) {
+  const warningElement = document.getElementById('warning-message');
+  warningElement.textContent = message;
+  warningElement.style.display = 'block';
+}
+
+function hideJayride() {
+  document.getElementById('jayride-container').style.display = 'none';
+}
+function sortAndCategorizeQuotes(quotes) {
+
+  const sedans = [];
+  const suvs = [];
+  const vans = [];
+  const buses = [];
+
+  quotes.forEach(quote => {
+    switch (quote.service_info.vehicle_type.toLowerCase()) {
+      case 'sedan':
+        sedans.push(quote);
+        break;
+      case 'suv':
+        suvs.push(quote);
+        break;
+      case 'van':
+        vans.push(quote);
+        break;
+      case 'bus':
+        buses.push(quote);
+        break;
+      default:
+        break;
+    }
+  });
+
+  sedans.sort((a, b) => a.fare.price - b.fare.price);
+  suvs.sort((a, b) => a.fare.price - b.fare.price);
+  vans.sort((a, b) => a.fare.price - b.fare.price);
+  buses.sort((a, b) => a.fare.price - b.fare.price);
+
+  const sortedQuotes = [];
+  const maxLength = Math.max(sedans.length, suvs.length, vans.length, buses.length);
+  for (let i = 0; i < maxLength; i++) {
+    sortedQuotes.push({
+      SEDAN: sedans[i] || null,
+      SUV: suvs[i] || null,
+      VAN: vans[i] || null,
+      BUS: buses[i] || null,
+    });
+  }
+
+  return sortedQuotes;
+}
