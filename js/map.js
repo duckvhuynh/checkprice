@@ -6,7 +6,7 @@ function initMap(lat, lng, zoom) {
     if (!map) {
         map = L.map('map', { minZoom: 5 }).setView([lat, lng], zoom);
         addTileLayerToMap();
-        addMarkerToMap(lat, lng, '../icon/mtt-pin.png');
+        addMarkerToMap(lat, lng, 'icon/mtt-pin.png');
     } else {
         map.setView([lat, lng], zoom);
     }
