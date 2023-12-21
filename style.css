@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap');
+
 #scrollToTop, #scrollToBottom {
   font-family: 'Montserrat', sans-serif;
   position: fixed;
@@ -92,6 +93,7 @@
   background-color: rgba(248, 249, 250, 0.929);
 }
 #map {
+  border: 1px solid #ccc;
   height: 400px;
   width: 50%;
   margin: 0 auto;

@@ -1,7 +1,7 @@
 const locationWorker = new Worker('worker/locationWorker.js');
 const destinationWorker = new Worker('worker/locationWorker.js');
   document.addEventListener("DOMContentLoaded", function() {
-    // initMap(14.0583, 108.2772, 6);
+    initMap(16.0555992, 108.2371671, 14);
     //drawCircleAndTriangle(15.887746792486352, 107.95146650372304, 1000);
     function smoothScroll(target, duration) {
       var targetPosition = target === 'top' ? 0 : document.body.scrollHeight;

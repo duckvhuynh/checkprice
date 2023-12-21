@@ -1,90 +1,97 @@
 var map;
+var routingControl;
+
+// Initialize the map
 function initMap(lat, lng, zoom) {
     if (!map) {
-        map = L.map('map').setView([lat, lng], zoom);
-        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+        map = L.map('map', { minZoom: 5 }).setView([lat, lng], zoom);
+        addTileLayerToMap();
+        addMarkerToMap(lat, lng, '../icon/mtt-pin.png');
     } else {
         map.setView([lat, lng], zoom);
     }
 }
 
+// Update the route
 function updateRoute(fromLat, fromLng, toLat, toLng) {
     if (!map) {
-        initMap(fromLat, fromLng, 10);
+        map = L.map('map').setView([fromLat, fromLng], 10);
+        addTileLayerToMap();
     }
     routeMap(fromLat, fromLng, toLat, toLng);
 }
 
+// Route the map
 function routeMap(fromLat, fromLng, toLat, toLng) {
-    map.setView([fromLat, fromLng], 10);
-    L.Routing.control({
+    var from = L.latLng(fromLat, fromLng);
+    var to = L.latLng(toLat, toLng);
+
+    var pickupIcon = createIcon('#pickup-icon');
+    var dropoffIcon = createIcon('#destination-icon');
+
+    if (!map) {
+        map = L.map('map').flyToBounds([from, to], {duration: 2.0});
+        addTileLayerToMap();
+    } else {
+        map.flyToBounds([from, to], {duration: 2.0});
+    }
+
+    if (routingControl) {
+        map.removeControl(routingControl);
+    }
+
+    routingControl = L.Routing.control({
         waypoints: [
-            L.latLng(fromLat, fromLng),  // Location coordinates
-            L.latLng(toLat, toLng)  // Destination coordinates
+            L.Routing.waypoint(from),
+            L.Routing.waypoint(to)
         ],
         routeWhileDragging: false,
+        draggableWaypoints: false,
+        addWaypoints: false,
         lineOptions: {
-            styles: [{ color: "red", opacity: 0.7, weight: 8 }],
+            styles: [{ color: "#e14d20", opacity: 1, weight: 3 }],
         },
         router: new L.Routing.osrmv1({
             serviceUrl: 'https://router.project-osrm.org/route/v1',
             profile: 'driving',
             show: false
         }),
+        createMarker: function(i, wp) {
+            var icon = i === 0 ? pickupIcon : dropoffIcon;
+            return L.marker(wp.latLng, {icon: icon});
+        },
         show: false
     }).addTo(map);
 }
+
+// Draw a circle on the map
 function drawCircle(lat, lng, radius) {
-    var map = L.map('map').setView([lat, lng], 10);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
-    L.circle([lat, lng], {
-        color: '#e14d20', // change the color of the circle's outline
-        fillColor: '#f88a4b', // change the color of the circle's interior
-        fillOpacity: 0.4, // change the opacity of the circle's interior
-        weight: 1, // change the width of the circle's outline
-        radius: radius
-    }).addTo(map);
-}
-
-function calculateTrianglePoints(lat, lng, radius) {
-    var points = [];
-    var side = radius * Math.sqrt(3);
-    for (var i = 0; i < 3; i++) {
-        var angle = (i / 3) * 2 * Math.PI;
-        var pointLat = lat + side * Math.cos(angle);
-        var pointLng = lng + side * Math.sin(angle);
-        points.push([pointLat, pointLng]);
+    if (!map) {
+        map = L.map('map').setView([lat, lng], 10);
+        addTileLayerToMap();
     }
-    return points;
-}
-
-function drawCircleAndTriangle(lat, lng, radius) {
-    var map = L.map('map').setView([lat, lng], 10);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
     L.circle([lat, lng], {
-        color: '#e14d20', // change the color of the circle's outline
-        fillColor: '#f88a4b', // change the color of the circle's interior
-        fillOpacity: 0.4, // change the opacity of the circle's interior
-        weight: 1, // change the width of the circle's outline
+        color: '#e14d20', 
+        fillColor: '#f88a4b', 
+        fillOpacity: 0.4, 
+        weight: 1, 
         radius: radius
     }).addTo(map);
+}
 
-    // Calculate the coordinates of the triangle's vertices
-    var trianglePoints = calculateTrianglePoints(lat, lng, radius);
+// Helper function to add tile layer to the map
+function addTileLayerToMap() {
+    L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {}).addTo(map);
+}
 
-    // Draw the triangle
-    L.polygon(trianglePoints, {
-        color: '#3388ff', // change the color of the triangle's outline
-        fillColor: '#3388ff', // change the color of the triangle's interior
-        fillOpacity: 0.5, // change the opacity of the triangle's interior
-        weight: 1 // change the width of the triangle's outline
-    }).addTo(map);
+// Helper function to add a marker to the map
+function addMarkerToMap(lat, lng, iconUrl) {
+    var customIcon = L.icon({ iconUrl: iconUrl, iconSize: [24, 24], iconAnchor: [12, 24]});
+    L.marker([lat, lng], {icon: customIcon}).addTo(map).openPopup();
+}
+
+// Helper function to create an icon
+function createIcon(elementId) {
+    var iconUrl = document.querySelector(elementId).src;
+    return L.icon({ iconUrl: iconUrl, iconSize: [24, 24], iconAnchor: [12, 24] });
 }

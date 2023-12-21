@@ -116,7 +116,7 @@ function processElfieLimo(websiteData) {
   const pickupLongitude = locationData.pickupLocation.latLng.longitude;
   const dropoffLatitude = locationData.dropoffLocation.latLng.latitude;
   const dropoffLongitude = locationData.dropoffLocation.latLng.longitude;
-  // routeMap(pickupLatitude, pickupLongitude, dropoffLatitude, dropoffLongitude);
+  routeMap(pickupLatitude, pickupLongitude, dropoffLatitude, dropoffLongitude);
   const dateTime = locationData.requestedPickupDateTime;
   const dateTimeURL = encodeURIComponent(dateTime.substring(0, 16));
   const dateTimeUTC = new Date(dateTime);
@@ -183,13 +183,6 @@ function fetchWithHeadersAndPayload(url, headers, payload) {
     headers: headers,
     body: JSON.stringify(payload)
   });
-}
-
-function clearTable(selector) {
-  const tableBody = document.querySelector(selector + " tbody");
-  while (tableBody.firstChild) {
-    tableBody.removeChild(tableBody.firstChild);
-  }
 }
 
 function filterQuotesByType(quotes, type) {
@@ -269,12 +262,6 @@ fetchJayRideWorker.addEventListener('message', function(e) {
 
 function showJayride() {
   document.getElementById('jayride-container').style.display = 'block';
-}
-
-function showWarning(message) {
-  const warningElement = document.getElementById('warning-message');
-  warningElement.textContent = message;
-  warningElement.style.display = 'block';
 }
 
 function hideJayride() {
