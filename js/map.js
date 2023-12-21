@@ -81,7 +81,7 @@ function drawCircle(lat, lng, radius) {
 
 // Helper function to add tile layer to the map
 function addTileLayerToMap() {
-    L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {}).addTo(map);
+    L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=07420e59-d599-4f1f-b5ce-3d843b0c8b40', {}).addTo(map);
 }
 
 // Helper function to add a marker to the map
