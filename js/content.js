@@ -2,8 +2,7 @@ const fetchMytransfersWorker = new Worker('worker/fetchMytransfersWorker.js');
 const fetchElifeLimoWorker = new Worker('worker/fetchElifeLimoWorker.js');
 const fetchDataWorker = new Worker('worker/fetchDataWorker.js');
 const fetchJayRideWorker = new Worker('worker/fetchJayRideWorker.js');
-let pickup = '';
-let dropoff = '';
+
 fetchDataWorker.addEventListener('message', function(e) {
   const data = e.data;
   if (data.error) {
@@ -34,8 +33,8 @@ function processMain(websiteData) {
 function processRoute(websiteData) {
   const dataTableRoute = document.querySelector("#data-table-route tbody");
   const leg = websiteData.journeys[0].legs[0];
-  pickup = leg.pickupLocation.name.split(',')[0];
-  dropoff = leg.dropoffLocation.name.split(',')[0];
+  const pickup = leg.pickupLocation.name.split(',')[0];
+  const dropoff = leg.dropoffLocation.name.split(',')[0];
   const dateTime = leg.requestedPickupDateTime;
   const currency = leg.results[0].currency;
   const distance = leg.results[0].drivingDistance;
@@ -104,27 +103,21 @@ fetchElifeLimoWorker.addEventListener('message', function(e) {
   }
 }, false);
 
-function processElfieLimo(websiteData) {
-  // const dataTableElifelimo = document.querySelector("#data-table-elifelimo tbody");
+async function processElfieLimo(websiteData) {
   const locationData = websiteData.journeys[0].legs[0];
-  const passenger = websiteData.journeys[0].legs[0].passenger;
-  const pickupName = locationData.pickupLocation.name;
-  const dropoffName = locationData.dropoffLocation.name;
-  const pickupID = locationData.pickupLocation.locationId;
-  const dropoffID = locationData.dropoffLocation.locationId;
-  const pickupLatitude = locationData.pickupLocation.latLng.latitude;
-  const pickupLongitude = locationData.pickupLocation.latLng.longitude;
-  const dropoffLatitude = locationData.dropoffLocation.latLng.latitude;
-  const dropoffLongitude = locationData.dropoffLocation.latLng.longitude;
+  const { passenger, pickupLocation, dropoffLocation, requestedPickupDateTime: dateTime } = locationData;
+  const { name: pickupName, locationId: pickupID, latLng: { latitude: pickupLatitude, longitude: pickupLongitude } } = pickupLocation;
+  const { name: dropoffName, locationId: dropoffID, latLng: { latitude: dropoffLatitude, longitude: dropoffLongitude } } = dropoffLocation;
+
   routeMap(pickupLatitude, pickupLongitude, dropoffLatitude, dropoffLongitude);
-  const dateTime = locationData.requestedPickupDateTime;
+
   const dateTimeURL = encodeURIComponent(dateTime.substring(0, 16));
   const dateTimeUTC = new Date(dateTime);
   const urlSixt = `https://www.sixt.com/ride/new/offers?datetime=${dateTimeUTC.getTime()}&destination=${dropoffID}&pickup=${pickupID}&type=DISTANCE`;
   const urlMyTransfers = `https://www.mytransfers.com/api/list?adults=2&arrival_date=${dateTimeURL}&arrival_lat=${pickupLatitude}&arrival_lng=${pickupLongitude}&departure_lat=${dropoffLatitude}&departure_lng=${dropoffLongitude}&lang=en&type=oneway`;
+
   dateTimeUTC.setHours(dateTimeUTC.getHours() + 5);
   const utcFormat = dateTimeUTC.getTime() / 1000;
-
 
   let request = {
     "include_return_trip": false,
@@ -135,7 +128,6 @@ function processElfieLimo(websiteData) {
   };
 
   fetchJayRideWorker.postMessage(request);
-  //fetchJayRide(request);
 
   let sixtElement = document.querySelector('#sixt-url');
   sixtElement.innerHTML = `<a href="${urlSixt}" target="_blank">Sixt URL</a>`;
@@ -147,14 +139,15 @@ function processElfieLimo(websiteData) {
 
   fetchMytransfersWorker.postMessage(urlMyTransfers);
 
-  fetch(getDistanceURL)
-    .then(response => response.json())
-    .then(data => {
-        const distance = data.distance;
-        url = `https://k3zdvi12m6.execute-api.us-east-2.amazonaws.com/prod/ride-pricings?currency=USD&from_lat=${pickupLatitude}&from_lng=${pickupLongitude}&to_lat=${dropoffLatitude}&to_lng=${dropoffLongitude}&distance=${distance}&from_utc=${utcFormat}&from_time_str=${dateTimeURL}&passenger_count=${passenger}`;
-        fetchElifeLimoWorker.postMessage(url);
-    })
-    .catch(error => console.error('Error:', error));
+  try {
+    const response = await fetch(getDistanceURL);
+    const data = await response.json();
+    const { distance } = data;
+    url = `https://k3zdvi12m6.execute-api.us-east-2.amazonaws.com/prod/ride-pricings?currency=USD&from_lat=${pickupLatitude}&from_lng=${pickupLongitude}&to_lat=${dropoffLatitude}&to_lng=${dropoffLongitude}&distance=${distance}&from_utc=${utcFormat}&from_time_str=${dateTimeURL}&passenger_count=${passenger}`;
+    fetchElifeLimoWorker.postMessage(url);
+  } catch (error) {
+    console.error('Error:', error);
+  }
 }
 
 function processBooking(websiteData) {

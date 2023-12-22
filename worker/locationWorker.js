@@ -1,10 +1,17 @@
+const BASE_URL = 'https://taxi.booking.com/places/autocomplete/';
+
 self.addEventListener('message', async ({ data: { input, placeid, lat, lon } }) => {
-  const placeId = placeid ? `&radiusSearchPlaceId=${placeid}` : '';
-  const latitude = lat ? `&lat=${lat}` : '';
-  const longitude = lon ? `&lon=${lon}` : '';
+  const params = new URLSearchParams({
+    isDropOff: false,
+    language: 'en-gb'
+  });
+
+  if (placeid) params.append('radiusSearchPlaceId', placeid);
+  if (lat) params.append('lat', lat);
+  if (lon) params.append('lon', lon);
 
   try {
-    const response = await fetch(`https://taxi.booking.com/places/autocomplete/${encodeURIComponent(input)}?isDropOff=false&language=en-gb${placeId}${latitude}${longitude}`);
+    const response = await fetch(`${BASE_URL}${encodeURIComponent(input)}?${params}`);
     const data = await response.json();
     self.postMessage(data);
   } catch (error) {

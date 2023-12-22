@@ -171,7 +171,7 @@ const destinationWorker = new Worker('worker/locationWorker.js');
           return;
         }
         search(input.value, iconSelector, listSelector, worker, '#pickup-location', '#destination');
-      }, 150));
+      }, 200));
 
       input.addEventListener('change', function() {
         if (!enterPressed) {
