@@ -42,7 +42,7 @@ function updateList(predictions, listId, inputId, iconId) {
   
     const secondaryText = document.createElement('span');
     secondaryText.classList.add('secondary-text');
-    secondaryText.textContent = `\n${prediction.city}, ${prediction.country}`;
+    secondaryText.textContent = `${prediction.terms[0].value}`;
   
     const icon = document.createElement('img');
     icon.src = `${path}${prediction['icon']}`;

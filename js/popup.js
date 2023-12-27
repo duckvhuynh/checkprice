@@ -1,6 +1,21 @@
 const locationWorker = new Worker('worker/locationWorker.js');
 const destinationWorker = new Worker('worker/locationWorker.js');
+// function initializeAutocomplete(id) {
+//   const input = document.getElementById(id);
+//   const autocomplete = new google.maps.places.Autocomplete(input);
+// }
   document.addEventListener("DOMContentLoaded", function() {
+    // window.initAutocomplete = function() {
+    //   const inputs = ['pickup-location', 'destination', 'pickup-location-one', 'pickup-location-two', 'pickup-location-three', 'destination-one', 'destination-two', 'destination-three'];
+    //   inputs.forEach(initializeAutocomplete);
+    // }
+    
+    // function initializeAutocomplete(id) {
+    //   const input = document.getElementById(id);
+    //   if (input) {
+    //     const autocomplete = new google.maps.places.Autocomplete(input);
+    //   }
+    // }
     initMap(16.0555992, 108.2371671, 14);
     //drawCircleAndTriangle(15.887746792486352, 107.95146650372304, 1000);
     function smoothScroll(target, duration) {
@@ -122,7 +137,7 @@ const destinationWorker = new Worker('worker/locationWorker.js');
       }
     }
   
-      const inputs = [
+    const inputs = [
       {
         id: '#pickup-location',
         worker: locationWorker,
