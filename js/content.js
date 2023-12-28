@@ -2,6 +2,7 @@ const fetchMytransfersWorker = new Worker('worker/fetchMytransfersWorker.js');
 const fetchElifeLimoWorker = new Worker('worker/fetchElifeLimoWorker.js');
 const fetchDataWorker = new Worker('worker/fetchDataWorker.js');
 const fetchJayRideWorker = new Worker('worker/fetchJayRideWorker.js');
+const fetchKlookWorker = new Worker('worker/fetchKlookWorker.js');
 
 fetchDataWorker.addEventListener('message', function(e) {
   const data = e.data;
@@ -126,6 +127,50 @@ async function processElfieLimo(websiteData) {
     "from_location": {"type": "airport-terminal", "description": pickupName, "lat": pickupLatitude, "lng": pickupLongitude},
     "to_location": {"type": "others", "description": dropoffName, "lat": dropoffLatitude, "lng": dropoffLongitude}
   };
+
+  const klookData = {payload: {}, refererUrl: ''};
+  const klookPayload = {
+    "flight_direction": "1",
+    "from": pickupName,
+    "to": dropoffName,
+    "iata_code": "JFK",
+    "passenger_count": passenger,
+    "travel_time": dateTime.substring(0, 16),
+    "longitude": dropoffLongitude,
+    "latitude": dropoffLatitude,
+    "address": dropoffName,
+    "poi_id":"50025974",
+    "place_id":"",
+    "source_country":"VN"
+  };
+  function generateRefererUrl(klookPayload) {
+    const baseUrl = 'https://www.klook.com/en-US/airport-transfers/results/?';
+    const queryParams = {
+      flightDirection: 1,
+      from: klookPayload.from,
+      to: klookPayload.to,
+      address: klookPayload.address,
+      lat: pickupLatitude,
+      long: pickupLongitude,
+      poiId: klookPayload.poi_id,
+      poi_lat: dropoffLatitude,
+      poi_long: dropoffLongitude,
+      time: klookPayload.travel_time,
+      pas: klookPayload.passenger_count,
+      code: klookPayload.iata_code
+    };
+  
+    const queryString = Object.keys(queryParams)
+      .map((key) => `${key}=${encodeURIComponent(queryParams[key])}`)
+      .join('&');
+  
+    return `${baseUrl}${queryString}`;
+  }
+
+  klookData.payload = klookPayload;
+  klookData.refererUrl = generateRefererUrl(klookPayload);
+
+  fetchKlookWorker.postMessage(klookData);
 
   fetchJayRideWorker.postMessage(request);
 
