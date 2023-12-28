@@ -242,6 +242,19 @@ function calculateAndDisplayRoute(directionsService, directionsRenderer) {
       }
     });
 
+    const inputs = [
+      {
+        id: '#pickup-location',
+        iconSelector: '#pickup-icon',
+        listSelector: '#location-list'
+      },
+      {
+        id: '#destination',
+        iconSelector: '#destination-icon',
+        listSelector: '#destination-list'
+      }
+    ];
+
     function swapInputs(input1, input2, icon1Selector, icon2Selector) {
       const tempValue = input1.value;
       const tempPlaceId = input1.getAttribute('data-placeid');
