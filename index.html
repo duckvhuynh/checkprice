@@ -5,15 +5,18 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
   <link rel="shortcut icon" type="image/png" href="icon/icon16.png">
-  <script type="text/javascript" src="js/map.js"></script>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyClhidy5XNQmhVkvzbvEWz7h2KI3rn1ypc&libraries=places&language=en"></script>
+  <script type="text/javascript" src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script type="text/javascript" src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script type="text/javascript" src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
   <script type="text/javascript" src="js/handler.js"></script>
   <script type="text/javascript" src="js/table.js"></script>
   <script type="text/javascript" src="js/content.js"></script>
   <script type="text/javascript" src="js/popup.js"></script>
+  <script type="text/javascript" src="js/map.js"></script>
 </head>
 <body>
   <div id="map"></div>
@@ -79,20 +82,6 @@
       </button>
     </div>
   </form>
-  <div id="history-container">
-    <div class="controls-container">
-      <div class="toggle-container">
-        <label for="toggle-switch">RELOAD</label>
-        <label class="switch">
-          <input type="checkbox" id="toggle-switch">
-          <span class="slider round"></span>
-        </label>
-      </div>
-      <select id="history-dropdown">
-        <option value="">Select a previous search...</option>
-      </select>
-    </div>
-  </div>
   <p id="placeholder-text">🛈 Please enter a route</p>
   <table id="data-table-route">
     <thead>

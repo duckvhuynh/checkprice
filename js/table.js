@@ -150,6 +150,10 @@ function addCopyIconToCell(cell) {
 }
 
 function showNotification(message) {
+  showNotification(message, 1500);
+}
+
+function showNotification(message, duration) {
   const notification = document.createElement("div");
   notification.classList.add("notification");
   notification.innerText = message;
@@ -159,9 +163,8 @@ function showNotification(message) {
   setTimeout(() => {
     notification.remove();
     notificationCount--;
-  }, 1500);
+  }, duration);
 }
-
 function showWarning(message) {
   const warning = document.createElement("div");
   warning.classList.add("warning");

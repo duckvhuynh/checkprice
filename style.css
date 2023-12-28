@@ -1,4 +1,40 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&display=swap');
+
+.pac-item-query {
+  font-size: 16px; 
+  display: block;
+}
+.pac-matched {
+  font-weight: normal;
+}
+
+.pac-container {
+  font-family: 'Montserrat', sans-serif;
+  border-radius: 15px;
+  background: white;
+  border: 0.1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.pac-item {
+  display: block;
+  flex-direction: column;
+  font-size: 12px;
+  border-radius: 15px;
+  border: 0.1px solid white;
+  cursor: pointer; 
+  transition: background-color 0.1s ease;
+}
+
+.pac-item:hover {
+  background-color: #f1f1f1; 
+}
+
+.pac-icon {
+  display: none;
+}
+
+
 .font-base {
   font-family: 'Montserrat', sans-serif;
 }
@@ -96,8 +132,8 @@
 }
 #map {
   border: 1px solid #ccc;
-  height: 400px;
-  width: 50%;
+  height: 500px;
+  width: 63%;
   margin: 0 auto;
   border-radius: 15px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
@@ -506,10 +542,6 @@ form select {
   background-repeat: no-repeat;
   background-position: right 5px center;
   background-size: 32px;
-}
-
-form select::-ms-expand {
-  display: none;
 }
 
 form select option {

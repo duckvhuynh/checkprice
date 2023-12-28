@@ -1,5 +1,83 @@
 const path = window.location.pathname.includes('multi') ? '../icon/' : 'icon/';
+// function initService(input, listId, inputId, iconId) {
+//   const displaySuggestions = function (predictions, status) {
+//     if (status != google.maps.places.PlacesServiceStatus.OK || !predictions) {
+//       alert(status);
+//       return;
+//     }
 
+//     const list = document.querySelector(listId);
+//     const input = document.querySelector(inputId);
+
+//     if (!list) {
+//         console.error(`Element with id "${listId}" not found`);
+//         return;
+//     }
+//     list.innerHTML = '';
+
+//     const fragment = document.createDocumentFragment();
+    
+//     console.log(predictions);
+//     predictions.forEach(prediction => {
+//       const item = document.createElement('li');
+//       item.classList.add('list-item');
+    
+//       const mainText = document.createElement('span');
+//       mainText.classList.add('main-text');
+//       mainText.textContent = prediction.structured_formatting.main_text;
+    
+//       const secondaryText = document.createElement('span');
+//       secondaryText.classList.add('secondary-text');
+//       secondaryText.textContent = prediction.structured_formatting.secondary_text;
+    
+//       const icon = document.createElement('img');
+//       icon.src = prediction.icon ? `url(${prediction.icon})` : `${path}geo-pin.svg`;
+//       icon.alt = 'Location icon';
+//       icon.classList.add('location-icon');
+    
+//       const textContainer = document.createElement('div');
+//       textContainer.classList.add('text-container');
+//       textContainer.appendChild(mainText);
+//       textContainer.appendChild(secondaryText);
+    
+//       item.appendChild(icon);
+//       item.appendChild(textContainer);
+    
+//       item.dataset.description = prediction.structured_formatting.main_text;
+//       item.dataset.placeid = prediction.place_id;
+//       console.log(prediction.place_id);
+//       console.log(prediction.name);
+//       console.log(prediction.formatted_address);
+//       console.log(prediction.icon);
+//       // item.dataset.lat = prediction.lat;
+//       // item.dataset.lon = prediction.lon;
+    
+//       fragment.appendChild(item);
+//     });
+
+//     list.appendChild(fragment);
+//     list.style.display = 'block';
+
+//     list.addEventListener('click', function(event) {
+//         const item = event.target.closest('.list-item');
+//         if (item) {
+//         event.stopPropagation();
+//         const locationIcon = document.querySelector(iconId);
+//         locationIcon.src = item.querySelector('.location-icon').src;
+//         input.value = item.dataset.description;
+//         input.dataset.placeid = item.dataset.placeid;
+//         // input.dataset.lat = item.dataset.lat;
+//         // input.dataset.lon = item.dataset.lon;
+//         list.innerHTML = '';
+//         list.style.display = 'none';
+//         }
+//     });
+//   };
+
+//   const service = new google.maps.places.AutocompleteService();
+
+//   service.getPlacePredictions({ input: input }, displaySuggestions);
+// }
 function search(input, iconId, listId, worker, pickupLocationId, destinationId) {
   const locationIcon = document.querySelector(iconId);
   const list = document.querySelector(listId);
@@ -42,7 +120,7 @@ function updateList(predictions, listId, inputId, iconId) {
   
     const secondaryText = document.createElement('span');
     secondaryText.classList.add('secondary-text');
-    secondaryText.textContent = `\n${prediction.city}, ${prediction.country}`;
+    secondaryText.textContent = `${prediction.terms[0].value}`;
   
     const icon = document.createElement('img');
     icon.src = `${path}${prediction['icon']}`;

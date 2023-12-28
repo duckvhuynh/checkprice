@@ -1,7 +1,139 @@
-const locationWorker = new Worker('worker/locationWorker.js');
-const destinationWorker = new Worker('worker/locationWorker.js');
+let pickupPlace = null;
+let destinationPlace = null;
+
+function initAutocomplete() {
+  initMapOld(16.0555992, 108.2371671, 14);
+  map.addListener('click', (event) => {
+    if (event.placeId) {
+      event.stop();
+  
+      const service = new google.maps.places.PlacesService(map);
+      service.getDetails({ placeId: event.placeId }, (place, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          destinationInput.value = place.name;
+          destinationInput.setAttribute('data-placeid', place.place_id);
+          destinationPlace = place;
+          if (pickupPlace) {
+            calculateAndDisplayRoute(directionsService, directionsRenderer);
+          }
+        } else {
+          window.alert('PlacesService failed due to: ' + status);
+        }
+      });
+    }
+  });
+  const pickupInput = document.querySelector('#pickup-location');
+  const destinationInput = document.querySelector('#destination');
+  const options = {
+    fields: ["name", "formatted_address", "geometry", "place_id", "icon"]
+  };
+
+  const pickupAutocomplete = new google.maps.places.Autocomplete(pickupInput, options);
+  const destinationAutocomplete = new google.maps.places.Autocomplete(destinationInput, options);
+  
+  const directionsService = new google.maps.DirectionsService();
+  const directionsRenderer = new google.maps.DirectionsRenderer({
+    polylineOptions: {
+      strokeColor: '#e14d20'
+    }
+  });
+  directionsRenderer.setMap(map);
+
+  pickupAutocomplete.addListener('place_changed', () => {
+    pickupPlace = pickupAutocomplete.getPlace();
+    if (!pickupPlace.geometry) {
+      return;
+    }
+    showNotification('You can select destination\n by clicking places on the map', 9000);
+    pickupInput.value = pickupPlace.name;
+    pickupInput.setAttribute('data-placeid', pickupPlace.place_id);
+    destinationAutocomplete.setBounds(pickupPlace.geometry.viewport);
+
+    map.setCenter(pickupPlace.geometry.location);
+
+    const icon = {
+      url: pickupPlace.icon,
+      size: new google.maps.Size(71, 71),
+      origin: new google.maps.Point(0, 0),
+      anchor: new google.maps.Point(17, 34),
+      scaledSize: new google.maps.Size(25, 25),
+    };
+
+    // Add a marker at the selected place
+    new google.maps.Marker({
+      position: pickupPlace.geometry.location,
+      icon: icon,
+      title: pickupPlace.name,
+      map: map
+    });
+
+
+    if (pickupPlace && destinationPlace) {
+      calculateAndDisplayRoute(directionsService, directionsRenderer);
+    }
+  });
+
+  destinationAutocomplete.addListener('place_changed', () => {
+    destinationPlace = destinationAutocomplete.getPlace();
+    if (!destinationPlace.geometry) {
+      return;
+    }
+    destinationInput.value = destinationPlace.name;
+    destinationInput.setAttribute('data-placeid', destinationPlace.place_id);
+    pickupAutocomplete.setBounds(destinationPlace.geometry.viewport);
+
+    map.setCenter(destinationPlace.geometry.location);
+
+    const icon = {
+      url: destinationPlace.icon,
+      size: new google.maps.Size(71, 71),
+      origin: new google.maps.Point(0, 0),
+      anchor: new google.maps.Point(17, 34),
+      scaledSize: new google.maps.Size(25, 25),
+    };
+
+    new google.maps.Marker({
+      position: destinationPlace.geometry.location,
+      icon: icon,
+      title: destinationPlace.name,
+      map: map
+    });
+
+    if (pickupPlace && destinationPlace) {
+      calculateAndDisplayRoute(directionsService, directionsRenderer);
+    }
+  });
+}
+
+function calculateAndDisplayRoute(directionsService, directionsRenderer) {
+  if (!pickupPlace || !destinationPlace) {
+    return;
+  }
+
+  directionsService.route(
+    {
+      origin: pickupPlace.geometry.location,
+      destination: destinationPlace.geometry.location,
+      travelMode: google.maps.TravelMode.DRIVING,
+    },
+    (response, status) => {
+      if (status === "OK") {
+        directionsRenderer.setDirections(response);
+        const submitButton = document.querySelector('#submit-button');
+        submitButton.click();
+      } else {
+        const destinationInput = document.querySelector('#destination');
+        destinationInput.value = '';
+        destinationInput.setAttribute('data-placeid', '');
+        destinationPlace = null;
+      }
+    }
+  );
+}
+
   document.addEventListener("DOMContentLoaded", function() {
-    initMap(16.0555992, 108.2371671, 14);
+    initAutocomplete();
+    //initMapOld(16.0555992, 108.2371671, 14);
     //drawCircleAndTriangle(15.887746792486352, 107.95146650372304, 1000);
     function smoothScroll(target, duration) {
       var targetPosition = target === 'top' ? 0 : document.body.scrollHeight;
@@ -63,8 +195,6 @@ const destinationWorker = new Worker('worker/locationWorker.js');
       showNotification('Copied whole table to clipboard');
     });
 
-    setupWorker(locationWorker, '#location-list', '#pickup-location', '#pickup-icon');
-    setupWorker(destinationWorker, '#destination-list', '#destination', '#destination-icon');
 
     function clearAndHideList(list) {
       if (list) {
@@ -111,79 +241,6 @@ const destinationWorker = new Worker('worker/locationWorker.js');
         });
         instance.calendarContainer.appendChild(todayButton);
       }
-    });
-    function debounce(func, delay) {
-      let debounceTimer;
-      return function() {
-        const context = this;
-        const args = arguments;
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => func.apply(context, args), delay);
-      }
-    }
-  
-      const inputs = [
-      {
-        id: '#pickup-location',
-        worker: locationWorker,
-        iconSelector: '#pickup-icon',
-        listSelector: '#location-list'
-      },
-      {
-        id: '#destination',
-        worker: destinationWorker,
-        iconSelector: '#destination-icon',
-        listSelector: '#destination-list'
-      }
-    ];
-
-    let isPasting = false;
-    let enterPressed = false;
-
-    inputs.forEach(({ id, worker, iconSelector, listSelector }) => {
-      const input = document.querySelector(id);
-
-      input.addEventListener('keydown', function(event) {
-        if (event.key === 'Enter') {
-          enterPressed = true;
-          event.preventDefault();
-          event.stopPropagation();
-          const firstItem = document.querySelector(`${listSelector} .list-item`);
-          if (firstItem) {
-            firstItem.click();
-            input.blur();
-          }
-        }
-      });
-
-      input.addEventListener('paste', (event) => {
-        isPasting = true;
-        const pasteData = event.clipboardData || window.clipboardData;
-        if (pasteData) {
-          const pastedText = pasteData.getData('text');
-          search(pastedText, iconSelector, listSelector, worker, '#pickup-location', '#destination');
-        }
-      });
-
-      input.addEventListener('input', debounce(() => {
-        if (isPasting) {
-          isPasting = false;
-          return;
-        }
-        search(input.value, iconSelector, listSelector, worker, '#pickup-location', '#destination');
-      }, 200));
-
-      input.addEventListener('change', function() {
-        if (!enterPressed) {
-          const items = document.querySelectorAll(`${listSelector} .autocomplete-item`);
-          const match = Array.from(items).find(item => item.textContent === this.value);
-          if (!match) {
-            this.setAttribute('data-placeid', '');
-          }
-        } else {
-          enterPressed = false;
-        }
-      });
     });
 
     function swapInputs(input1, input2, icon1Selector, icon2Selector) {
