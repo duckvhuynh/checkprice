@@ -10,6 +10,13 @@ function initAutocomplete() {
       const service = new google.maps.places.PlacesService(map);
       service.getDetails({ placeId: event.placeId }, (place, status) => {
         if (status === google.maps.places.PlacesServiceStatus.OK) {
+          if (!pickupInput.value) {
+            pickupInput.value = place.name;
+            pickupInput.setAttribute('data-placeid', place.place_id);
+            pickupPlace = place;
+            map.setCenter(pickupPlace.geometry.location);
+            return;
+          }
           destinationInput.value = place.name;
           destinationInput.setAttribute('data-placeid', place.place_id);
           destinationPlace = place;
@@ -22,6 +29,7 @@ function initAutocomplete() {
       });
     }
   });
+  
   const pickupInput = document.querySelector('#pickup-location');
   const destinationInput = document.querySelector('#destination');
   const options = {
@@ -120,6 +128,10 @@ function calculateAndDisplayRoute(directionsService, directionsRenderer) {
         directionsRenderer.setDirections(response);
         const submitButton = document.querySelector('#submit-button');
         submitButton.click();
+      } else if (status == "ZERO_RESULTS") {
+        showWarning('No route found');
+        const submitButton = document.querySelector('#submit-button');
+        submitButton.click();
       } else {
         const destinationInput = document.querySelector('#destination');
         destinationInput.value = '';
@@ -134,35 +146,11 @@ function calculateAndDisplayRoute(directionsService, directionsRenderer) {
     initAutocomplete();
     //initMapOld(16.0555992, 108.2371671, 14);
     //drawCircleAndTriangle(15.887746792486352, 107.95146650372304, 1000);
-    function smoothScroll(target, duration) {
-      var targetPosition = target === 'top' ? 0 : document.body.scrollHeight;
-      var startPosition = window.pageYOffset;
-      var distance = targetPosition - startPosition;
-      var startTime = null;
-
-      function animation(currentTime) {
-        if (startTime === null) startTime = currentTime;
-        var timeElapsed = currentTime - startTime;
-        var run = ease(timeElapsed, startPosition, distance, duration);
-        window.scrollTo(0, run);
-        if (timeElapsed < duration) requestAnimationFrame(animation);
-      }
-
-      function ease(t, b, c, d) {
-        t /= d / 2;
-        if (t < 1) return c / 2 * t * t + b;
-        t--;
-        return -c / 2 * (t * (t - 2) - 1) + b;
-      }
-
-      requestAnimationFrame(animation);
-    }
-
-    document.getElementById('scrollToTop').addEventListener('click', function() {
+    document.querySelector('#scrollToTop').addEventListener('click', function() {
       smoothScroll('top', 1000);
     });
 
-    document.getElementById('scrollToBottom').addEventListener('click', function() {
+    document.querySelector('#scrollToBottom').addEventListener('click', function() {
       smoothScroll('bottom', 1000);
     });
     document.querySelector('#copyJayrideTable').addEventListener('click', function() {

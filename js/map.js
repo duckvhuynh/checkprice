@@ -1,37 +1,16 @@
 var map;
 var routingControl;
 
-// Initialize the map
 function initMapOld(lat, lng, zoom) {
     var center = {lat: lat, lng: lng};
     map = new google.maps.Map(document.getElementById('map'), {
+        minZoom: 3,
         zoom: zoom,
         center: center,
         disableDefaultUI: true,
-        zoomControl: true,
-        // styles: [
-        //     {
-        //         "featureType": "poi",
-        //         "stylers": [
-        //             { "visibility": "off" }
-        //         ]
-        //     },
-        //     {
-        //         "featureType": "transit",
-        //         "stylers": [
-        //             { "visibility": "off" }
-        //         ]
-        //     },
-        //     {
-        //         "featureType": "poi.business",
-        //         "stylers": [
-        //             { "visibility": "on" }
-        //         ]
-        //     }
-        // ]
+        zoomControl: true
     });
     
-    // Add a marker at the center
     new google.maps.Marker({
         position: center,
         map: map

@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
         textarea.select();
         try {
           document.execCommand('copy');
-          showNotification('Price and KM data copied to clipboard');
+          showNotification('Price and KM data copied to clipboard', 1500);
         } catch (err) {
           console.error('Error copying text: ', err);
         }
@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', function() {
       } else {
         navigator.clipboard.writeText(textToCopy)
           .then(() => {
-            showNotification('Price and KM data copied to clipboard');
+            showNotification('Price and KM data copied to clipboard', 1500);
           })
           .catch(err => {
             console.error('Error copying text: ', err);

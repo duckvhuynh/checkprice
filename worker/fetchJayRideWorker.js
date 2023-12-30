@@ -10,13 +10,6 @@ self.addEventListener('message', function(e) {
         'Accept-Language': 'en-US,en;q=0.5',
         'Accept-Encoding': 'gzip, deflate, br',
         'Content-Type': 'application/json'
-        // 'Content-Length': '351',
-        // 'Origin': 'https://booking.jayride.com',
-        // 'Connection': 'keep-alive',
-        // 'Referer': 'https://booking.jayride.com/',
-        // 'Sec-Fetch-Dest': 'empty',
-        // 'Sec-Fetch-Mode': 'cors',
-        // 'Sec-Fetch-Site': 'same-site'
       },
       body: JSON.stringify(payload)
     })

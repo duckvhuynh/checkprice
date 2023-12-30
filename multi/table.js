@@ -65,36 +65,6 @@ function addCopyIconToCell(cell) {
   cell.appendChild(copyIcon);
 }
 
-function showNotification(message) {
-  showNotification(message, 1500);
-}
-
-function showNotification(message, duration) {
-  const notification = document.createElement("div");
-  notification.classList.add("notification");
-  notification.innerText = message;
-  notification.style.top = `${notificationCount * 40}px`; 
-  document.querySelector('#notification-container').appendChild(notification);
-  notificationCount++;
-  setTimeout(() => {
-    notification.remove();
-    notificationCount--;
-  }, duration);
-}
-
-function showWarning(message) {
-  const warning = document.createElement("div");
-  warning.classList.add("warning");
-  warning.innerText = message;
-  warning.style.top = `${notificationCount * 40}px`; 
-  document.querySelector('#notification-container').appendChild(warning);
-  notificationCount++;
-  setTimeout(() => {
-    warning.remove();
-    notificationCount--;
-  }, 1500);
-}
-
 function showTableHeader() {
     document.querySelector("#data-table-multi thead").style.display = "table-header-group";
 }
