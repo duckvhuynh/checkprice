@@ -129,7 +129,7 @@ function calculateAndDisplayRoute(directionsService, directionsRenderer) {
         const submitButton = document.querySelector('#submit-button');
         submitButton.click();
       } else if (status == "ZERO_RESULTS") {
-        showWarning('No route found');
+        showWarning('No directions found for this route.');
         const submitButton = document.querySelector('#submit-button');
         submitButton.click();
       } else {
