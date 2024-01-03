@@ -1,3 +1,6 @@
+// const locationWorker = new Worker('worker/locationWorker.js');
+// const destinationWorker = new Worker('worker/locationWorker.js');
+
 let pickupPlace = null;
 let destinationPlace = null;
 
@@ -182,6 +185,9 @@ function calculateAndDisplayRoute(directionsService, directionsRenderer) {
       showNotification('Copied whole table to clipboard');
     });
 
+    // setupWorker(locationWorker, '#location-list', '#pickup-location', '#pickup-icon');
+    // setupWorker(destinationWorker, '#destination-list', '#destination', '#destination-icon');
+
 
     function clearAndHideList(list) {
       if (list) {
@@ -242,6 +248,104 @@ function calculateAndDisplayRoute(directionsService, directionsRenderer) {
         listSelector: '#destination-list'
       }
     ];
+
+    // function debounce(func, delay) {
+    //   let debounceTimer;
+    //   return function() {
+    //     const context = this;
+    //     const args = arguments;
+    //     clearTimeout(debounceTimer);
+    //     debounceTimer = setTimeout(() => func.apply(context, args), delay);
+    //   }
+    // }
+
+    //   const inputs = [
+    //   {
+    //     id: '#pickup-location',
+    //     worker: locationWorker,
+    //     iconSelector: '#pickup-icon',
+    //     listSelector: '#location-list'
+    //   },
+    //   {
+    //     id: '#destination',
+    //     worker: destinationWorker,
+    //     iconSelector: '#destination-icon',
+    //     listSelector: '#destination-list'
+    //   }
+    // ];
+
+    // let isPasting = false;
+    // let enterPressed = false;
+
+    // inputs.forEach(({ id, worker, iconSelector, listSelector }) => {
+    //   const input = document.querySelector(id);
+
+    //   input.addEventListener('keydown', function(event) {
+    //     if (event.key === 'Enter') {
+    //       enterPressed = true;
+    //       event.preventDefault();
+    //       event.stopPropagation();
+    //       const firstItem = document.querySelector(`${listSelector} .list-item`);
+    //       if (firstItem) {
+    //         firstItem.click();
+    //         input.blur();
+    //       }
+    //     }
+    //   });
+
+    //   input.addEventListener('paste', (event) => {
+    //     isPasting = true;
+    //     const pasteData = event.clipboardData || window.clipboardData;
+    //     if (pasteData) {
+    //       const pastedText = pasteData.getData('text');
+    //       search(pastedText, iconSelector, listSelector, worker, '#pickup-location', '#destination');
+    //     }
+    //   });
+
+    //   input.addEventListener('input', debounce(() => {
+    //     if (isPasting) {
+    //       isPasting = false;
+    //       return;
+    //     }
+    //     search(input.value, iconSelector, listSelector, worker, '#pickup-location', '#destination');
+    //   }, 200));
+
+    //   input.addEventListener('change', function() {
+    //     if (!enterPressed) {
+    //       const items = document.querySelectorAll(`${listSelector} .autocomplete-item`);
+    //       const match = Array.from(items).find(item => item.textContent === this.value);
+    //       if (!match) {
+    //         this.setAttribute('data-placeid', '');
+    //       }
+    //     } else {
+    //       enterPressed = false;
+    //     }
+    //   });
+    // });
+
+    // function swapInputs(input1, input2, icon1Selector, icon2Selector) {
+    //   const tempValue = input1.value;
+    //   const tempPlaceId = input1.getAttribute('data-placeid');
+    //   const tempIconSrc = document.querySelector(icon1Selector).src;
+    
+    //   input1.value = input2.value;
+    //   input1.setAttribute('data-placeid', input2.getAttribute('data-placeid'));
+    //   document.querySelector(icon1Selector).src = document.querySelector(icon2Selector).src;
+    
+    //   input2.value = tempValue;
+    //   input2.setAttribute('data-placeid', tempPlaceId);
+    //   document.querySelector(icon2Selector).src = tempIconSrc;
+    // }
+    
+    // document.querySelector('#swap-button').addEventListener('click', function(event) {
+    //   event.preventDefault();
+    //   const [input1, input2] = inputs.map(({ id }) => document.querySelector(id));
+    //   if (!input1.value && !input2.value) {
+    //     return;
+    //   }
+    //   swapInputs(input1, input2, inputs[0].iconSelector, inputs[1].iconSelector);
+    // });
+
 
     function swapInputs(input1, input2, icon1Selector, icon2Selector) {
       const tempValue = input1.value;
