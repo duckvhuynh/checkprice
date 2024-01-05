@@ -2,7 +2,6 @@ let copyData = [];
 let copyDataDropoff = "";
 let copyDataElife = [];
 let copyDataDistance = 0;
-let notificationCount = 0;
 
 document.addEventListener("DOMContentLoaded", function() {
   const priceHeader = document.querySelector("#data-table th:nth-child(4)");

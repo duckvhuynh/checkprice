@@ -7,7 +7,7 @@ const destinationThreeWorker = new Worker('../worker/locationWorker.js');
 const fetchAllWorker = new Worker('../worker/fetchAllWorker.js');
 
 function updateTable(data, type) {
-  const table = document.querySelector('#data-table-multi');
+  const table = document.getElementById('data-table-multi');
 
   if (!table) {
     console.error('Element with id "data-table" not found');
@@ -42,11 +42,11 @@ function updateTable(data, type) {
 
 document.addEventListener('DOMContentLoaded', function() {
     let toggle = true;
-    document.querySelector('#swap-button').addEventListener('click', function(event) {
+    document.getElementById('swap-button').addEventListener('click', function(event) {
       event.preventDefault();
       function swapValues(pickupInputId, destinationInputId, pickupIconId, destinationIconId) {
-        const pickupInput = document.querySelector(pickupInputId);
-        const destinationInput = document.querySelector(destinationInputId);
+        const pickupInput = document.getElementById(pickupInputId);
+        const destinationInput = document.getElementById(destinationInputId);
       
         if (!pickupInput.value && !destinationInput.value) {
           return;
@@ -54,21 +54,21 @@ document.addEventListener('DOMContentLoaded', function() {
       
         const tempValue = pickupInput.value;
         const tempPlaceId = pickupInput.getAttribute('data-placeid');
-        const tempIconSrc = document.querySelector(pickupIconId).src;
+        const tempIconSrc = document.getElementById(pickupIconId).src;
       
         pickupInput.value = destinationInput.value;
         pickupInput.setAttribute('data-placeid', destinationInput.getAttribute('data-placeid'));
-        document.querySelector(pickupIconId).src = document.querySelector(destinationIconId).src;
+        document.getElementById(pickupIconId).src = document.getElementById(destinationIconId).src;
       
         destinationInput.value = tempValue;
         destinationInput.setAttribute('data-placeid', tempPlaceId);
-        document.querySelector(destinationIconId).src = tempIconSrc;
+        document.getElementById(destinationIconId).src = tempIconSrc;
       }
       
       if (toggle) {
-        swapValues('#pickup-location-one', '#destination-one', '#pickup-icon-one', '#destination-icon-one');
-        swapValues('#pickup-location-two', '#destination-two', '#pickup-icon-two', '#destination-icon-two');
-        swapValues('#pickup-location-three', '#destination-three', '#pickup-icon-three', '#destination-icon-three');
+        swapValues('pickup-location-one', 'destination-one', 'pickup-icon-one', 'destination-icon-one');
+        swapValues('pickup-location-two', 'destination-two', 'pickup-icon-two', 'destination-icon-two');
+        swapValues('pickup-location-three', 'destination-three', 'pickup-icon-three', 'destination-icon-three');
       
         document.querySelector('.pickup-container-one').style.display = 'block';
         document.querySelector('.pickup-container-three').style.display = 'block';
@@ -77,9 +77,9 @@ document.addEventListener('DOMContentLoaded', function() {
       
         toggle = false;
       } else {
-        swapValues('#pickup-location-one', '#destination-one', '#pickup-icon-one', '#destination-icon-one');
-        swapValues('#pickup-location-two', '#destination-two', '#pickup-icon-two', '#destination-icon-two');
-        swapValues('#pickup-location-three', '#destination-three', '#pickup-icon-three', '#destination-icon-three');
+        swapValues('pickup-location-one', 'destination-one', 'pickup-icon-one', 'destination-icon-one');
+        swapValues('pickup-location-two', 'destination-two', 'pickup-icon-two', 'destination-icon-two');
+        swapValues('pickup-location-three', 'destination-three', 'pickup-icon-three', 'destination-icon-three');
       
         document.querySelector('.pickup-container-one').style.display = 'none';
         document.querySelector('.pickup-container-three').style.display = 'none';
@@ -89,9 +89,9 @@ document.addEventListener('DOMContentLoaded', function() {
         toggle = true;
       }
     });
-    document.querySelector('#copy-multi').addEventListener('click', function() {
+    document.getElementById('copy-multi').addEventListener('click', function() {
       let textToCopy = '';
-      const table = document.querySelector('#data-table-multi');
+      const table = document.getElementById('data-table-multi');
       for (let r = 1, n = table.rows.length; r < n; r++) {
         for (let c of [2, 3, 4, 5, 6, 7]) {
           if (table.rows[r].cells[c]) {
@@ -142,12 +142,12 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     const workers = [
-      { worker: locationOneWorker, updateFunction: (data) => updateList(data, '#location-list-one', '#pickup-location-one', '#pickup-icon-one') },
-      { worker: locationTwoWorker, updateFunction: (data) => updateList(data, '#location-list-two', '#pickup-location-two', '#pickup-icon-two') },
-      { worker: locationThreeWorker, updateFunction: (data) => updateList(data, '#location-list-three', '#pickup-location-three', '#pickup-icon-three') },
-      { worker: destinationOneWorker, updateFunction: (data) => updateList(data, '#destination-list-one', '#destination-one', '#destination-icon-one') },
-      { worker: destinationTwoWorker, updateFunction: (data) => updateList(data, '#destination-list-two', '#destination-two', '#destination-icon-two') },
-      { worker: destinationThreeWorker, updateFunction: (data) => updateList(data, '#destination-list-three', '#destination-three', '#destination-icon-three') },
+      { worker: locationOneWorker, updateFunction: (data) => updateList(data, 'location-list-one', 'pickup-location-one', 'pickup-icon-one') },
+      { worker: locationTwoWorker, updateFunction: (data) => updateList(data, 'location-list-two', 'pickup-location-two', 'pickup-icon-two') },
+      { worker: locationThreeWorker, updateFunction: (data) => updateList(data, 'location-list-three', 'pickup-location-three', 'pickup-icon-three') },
+      { worker: destinationOneWorker, updateFunction: (data) => updateList(data, 'destination-list-one', 'destination-one', 'destination-icon-one') },
+      { worker: destinationTwoWorker, updateFunction: (data) => updateList(data, 'destination-list-two', 'destination-two', 'destination-icon-two') },
+      { worker: destinationThreeWorker, updateFunction: (data) => updateList(data, 'destination-list-three', 'destination-three', 'destination-icon-three') },
     ];
     
     workers.forEach(({ worker, updateFunction }) => {
@@ -163,17 +163,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.addEventListener('click', function(event) {
       const lists = [
-        '#location-list-one',
-        '#location-list-two',
-        '#location-list-three',
-        '#destination-list-one',
-        '#destination-list-two',
-        '#destination-list-three'
+        'location-list-one',
+        'location-list-two',
+        'location-list-three',
+        'destination-list-one',
+        'destination-list-two',
+        'destination-list-three'
       ];
     
       if (!event.target.closest('.autocomplete')) {
         lists.forEach(listId => {
-          const list = document.querySelector(listId);
+          const list = document.getElementById(listId);
           if (list) {
             list.innerHTML = '';
             list.style.display = 'none';
@@ -227,24 +227,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const inputs = [
-      { id: '#pickup-location-one', event: 'input', handler: (input) => search(input, '#pickup-icon-one', '#location-list-one', locationOneWorker, '#pickup-location-two', '#destination-two'), list: '#location-list-one .autocomplete-item', listSelector: '#location-list-one' },
-      { id: '#pickup-location-two', event: 'input', handler: (input) => search(input, '#pickup-icon-two', '#location-list-two', locationTwoWorker, '#pickup-location-two', '#destination-two'), list: '#location-list-two .autocomplete-item', listSelector: '#location-list-two' },
-      { id: '#pickup-location-three', event: 'input', handler: (input) => search(input, '#pickup-icon-three', '#location-list-three', locationThreeWorker, '#pickup-location-two', '#destination-two'), list: '#location-list-three .autocomplete-item', listSelector: '#location-list-three' },
-      { id: '#destination-one', event: 'input', handler: (input) => search(input, '#destination-icon-one', '#destination-list-one', destinationOneWorker, '#pickup-location-two', '#destination-two'), list: '#destination-list-one .autocomplete-item', listSelector: '#destination-list-one' },
-      { id: '#destination-two', event: 'input', handler: (input) => search(input, '#destination-icon-two', '#destination-list-two', destinationTwoWorker, '#pickup-location-two', '#destination-two'), list: '#destination-list-two .autocomplete-item', listSelector: '#destination-list-two' },
-      { id: '#destination-three', event: 'input', handler: (input) => search(input, '#destination-icon-three', '#destination-list-three', destinationThreeWorker, '#pickup-location-two', '#destination-two'), list: '#destination-list-three .autocomplete-item', listSelector: '#destination-list-three' },
+      { id: 'pickup-location-one', event: 'input', handler: (input) => search(input, 'pickup-icon-one', 'location-list-one', locationOneWorker, 'pickup-location-two', 'destination-two'), listSelector: 'location-list-one' },
+      { id: 'pickup-location-two', event: 'input', handler: (input) => search(input, 'pickup-icon-two', 'location-list-two', locationTwoWorker, 'pickup-location-two', 'destination-two'), listSelector: 'location-list-two' },
+      { id: 'pickup-location-three', event: 'input', handler: (input) => search(input, 'pickup-icon-three', 'location-list-three', locationThreeWorker, 'pickup-location-two', 'destination-two'), listSelector: 'location-list-three' },
+      { id: 'destination-one', event: 'input', handler: (input) => search(input, 'destination-icon-one', 'destination-list-one', destinationOneWorker, 'pickup-location-two', 'destination-two'), listSelector: 'destination-list-one' },
+      { id: 'destination-two', event: 'input', handler: (input) => search(input, 'destination-icon-two', 'destination-list-two', destinationTwoWorker, 'pickup-location-two', 'destination-two'), listSelector: 'destination-list-two' },
+      { id: 'destination-three', event: 'input', handler: (input) => search(input, 'destination-icon-three', 'destination-list-three', destinationThreeWorker, 'pickup-location-two', 'destination-two'), listSelector: 'destination-list-three' },
     ];
 
     let enterPressed = false;
     inputs.forEach(({ id, event, handler, list, listSelector }) => {
-      const input = document.querySelector(id);
+      const input = document.getElementById(id);
 
       input.addEventListener('keydown', function(event) {
         if (event.key === 'Enter') {
           enterPressed = true;
           event.preventDefault();
           event.stopPropagation();
-          const firstItem = document.querySelector(`${listSelector} .list-item`);
+          const firstItem = document.querySelector(`#${listSelector} .list-item`);
           if (firstItem) {
             firstItem.click();
             input.blur();
@@ -256,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       input.addEventListener('change', function() {
         if (!enterPressed) {
-          const items = document.querySelectorAll(list);
+          const items = document.querySelectorAll(`#${listSelector} .autocomplete-item`);
           const match = Array.from(items).find(item => item.textContent === this.value);
           if (!match) {
             this.setAttribute('data-placeid', '');
@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
       
     });
 
-    const submitButton = document.querySelector('#submit-button');
+    const submitButton = document.getElementById('submit-button');
 
     document.addEventListener('keydown', function(event) {
       if (event.key === 'Enter') {
@@ -277,7 +277,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
-    document.querySelector('#multi-button').addEventListener('click', function(event) {
+    document.getElementById('multi-button').addEventListener('click', function(event) {
       event.preventDefault();
       window.open('..', '_self');
     });
@@ -308,23 +308,23 @@ document.addEventListener('DOMContentLoaded', function() {
       if (!time) {
         return showErrorAndReturn('Please select a time');
       }
-      const passenger = document.querySelector('#passenger').value;
+      const passenger = document.getElementById('passenger').value;
       if (!passenger) {
         return showErrorAndReturn('Please select a passenger');
       }
       const locations = toggle ? [
-        { id: '#pickup-location-two' },
-        { id: '#destination-one' },
-        { id: '#destination-two' },
-        { id: '#destination-three' },
+        { id: 'pickup-location-two' },
+        { id: 'destination-one' },
+        { id: 'destination-two' },
+        { id: 'destination-three' },
       ] : [
-        { id: '#pickup-location-one' },
-        { id: '#pickup-location-two' },
-        { id: '#pickup-location-three' },
-        { id: '#destination-two' },
+        { id: 'pickup-location-one' },
+        { id: 'pickup-location-two' },
+        { id: 'pickup-location-three' },
+        { id: 'destination-two' },
       ];
       const placeIds = locations.map(({ id }) => {
-        const input = document.querySelector(id);
+        const input = document.getElementById(id);
         const dataValue = input.value;
         const dataPlaceId = input.getAttribute('data-placeid');
         if ((!id.includes('three')) && (!dataValue || !dataPlaceId)) {

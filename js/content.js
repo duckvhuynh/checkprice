@@ -109,7 +109,7 @@ async function processElfieLimo(websiteData) {
   const { name: pickupName, locationId: pickupID, latLng: { latitude: pickupLatitude, longitude: pickupLongitude } } = pickupLocation;
   const { name: dropoffName, locationId: dropoffID, latLng: { latitude: dropoffLatitude, longitude: dropoffLongitude } } = dropoffLocation;
 
-  //routeMap(pickupLatitude, pickupLongitude, dropoffLatitude, dropoffLongitude);
+  routeMap(pickupLatitude, pickupLongitude, dropoffLatitude, dropoffLongitude);
 
   const dateTimeURL = encodeURIComponent(dateTime.substring(0, 16));
   const dateTimeUTC = new Date(dateTime);

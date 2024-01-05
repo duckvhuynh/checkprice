@@ -1,88 +1,28 @@
 const path = window.location.pathname.includes('multi') ? '../icon/' : 'icon/';
-// function initService(input, listId, inputId, iconId) {
-//   const displaySuggestions = function (predictions, status) {
-//     if (status != google.maps.places.PlacesServiceStatus.OK || !predictions) {
-//       alert(status);
-//       return;
-//     }
+let listItemTemplate = null;
+let spinner = null;
+let notificationCount = 0;
 
-//     const list = document.querySelector(listId);
-//     const input = document.querySelector(inputId);
 
-//     if (!list) {
-//         console.error(`Element with id "${listId}" not found`);
-//         return;
-//     }
-//     list.innerHTML = '';
+function swapInputs(input1, input2, icon1Selector, icon2Selector) {
+  const tempValue = input1.value;
+  const tempPlaceId = input1.getAttribute('data-placeid');
+  const tempIconSrc = document.getElementById(icon1Selector).src;
 
-//     const fragment = document.createDocumentFragment();
-    
-//     console.log(predictions);
-//     predictions.forEach(prediction => {
-//       const item = document.createElement('li');
-//       item.classList.add('list-item');
-    
-//       const mainText = document.createElement('span');
-//       mainText.classList.add('main-text');
-//       mainText.textContent = prediction.structured_formatting.main_text;
-    
-//       const secondaryText = document.createElement('span');
-//       secondaryText.classList.add('secondary-text');
-//       secondaryText.textContent = prediction.structured_formatting.secondary_text;
-    
-//       const icon = document.createElement('img');
-//       icon.src = prediction.icon ? `url(${prediction.icon})` : `${path}geo-pin.svg`;
-//       icon.alt = 'Location icon';
-//       icon.classList.add('location-icon');
-    
-//       const textContainer = document.createElement('div');
-//       textContainer.classList.add('text-container');
-//       textContainer.appendChild(mainText);
-//       textContainer.appendChild(secondaryText);
-    
-//       item.appendChild(icon);
-//       item.appendChild(textContainer);
-    
-//       item.dataset.description = prediction.structured_formatting.main_text;
-//       item.dataset.placeid = prediction.place_id;
-//       console.log(prediction.place_id);
-//       console.log(prediction.name);
-//       console.log(prediction.formatted_address);
-//       console.log(prediction.icon);
-//       // item.dataset.lat = prediction.lat;
-//       // item.dataset.lon = prediction.lon;
-    
-//       fragment.appendChild(item);
-//     });
+  input1.value = input2.value;
+  input1.setAttribute('data-placeid', input2.getAttribute('data-placeid'));
+  document.getElementById(icon1Selector).src = document.getElementById(icon2Selector).src;
 
-//     list.appendChild(fragment);
-//     list.style.display = 'block';
-
-//     list.addEventListener('click', function(event) {
-//         const item = event.target.closest('.list-item');
-//         if (item) {
-//         event.stopPropagation();
-//         const locationIcon = document.querySelector(iconId);
-//         locationIcon.src = item.querySelector('.location-icon').src;
-//         input.value = item.dataset.description;
-//         input.dataset.placeid = item.dataset.placeid;
-//         // input.dataset.lat = item.dataset.lat;
-//         // input.dataset.lon = item.dataset.lon;
-//         list.innerHTML = '';
-//         list.style.display = 'none';
-//         }
-//     });
-//   };
-
-//   const service = new google.maps.places.AutocompleteService();
-
-//   service.getPlacePredictions({ input: input }, displaySuggestions);
-// }
+  input2.value = tempValue;
+  input2.setAttribute('data-placeid', tempPlaceId);
+  document.getElementById(icon2Selector).src = tempIconSrc;
+}
 function search(input, iconId, listId, worker, pickupLocationId, destinationId) {
-  const locationIcon = document.querySelector(iconId);
-  const list = document.querySelector(listId);
-  const pickupLocation = document.querySelector(pickupLocationId).dataset.placeid ? document.querySelector(pickupLocationId) : document.querySelector(destinationId);
-  const data = {input: input, placeid: '', lat: 0, lon: 0};
+  const locationIcon = document.getElementById(iconId);
+  const list = document.getElementById(listId);
+  const pickupLocation = document.querySelector(
+    `#${pickupLocationId}, #${destinationId}`
+  );
 
   if (!input) {
     locationIcon.src = `${path}geo-pin.svg`;
@@ -92,74 +32,100 @@ function search(input, iconId, listId, worker, pickupLocationId, destinationId) 
     }
     return;
   }
-  data.placeid = pickupLocation.dataset.placeid ? pickupLocation.dataset.placeid : '';
-  data.lat = pickupLocation.dataset.lat ? pickupLocation.dataset.lat : 0;
-  data.lon = pickupLocation.dataset.lon ? pickupLocation.dataset.lon : 0;
+
+  const data = {
+    input,
+    placeid: pickupLocation?.dataset.placeid || '',
+    lat: parseFloat(pickupLocation?.dataset.lat) || 0,
+    lon: parseFloat(pickupLocation?.dataset.lon) || 0,
+  };
+
   worker.postMessage(data);
 }
 
+function getListItemTemplate() {
+  if (!listItemTemplate) {
+    const item = document.createElement('li');
+    item.classList.add('list-item');
+
+    const textContainer = document.createElement('div');
+    textContainer.classList.add('text-container');
+
+    const mainText = document.createElement('span');
+    mainText.classList.add('main-text');
+
+    const secondaryText = document.createElement('span');
+    secondaryText.classList.add('secondary-text');
+
+    const icon = document.createElement('img');
+    icon.alt = 'Location icon';
+    icon.classList.add('location-icon');
+
+    textContainer.appendChild(mainText);
+    textContainer.appendChild(secondaryText);
+
+    item.appendChild(icon);
+    item.appendChild(textContainer);
+
+    listItemTemplate = item;
+  }
+
+  return listItemTemplate.cloneNode(true);
+}
+
+function createListItem(prediction) {
+  const item = getListItemTemplate();
+
+  item.querySelector('.main-text').textContent = prediction.description;
+  item.querySelector('.secondary-text').textContent = prediction.terms[0].value;
+  item.querySelector('.location-icon').src = path + prediction['icon'];
+
+  item.dataset.description = prediction.description;
+  item.dataset.placeid = prediction.place_id;
+  item.dataset.lat = prediction.lat;
+  item.dataset.lon = prediction.lon;
+
+  return item;
+}
+
+function handleListClick(event, input, iconId) {
+  const item = event.target.closest('.list-item');
+  if (item) {
+    event.preventDefault();
+    event.stopPropagation();
+    const locationIcon = document.getElementById(iconId);
+    locationIcon.src = item.querySelector('.location-icon').src;
+    input.value = item.dataset.description;
+    input.dataset.placeid = item.dataset.placeid;
+    input.dataset.lat = item.dataset.lat;
+    input.dataset.lon = item.dataset.lon;
+    event.currentTarget.innerHTML = '';
+    event.currentTarget.style.display = 'none';
+  }
+}
+
 function updateList(predictions, listId, inputId, iconId) {
-  const list = document.querySelector(listId);
-  const input = document.querySelector(inputId);
+  const list = document.getElementById(listId);
+  const input = document.getElementById(inputId);
 
   if (!list) {
-      console.error(`Element with id "${listId}" not found`);
-      return;
+    console.error(`Element with id "${listId}" not found`);
+    return;
   }
+
   list.innerHTML = '';
 
   const fragment = document.createDocumentFragment();
 
-  predictions.forEach(prediction => {
-    const item = document.createElement('li');
-    item.classList.add('list-item');
-  
-    const mainText = document.createElement('span');
-    mainText.classList.add('main-text');
-    mainText.textContent = prediction.description;
-  
-    const secondaryText = document.createElement('span');
-    secondaryText.classList.add('secondary-text');
-    secondaryText.textContent = `${prediction.terms[0].value}`;
-  
-    const icon = document.createElement('img');
-    icon.src = `${path}${prediction['icon']}`;
-    icon.alt = 'Location icon';
-    icon.classList.add('location-icon');
-  
-    const textContainer = document.createElement('div');
-    textContainer.classList.add('text-container');
-    textContainer.appendChild(mainText);
-    textContainer.appendChild(secondaryText);
-  
-    item.appendChild(icon);
-    item.appendChild(textContainer);
-  
-    item.dataset.description = prediction.description;
-    item.dataset.placeid = prediction.place_id;
-    item.dataset.lat = prediction.lat;
-    item.dataset.lon = prediction.lon;
-  
+  predictions.forEach((prediction) => {
+    const item = createListItem(prediction);
     fragment.appendChild(item);
   });
 
   list.appendChild(fragment);
   list.style.display = 'block';
 
-  list.addEventListener('click', function(event) {
-      const item = event.target.closest('.list-item');
-      if (item) {
-      event.stopPropagation();
-      const locationIcon = document.querySelector(iconId);
-      locationIcon.src = item.querySelector('.location-icon').src;
-      input.value = item.dataset.description;
-      input.dataset.placeid = item.dataset.placeid;
-      input.dataset.lat = item.dataset.lat;
-      input.dataset.lon = item.dataset.lon;
-      list.innerHTML = '';
-      list.style.display = 'none';
-      }
-  });
+  list.addEventListener('click', (event) => handleListClick(event, input, iconId));
 }
 function generateDynamicLinks(pickup, destination, date, time, passenger) {
   const baseURL = "https://taxi.booking.com/search-results-mfe/rates?format=envelope";
@@ -193,24 +159,28 @@ function generateDynamicLinks(pickup, destination, date, time, passenger) {
   return [generateLink(pickup, destination)];
 }
   
-function showLoadingSpinner() {
-    const submitButton = document.querySelector('#submit-button');
-    const spinner = document.createElement("div");
+function getSpinner() {
+  if (!spinner) {
+    spinner = document.createElement("div");
     spinner.classList.add("loader");
-    submitButton.textContent = '';
-    if (!submitButton.contains(spinner)) {
-    submitButton.appendChild(spinner);
-    }
+  }
+  return spinner;
+}
+
+function showLoadingSpinner() {
+  const submitButton = document.querySelector('#submit-button');
+  submitButton.textContent = '';
+  if (!submitButton.contains(getSpinner())) {
+    submitButton.appendChild(getSpinner());
+  }
 }
 
 function hideLoadingSpinner() {
-    const submitButton = document.querySelector('#submit-button');
-    const spinner = document.createElement("div");
-    spinner.classList.add("loader");
-    submitButton.textContent = 'Search';
-    if (submitButton.contains(spinner)) {
-        submitButton.removeChild(spinner);
-    }
+  const submitButton = document.querySelector('#submit-button');
+  submitButton.textContent = 'Search';
+  if (submitButton.contains(getSpinner())) {
+    submitButton.removeChild(getSpinner());
+  }
 }
 
 function setupWorker(worker, listSelector, inputSelector, iconSelector) {
@@ -336,15 +306,24 @@ function smoothScroll(target, duration) {
 
 function showNotification(message, duration, type) {
   const notification = document.createElement('div');
-  notification.classList.add(type? type : 'notification');
+  notification.classList.add(type ? type : 'notification');
   notification.innerText = message;
   notification.style.top = `${notificationCount * 40}px`; 
   document.querySelector('#notification-container').appendChild(notification);
   notificationCount++;
+
   setTimeout(() => {
-    notification.remove();
-    notificationCount--;
-  }, duration? duration : 1500);
+    notification.classList.add('show');
+  }, 0);
+
+  setTimeout(() => {
+    notification.classList.remove('show');
+
+    setTimeout(() => {
+      notification.remove();
+      notificationCount--;
+    }, 500);
+  }, duration ? duration : 1500);
 }
 function showWarning(message, duration) {
   showNotification(message, duration? duration : 1500, 'warning');
