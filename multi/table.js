@@ -1,5 +1,4 @@
 let copyData = [];
-let notificationCount = 0;
 
 document.addEventListener("DOMContentLoaded", function() {
   const carDescriptionHeader = document.querySelector("#data-table-multi th:nth-child(2)");

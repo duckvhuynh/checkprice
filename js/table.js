@@ -173,26 +173,26 @@ function clearAll() {
 }
 
 function showRoute() {
-    document.querySelector("#data-table-route").style.display = "block";
+    document.getElementById("data-table-route").style.display = "block";
 }
 function hideRoute() {
-    document.querySelector("#data-table-route").style.display = "none";
+    document.getElementById("data-table-route").style.display = "none";
 }
 
 function showSixtURL(){
-    document.querySelector("#sixt-container").style.display = "block";
+    document.getElementById("sixt-container").style.display = "block";
 }
 
 function hideSixtURL(){
-    document.querySelector("#sixt-container").style.display = "none";
+    document.getElementById("sixt-container").style.display = "none";
 }
 
 function hideInstructions() {
-    document.querySelector('#placeholder-text').style.display = 'none';
+    document.getElementById('placeholder-text').style.display = 'none';
 }
 
 function showInstructions(text) {
-    const intructions = document.querySelector('#placeholder-text');
+    const intructions = document.getElementById('placeholder-text');
     intructions.textContent = text;
     intructions.style.display = 'block';
 }
@@ -202,29 +202,36 @@ function showDefaultInstructions() {
 }
 
 function showElifeLimo() {
-    document.querySelector('#elifelimo-container').style.display = 'block';
+    document.getElementById('elifelimo-container').style.display = 'block';
 }
 function hideElifeLimo() {
-    document.querySelector('#elifelimo-container').style.display = 'none';
+    document.getElementById('elifelimo-container').style.display = 'none';
 }
 function showMyTransfers() {
-    document.querySelector('#mytransfers-container').style.display = 'block';
+    document.getElementById('mytransfers-container').style.display = 'block';
 }
 function hideMyTransfers() {
-    document.querySelector('#mytransfers-container').style.display = 'none';
+    document.getElementById('mytransfers-container').style.display = 'none';
 }
 function showJayride() {
-    document.querySelector('#jayride-container').style.display = 'block';
+    document.getElementById('jayride-container').style.display = 'block';
 }
 function hideJayride() {
-    document.querySelector('#jayride-container').style.display = 'none';
+    document.getElementById('jayride-container').style.display = 'none';
 }
 
 function showBooking() {
-    document.querySelector('#booking-container').style.display = 'block';
+    document.getElementById('booking-container').style.display = 'block';
 }
 function hideBooking() {
-    document.querySelector('#booking-container').style.display = 'none';
+    document.getElementById('booking-container').style.display = 'none';
+}
+
+function showTaxi2Airport() {
+    document.getElementById('taxi2airport-container').style.display = 'block';
+}
+function hideTaxi2Airport() {
+    document.getElementById('taxi2airport-container').style.display = 'none';
 }
 
 function hideAllTables() {
@@ -234,6 +241,7 @@ function hideAllTables() {
     hideMyTransfers();
     hideJayride();
     hideBooking();
+    hideTaxi2Airport();
 }
 
 function showAllTables() {
@@ -243,4 +251,5 @@ function showAllTables() {
     showMyTransfers();
     showJayride();
     showBooking();
+    showTaxi2Airport();
 }

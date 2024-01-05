@@ -205,6 +205,18 @@ const carDescriptionOrder = [
   'Electric Standard',
   'Electric Luxury'
 ];
+const carDescriptionOrderTaxi2Airport = [
+  'SEDAN',
+  'VAN',
+  'MINIBUS',
+  'MINIVAN',
+  'EXCLUSIVE_MINIVAN',
+  'BUSINESS_SEDAN',
+  'HIGH_END_ELECTRIC_CAR',
+  'SUV',
+  'BUS',
+  'COACH'
+];
 const carDescriptionOrderElifeLimo = [
   'Sedan',
   'MPV-4',
@@ -227,6 +239,10 @@ const carOrderIndexes = carDescriptionOrder.reduce((acc, description, index) => 
   acc[description] = index;
   return acc;
 }, {});
+const carOrderIndexesTaxi2Airport = carDescriptionOrderTaxi2Airport.reduce((acc, description, index) => {
+  acc[description] = index;
+  return acc;
+}, {});
 const carOrderIndexesJayRide = carDescriptionOrderJayRide.reduce((acc, description, index) => {
   acc[description] = index;
   return acc;
@@ -246,6 +262,16 @@ function sortCarDecription(websiteData) {
       if (bOrderIndex === undefined) return -1;
       return aOrderIndex - bOrderIndex;
     });
+  });
+}
+function sortQuotesByOrder(quotes) {
+  return quotes.sort((a, b) => {
+    const aOrderIndex = carOrderIndexesTaxi2Airport[a.vehicleCategory];
+    const bOrderIndex = carOrderIndexesTaxi2Airport[b.vehicleCategory];
+    if (aOrderIndex === undefined && bOrderIndex === undefined) return 0;
+    if (aOrderIndex === undefined) return 1;
+    if (bOrderIndex === undefined) return -1;
+    return aOrderIndex - bOrderIndex;
   });
 }
 function sortDescriptionElifeLimo(vehicleClasses) {
