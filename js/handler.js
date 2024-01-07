@@ -2,6 +2,219 @@ const path = window.location.pathname.includes('multi') ? '../icon/' : 'icon/';
 let listItemTemplate = null;
 let spinner = null;
 let notificationCount = 0;
+const carDescriptionOrder = [
+  'Standard',
+  'People Carrier',
+  'Minibus',
+  'Large People Carrier',
+  'Executive People Carrier',
+  'Luxury',
+  'Executive',
+  'Electric Standard',
+  'Electric Luxury'
+];
+const carDescriptionOrderTaxi2Airport = [
+  'SEDAN',
+  'VAN',
+  'MINIBUS',
+  'MINIVAN',
+  'EXCLUSIVE_MINIVAN',
+  'BUSINESS_SEDAN',
+  'HIGH_END_ELECTRIC_CAR',
+  'SUV',
+  'BUS',
+  'COACH'
+];
+const carDescriptionOrderElifeLimo = [
+  'Sedan',
+  'MPV-4',
+  'Minibus-8',
+  'MPV-5',
+  'Business MPV-5',
+  'First Class',
+  'Business Sedan'
+];
+
+const carDescriptionOrderJayRide = [
+  'sedan',
+  'suv',
+  'van',
+  'bus'
+];
+
+
+const carOrderIndexes = carDescriptionOrder.reduce((acc, description, index) => {
+  acc[description] = index;
+  return acc;
+}, {});
+const carOrderIndexesTaxi2Airport = carDescriptionOrderTaxi2Airport.reduce((acc, description, index) => {
+  acc[description] = index;
+  return acc;
+}, {});
+const carOrderIndexesJayRide = carDescriptionOrderJayRide.reduce((acc, description, index) => {
+  acc[description] = index;
+  return acc;
+}, {});
+
+const carOrderIndexesElifeLimo = carDescriptionOrderElifeLimo.reduce((acc, description, index) => {
+  acc[description] = index;
+  return acc;
+}, {});
+
+function debounce(func, delay) {
+  let debounceTimer;
+  return function() {
+    const context = this;
+    const args = arguments;
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => func.apply(context, args), delay);
+  }
+}
+
+function implementFlatpickr() {
+  function createTodayButton(instance) {
+    const todayButton = document.createElement('button');
+    todayButton.textContent = 'Today';
+    todayButton.className = 'flatpickr-today-button';
+    todayButton.type = 'button';
+    todayButton.addEventListener('click', () => {
+      const selectedTime = instance.selectedDates[0];
+      const hours = selectedTime ? selectedTime.getHours() : 12;
+      const minutes = selectedTime ? selectedTime.getMinutes() : 0;
+      const newDate = new Date();
+      newDate.setHours(hours, minutes, 0, 0);
+      instance.setDate(newDate, false);
+    });
+    return todayButton;
+  }
+  
+  const oneWeekFromNow = new Date();
+  oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
+  oneWeekFromNow.setHours(12, 0, 0, 0);
+  
+  const fp = flatpickr("#date", {
+    allowInput: true,
+    enableTime: true,
+    dateFormat: "D j, M Y H:i",
+    minDate: "today",
+    defaultDate: oneWeekFromNow,
+    time_24hr: true,
+    onChange: (selectedDates, dateStr, instance) => {
+      if (selectedDates.length === 0) {
+        instance.setDate(instance.latestSelectedDateObj);
+      }
+    },
+    onReady: (selectedDates, dateStr, instance) => {
+      const todayButton = createTodayButton(instance);
+      instance.calendarContainer.appendChild(todayButton);
+    }
+  });
+  return fp;
+}
+function fetchWithHeadersAndPayload(url, headers, payload) {
+  return fetch(url, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(payload)
+  });
+}
+
+function filterQuotesByType(quotes, type) {
+  return quotes.filter(quote => quote.service_info.vehicle_type === type);
+}
+
+function createQuoteRow(dataTable, quoteGroup, index) {
+  const row = dataTable.insertRow();
+  displayValue(row, index + 1);
+
+  ['SEDAN', 'SUV', 'VAN', 'BUS'].forEach((type, typeIndex) => {
+    const quote = quoteGroup[type];
+    addSupplierAndPriceCells(row, quote, typeIndex);
+  });
+}
+
+function addSupplierAndPriceCells(row, quote, typeIndex) {
+  const supplierCell = row.insertCell(1 + typeIndex * 2);
+  const priceCell = row.insertCell(2 + typeIndex * 2);
+
+  if (quote) {
+    const { name: supplierName } = quote.service_info.supplier;
+    const price = (quote.fare.price / 1.44).toFixed(2);
+    displayValue(supplierCell, supplierName, supplierName === "MyTravelThru" ? "is-mtt" : "");
+    displayValue(priceCell, price);
+  } else {
+    displayValue(supplierCell, '-');
+    displayValue(priceCell, '-');
+  }
+}
+
+function createVehicleRow(dataTable, sortedQuotes, type) {
+  const row = dataTable.insertRow();
+  displayValue(row, type);
+
+  for (let index = 0; index < 3; index++) {
+    const quoteGroup = sortedQuotes[index] || {};
+    const quote = quoteGroup[type];
+    addSupplierAndPriceCells(row, quote, index);
+  }
+}
+function sortAndCategorizeQuotes(quotes) {
+  const sedans = [];
+  const suvs = [];
+  const vans = [];
+  const buses = [];
+
+  quotes.forEach(quote => {
+    switch (quote.service_info.vehicle_type.toLowerCase()) {
+      case 'sedan':
+        sedans.push(quote);
+        break;
+      case 'suv':
+        suvs.push(quote);
+        break;
+      case 'van':
+        vans.push(quote);
+        break;
+      case 'bus':
+        buses.push(quote);
+        break;
+      default:
+        break;
+    }
+  });
+
+  sedans.sort((a, b) => a.fare.price - b.fare.price);
+  suvs.sort((a, b) => a.fare.price - b.fare.price);
+  vans.sort((a, b) => a.fare.price - b.fare.price);
+  buses.sort((a, b) => a.fare.price - b.fare.price);
+
+  const sortedQuotes = [];
+  const maxLength = Math.max(sedans.length, suvs.length, vans.length, buses.length);
+  for (let i = 0; i < maxLength; i++) {
+    sortedQuotes.push({
+      SEDAN: sedans[i] || null,
+      SUV: suvs[i] || null,
+      VAN: vans[i] || null,
+      BUS: buses[i] || null,
+    });
+  }
+
+  return sortedQuotes;
+}
+function isTableRow(element) {
+  return element instanceof HTMLTableRowElement;
+}
+
+function displayValue(rowOrCell, textContent, cssClass) {
+  if (isTableRow(rowOrCell)) {
+    rowOrCell = rowOrCell.insertCell();
+  }
+  rowOrCell.textContent = textContent;
+  if (cssClass) {
+    rowOrCell.classList.add(cssClass);
+  }
+  return rowOrCell;
+}
 
 
 function swapInputs(input1, input2, icon1Selector, icon2Selector) {
@@ -194,95 +407,29 @@ function setupWorker(worker, listSelector, inputSelector, iconSelector) {
     }, false);
 }
 
-const carDescriptionOrder = [
-  'Standard',
-  'People Carrier',
-  'Minibus',
-  'Large People Carrier',
-  'Executive People Carrier',
-  'Luxury',
-  'Executive',
-  'Electric Standard',
-  'Electric Luxury'
-];
-const carDescriptionOrderTaxi2Airport = [
-  'SEDAN',
-  'VAN',
-  'MINIBUS',
-  'MINIVAN',
-  'EXCLUSIVE_MINIVAN',
-  'BUSINESS_SEDAN',
-  'HIGH_END_ELECTRIC_CAR',
-  'SUV',
-  'BUS',
-  'COACH'
-];
-const carDescriptionOrderElifeLimo = [
-  'Sedan',
-  'MPV-4',
-  'Minibus-8',
-  'MPV-5',
-  'Business MPV-5',
-  'First Class',
-  'Business Sedan'
-];
-
-const carDescriptionOrderJayRide = [
-  'sedan',
-  'suv',
-  'van',
-  'bus'
-];
-
-
-const carOrderIndexes = carDescriptionOrder.reduce((acc, description, index) => {
-  acc[description] = index;
-  return acc;
-}, {});
-const carOrderIndexesTaxi2Airport = carDescriptionOrderTaxi2Airport.reduce((acc, description, index) => {
-  acc[description] = index;
-  return acc;
-}, {});
-const carOrderIndexesJayRide = carDescriptionOrderJayRide.reduce((acc, description, index) => {
-  acc[description] = index;
-  return acc;
-}, {});
-
-const carOrderIndexesElifeLimo = carDescriptionOrderElifeLimo.reduce((acc, description, index) => {
-  acc[description] = index;
-  return acc;
-}, {});
-function sortCarDecription(websiteData) {
-  websiteData.journeys.forEach((journey) => {
-    journey.legs[0].results.sort((a, b) => {
-      const aOrderIndex = carOrderIndexes[a.carDetails.description];
-      const bOrderIndex = carOrderIndexes[b.carDetails.description];
-      if (aOrderIndex === undefined && bOrderIndex === undefined) return 0;
-      if (aOrderIndex === undefined) return 1;
-      if (bOrderIndex === undefined) return -1;
-      return aOrderIndex - bOrderIndex;
-    });
-  });
-}
-function sortQuotesByOrder(quotes) {
-  return quotes.sort((a, b) => {
-    const aOrderIndex = carOrderIndexesTaxi2Airport[a.vehicleCategory];
-    const bOrderIndex = carOrderIndexesTaxi2Airport[b.vehicleCategory];
+function sortItemsByOrder(items, orderIndexes, itemKey) {
+  return items.sort((a, b) => {
+    const aOrderIndex = orderIndexes[a[itemKey]];
+    const bOrderIndex = orderIndexes[b[itemKey]];
     if (aOrderIndex === undefined && bOrderIndex === undefined) return 0;
     if (aOrderIndex === undefined) return 1;
     if (bOrderIndex === undefined) return -1;
     return aOrderIndex - bOrderIndex;
   });
 }
-function sortDescriptionElifeLimo(vehicleClasses) {
-  return vehicleClasses.sort((a, b) => {
-      const aOrderIndex = carOrderIndexesElifeLimo[a.vehicle_class];
-      const bOrderIndex = carOrderIndexesElifeLimo[b.vehicle_class];
-      if (aOrderIndex === undefined && bOrderIndex === undefined) return 0;
-      if (aOrderIndex === undefined) return 1;
-      if (bOrderIndex === undefined) return -1;
-      return aOrderIndex - bOrderIndex;
+
+function sortCarDecription(websiteData) {
+  websiteData.journeys.forEach((journey) => {
+    journey.legs[0].results = sortItemsByOrder(journey.legs[0].results, carOrderIndexes, 'description');
   });
+}
+
+function sortQuotesByOrder(quotes) {
+  return sortItemsByOrder(quotes, carOrderIndexesTaxi2Airport, 'vehicleCategory');
+}
+
+function sortDescriptionElifeLimo(vehicleClasses) {
+  return sortItemsByOrder(vehicleClasses, carOrderIndexesElifeLimo, 'vehicle_class');
 }
 
 function sortDescriptionJayride(quotes) {

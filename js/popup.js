@@ -148,6 +148,7 @@ const destinationWorker = new Worker('worker/locationWorker.js');
   document.addEventListener("DOMContentLoaded", function() {
     //initAutocomplete();
     initMap(16.0555992, 108.2371671, 14);
+    //drawCircle(16.0555992, 108.2371671, 1000);
     //drawCircleAndTriangle(15.887746792486352, 107.95146650372304, 1000);
     document.getElementById('scrollToTop').addEventListener('click', function() {
       smoothScroll('top', 1000);
@@ -201,63 +202,7 @@ const destinationWorker = new Worker('worker/locationWorker.js');
         clearAndHideList(document.getElementById('destination-list'));
       }
     });
-    const oneWeekFromNow = new Date();
-    oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
-    oneWeekFromNow.setHours(12, 0, 0, 0);
-    const fp = flatpickr("#date", {
-      allowInput: true,
-      enableTime: true,
-      dateFormat: "D j, M Y H:i",
-      minDate: "today",
-      defaultDate: oneWeekFromNow,
-      time_24hr: true,
-      onChange: function(selectedDates, dateStr, instance) {
-        if (selectedDates.length === 0) {
-          instance.setDate(instance.latestSelectedDateObj);
-        }
-      },
-      onReady: function(selectedDates, dateStr, instance) {
-        const todayButton = document.createElement('button');
-        todayButton.textContent = 'Today';
-        todayButton.className = 'flatpickr-today-button';
-        todayButton.type = 'button';
-        todayButton.addEventListener('click', function() {
-          const selectedTime = instance.selectedDates[0];
-          
-          const hours = selectedTime ? selectedTime.getHours() : 12;
-          const minutes = selectedTime ? selectedTime.getMinutes() : 0;
-          
-          const newDate = new Date();
-          newDate.setHours(hours, minutes, 0, 0);
-
-          instance.setDate(newDate, false);
-        });
-        instance.calendarContainer.appendChild(todayButton);
-      }
-    });
-
-    // const inputs = [
-    //   {
-    //     id: '#pickup-location',
-    //     iconSelector: '#pickup-icon',
-    //     listSelector: '#location-list'
-    //   },
-    //   {
-    //     id: '#destination',
-    //     iconSelector: '#destination-icon',
-    //     listSelector: '#destination-list'
-    //   }
-    // ];
-
-    function debounce(func, delay) {
-      let debounceTimer;
-      return function() {
-        const context = this;
-        const args = arguments;
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => func.apply(context, args), delay);
-      }
-    }
+    const fp = implementFlatpickr();
 
       const inputs = [
       {
@@ -340,10 +285,6 @@ const destinationWorker = new Worker('worker/locationWorker.js');
         submitButton.click();
       }
     });
-    document.getElementById('multi-button').addEventListener('click', function(event) {
-      event.preventDefault();
-      window.open('multi', '_self');
-    });
     submitButton.addEventListener('click', function(event) {
       event.preventDefault();
     
@@ -393,7 +334,9 @@ const destinationWorker = new Worker('worker/locationWorker.js');
       }
     
       hideAllTables();
-      showInstructions('Loading...');
+      hideInstructions();
+      showLoadingSkeleton();
+      //showInstructions('Loading...');
       fetchDataWorker.postMessage(generateDynamicLinks(pickupPlaceId, destinationPlaceId, date, time, passenger.value));
     });
   });

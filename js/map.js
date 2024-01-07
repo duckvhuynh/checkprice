@@ -26,7 +26,6 @@ function initMap(lat, lng, zoom) {
     }
 }
 
-// Update the route
 function updateRoute(fromLat, fromLng, toLat, toLng) {
     if (!map) {
         map = L.map('map').setView([fromLat, fromLng], 10);
@@ -35,7 +34,6 @@ function updateRoute(fromLat, fromLng, toLat, toLng) {
     routeMap(fromLat, fromLng, toLat, toLng);
 }
 
-// Route the map
 function routeMap(fromLat, fromLng, toLat, toLng) {
     var from = L.latLng(fromLat, fromLng);
     var to = L.latLng(toLat, toLng);
@@ -78,7 +76,6 @@ function routeMap(fromLat, fromLng, toLat, toLng) {
     }).addTo(map);
 }
 
-// Draw a circle on the map
 function drawCircle(lat, lng, radius) {
     if (!map) {
         map = L.map('map').setView([lat, lng], 10);
@@ -93,18 +90,15 @@ function drawCircle(lat, lng, radius) {
     }).addTo(map);
 }
 
-// Helper function to add tile layer to the map
 function addTileLayerToMap() {
     L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=07420e59-d599-4f1f-b5ce-3d843b0c8b40', {}).addTo(map);
 }
 
-// Helper function to add a marker to the map
 function addMarkerToMap(lat, lng, iconUrl) {
     var customIcon = L.icon({ iconUrl: iconUrl, iconSize: [24, 24], iconAnchor: [12, 24]});
     L.marker([lat, lng], {icon: customIcon}).addTo(map).openPopup();
 }
 
-// Helper function to create an icon
 function createIcon(elementId) {
     var iconUrl = document.querySelector(elementId).src;
     return L.icon({ iconUrl: iconUrl, iconSize: [24, 24], iconAnchor: [12, 24] });

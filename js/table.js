@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const priceHeaderElife = document.querySelector("#data-table-elifelimo th:nth-child(4)");
   const carDescriptionHeaderElife = document.querySelector("#data-table-elifelimo th:nth-child(3)");
   const cellDropoff = document.querySelector("#data-table-route th:nth-child(2)");
-  const cellDistance = document.querySelector("#data-table-route th:nth-child(5)");
+  const cellDistance = document.querySelector("#data-table-route th:nth-child(4)");
 
   addCopyIconToCell(cellDropoff);
   addCopyIconToCell(cellDistance);
@@ -149,15 +149,6 @@ function addCopyIconToCell(cell) {
 }
 
 
-
-function showTableHeader() {
-    document.querySelector("#data-table thead").style.display = "table-header-group";
-    document.querySelector("#data-table-route thead").style.display = "table-header-group";
-    document.querySelector("#data-table-elifelimo thead").style.display = "table-header-group";
-    document.querySelector("#data-table-mytransfers thead").style.display = "table-header-group";
-    document.querySelector("#data-table-jayride thead").style.display = "table-header-group";
-}
-
 function clearTable(tableId) {
     const tableBody = document.querySelector(tableId + ' tbody');
     if (tableBody) {
@@ -172,12 +163,6 @@ function clearAll() {
     clearTable("#data-table-route");
 }
 
-function showRoute() {
-    document.getElementById("data-table-route").style.display = "block";
-}
-function hideRoute() {
-    document.getElementById("data-table-route").style.display = "none";
-}
 
 function showSixtURL(){
     document.getElementById("sixt-container").style.display = "block";
@@ -195,6 +180,13 @@ function showInstructions(text) {
     const intructions = document.getElementById('placeholder-text');
     intructions.textContent = text;
     intructions.style.display = 'block';
+}
+function showLoadingSkeleton() {
+  document.getElementById('loading-skeleton').classList.remove('hidden');
+}
+
+function hideLoadingSkeleton() {
+  document.getElementById('loading-skeleton').classList.add('hidden');
 }
 
 function showDefaultInstructions() {
@@ -218,6 +210,13 @@ function showJayride() {
 }
 function hideJayride() {
     document.getElementById('jayride-container').style.display = 'none';
+}
+
+function showRoute() {
+  document.getElementById('route-container').style.display = 'block';
+}
+function hideRoute() {
+  document.getElementById('route-container').style.display = 'none';
 }
 
 function showBooking() {

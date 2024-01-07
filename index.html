@@ -21,15 +21,16 @@
   <script type="text/javascript" src="js/map.js"></script>
 </head>
 <body>
+  <div id="top-container">
+    <nav class="menu-bar">
+      <ul>
+        <li><a href="multi" class="menu-icon"><img src="icon/search.svg" class="icon">Multi-Search</a></li>
+      </ul>
+    </nav>
+  </div>
   <div id="map"></div>
   <div id="notification-container"></div>
-  <div id="top-container"></div>
   <form id="search-form">
-    <div class="button-container">
-      <button type="multi" id="multi-button" title="Switch to Multi search">
-        &#8667;
-      </button>
-    </div>
     <div class="input-group">
       <label for="pickup-location">Pick-up location</label>
       <div class="autocomplete">
@@ -84,18 +85,38 @@
     </div>
   </form>
   <p id="placeholder-text">🛈 Please enter a route</p>
-  <table id="data-table-route">
-    <thead>
-      <tr>
-        <th>FROM</th>
-        <th>TO</th>
-        <th>DATE & TIME</th>
-        <th>CURRENCY</th>
-        <th>DISTANCE & TIME</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <div id="loading-skeleton" class="hidden">
+    <div class="skeleton-table">
+      <div class="skeleton-row">
+        <div class="skeleton-cell header size-1"></div>
+        <div class="skeleton-cell header size-1"></div>
+        <div class="skeleton-cell header size-2"></div>
+        <div class="skeleton-cell header size-2"></div>
+        <div class="skeleton-cell header size-2"></div>
+      </div>
+      <div class="skeleton-row">
+        <div class="skeleton-cell row size-1"></div>
+        <div class="skeleton-cell row size-1"></div>
+        <div class="skeleton-cell row size-2"></div>
+        <div class="skeleton-cell row size-2"></div>
+        <div class="skeleton-cell row size-2"></div>
+      </div>
+    </div>
+  </div>
+  <div id="route-container">
+    <table id="data-table-route">
+      <thead>
+        <tr>
+          <th>FROM</th>
+          <th>TO</th>
+          <th>DATE & TIME</th>
+          <th>DISTANCE</th>
+          <th>CURRENCY</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
   <div id="booking-container">
     <p id="booking-table-name" class="table-name">Booking.com</p>
     <table id="data-table">
@@ -206,7 +227,7 @@
   <button id="scrollToBottom">&darr;</button>
   <div class="spacer"></div>
   <footer>
-    <p>&copy 2023 duckvhuynh for education purpose only.</p>
+    <p>&copy 2024 duckvhuynh for education purpose only.</p>
   </footer>
 </body>
 </html>

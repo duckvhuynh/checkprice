@@ -182,49 +182,9 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     });
 
-    const oneWeekFromNow = new Date();
-    oneWeekFromNow.setDate(oneWeekFromNow.getDate() + 7);
-    oneWeekFromNow.setHours(12, 0, 0, 0);
-    const fp = flatpickr("#date", {
-      allowInput: true,
-      enableTime: true,
-      dateFormat: "D j, M Y H:i",
-      minDate: "today",
-      defaultDate: oneWeekFromNow,
-      time_24hr: true,
-      onChange: function(selectedDates, dateStr, instance) {
-        if (selectedDates.length === 0) {
-          instance.setDate(instance.latestSelectedDateObj);
-        }
-      },
-      onReady: function(selectedDates, dateStr, instance) {
-        const todayButton = document.createElement('button');
-        todayButton.textContent = 'Today';
-        todayButton.className = 'flatpickr-today-button';
-        todayButton.type = 'button';
-        todayButton.addEventListener('click', function() {
-          const selectedTime = instance.selectedDates[0];
-          
-          const hours = selectedTime ? selectedTime.getHours() : 12;
-          const minutes = selectedTime ? selectedTime.getMinutes() : 0;
-          
-          const newDate = new Date();
-          newDate.setHours(hours, minutes, 0, 0);
+    const fp = implementFlatpickr();
 
-          instance.setDate(newDate, false);
-        });
-        instance.calendarContainer.appendChild(todayButton);
-      }
-    });
-    function debounce(func, delay) {
-      let debounceTimer;
-      return function() {
-        const context = this;
-        const args = arguments;
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => func.apply(context, args), delay);
-      }
-    }
+    
 
     const inputs = [
       { id: 'pickup-location-one', event: 'input', handler: (input) => search(input, 'pickup-icon-one', 'location-list-one', locationOneWorker, 'pickup-location-two', 'destination-two'), listSelector: 'location-list-one' },
@@ -275,11 +235,6 @@ document.addEventListener('DOMContentLoaded', function() {
         event.preventDefault();
         submitButton.click();
       }
-    });
-
-    document.getElementById('multi-button').addEventListener('click', function(event) {
-      event.preventDefault();
-      window.open('..', '_self');
     });
 
     submitButton.addEventListener('click', function(event) {

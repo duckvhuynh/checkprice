@@ -14,15 +14,17 @@
   <script type="text/javascript" src="multi.js"></script>
 </head>
 <body>
+  <div id="top-container">
+    <nav class="menu-bar">
+      <ul>
+        <li><a href=".." class="menu-icon"><img src="../icon/search.svg" class="icon">Single-Search</a></li>
+      </ul>
+    </nav>
+  </div>
   <div class="spacer"></div>
   <div id="notification-container"></div>
   <div id="top-container"></div>
   <form id="search-form">
-    <div class="button-container">
-      <button type="multi" id="multi-button" title="Switch to Single search">
-        &#8666;
-      </button>
-    </div>
     <div class="input-group">
       <div class="locations-container">
         <label for="pickup-location">Pick-up location</label>
@@ -117,18 +119,6 @@
     </div>
   </form>
   <p id="placeholder-text">🛈 Please fill all pickup and dropoff locations</p>
-  <table id="data-table-route">
-    <thead>
-      <tr>
-        <th>FROM</th>
-        <th>TO</th>
-        <th>DATE & TIME</th>
-        <th>CURRENCY</th>
-        <th>DISTANCE & TIME</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
   <div id="booking-container-multi">
     <div id="multi-container-header">
       <button id="copy-multi">Copy prices</button>
@@ -151,7 +141,7 @@
   </div>
   <div class="spacer"></div>
   <footer>
-    <p>&copy 2023 duckvhuynh for education purpose only.</p>
+    <p>&copy 2024 duckvhuynh for education purpose only.</p>
   </footer>
 </body>
 </html>
