@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Check Price | Get ID</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" type="text/css" href="../style.css">
+  <link rel="stylesheet" type="text/css" href="getid.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+  <link rel="shortcut icon" type="image/png" href="../icon/icon16.png">
+  <script type="text/javascript" src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script type="text/javascript" src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script type="text/javascript" src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+  <script type="text/javascript" src="../js/map.js"></script>
+  <script type="text/javascript" src="../js/table.js"></script>
+  <script type="text/javascript" src="../js/handler.js"></script>
+  <script type="text/javascript" src="getid.js"></script>
+</head>
+<body>
+  <div id="top-container">
+    <nav class="menu-bar">
+      <ul>
+        <li><a href=".." class="menu-icon"><img src="../icon/search.svg" class="icon">Single-Search</a></li>
+        <li><a href="../multi" class="menu-icon"><img src="../icon/search.svg" class="icon">Multi-Search</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div id="map"></div>
+  <form id="search-form" class="get-id">
+    <div class="input-group">
+      <label for="center-location">Center location</label>
+      <div class="autocomplete">
+        <div class="input-container">
+          <input type="text" id="center-location" name="center-location" placeholder="Center location" autocomplete="off" required>
+          <div class="icon-container">
+            <img id="center-icon" src="../icon/geo-pin.svg" alt="location icon">
+          </div>
+        </div>
+        <ul id="location-list"></ul>
+      </div>
+      <label for="radius">Radius</label>
+      <div class="normal">
+        <div class="input-container">
+          <input type="text" id="radius" name="radius" placeholder="Radius" autocomplete="off" required>
+          <div class="icon-container">
+            <img id="radius-icon" src="../icon/radius.svg" alt="radius icon">
+          </div>
+        </div>
+      </div>
+      <label for="points">Points</label>
+      <div class="normal">
+        <div class="input-container">
+          <input type="text" id="points" name="points" placeholder="Points" autocomplete="off" required value="3">
+          <div class="icon-container">
+            <img id="points-icon" src="../icon/points.svg" alt="points icon">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="button-container">
+      <button type="submit" id="getid-button" class="loading">
+        Get ID
+        <div id="submit-spinner" class="loader" style="display: none;"></div>
+      </button>
+    </div>
+  </form>
+  <div id="places-table-container">
+    <table id="places-table">
+      <thead>
+          <tr>
+              <th>Name</th>
+              <th>Place ID</th>
+              <th>Latitude</th>
+              <th>Longitude</th>
+          </tr>
+      </thead>
+      <tbody>
+        <td colspan="4" class="loader-cell"></td>
+      </tbody>
+    </table>
+  </div>
+  <div id="notification-container"></div>
+  <div class="spacer"></div>
+  <footer>
+    <p>&copy 2024 duckvhuynh for education purpose only.</p>
+  </footer>
+</body>
+</html>

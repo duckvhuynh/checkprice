@@ -1,4 +1,5 @@
-const path = window.location.pathname.includes('multi') ? '../icon/' : 'icon/';
+const sites = ['getid', 'multi'];
+const path = sites.some(site => window.location.pathname.includes(site)) ? '../icon/' : 'icon/';
 let listItemTemplate = null;
 let spinner = null;
 let notificationCount = 0;
@@ -60,7 +61,12 @@ const carOrderIndexesElifeLimo = carDescriptionOrderElifeLimo.reduce((acc, descr
   acc[description] = index;
   return acc;
 }, {});
-
+function clearAndHideList(list) {
+  if (list) {
+    list.innerHTML = '';
+    list.style.display = 'none';
+  }
+}
 function debounce(func, delay) {
   let debounceTimer;
   return function() {
@@ -301,7 +307,7 @@ function createListItem(prediction) {
   return item;
 }
 
-function handleListClick(event, input, iconId) {
+function handleListClick(event, input, iconId, isGetID = false) {
   const item = event.target.closest('.list-item');
   if (item) {
     event.preventDefault();
@@ -312,12 +318,25 @@ function handleListClick(event, input, iconId) {
     input.dataset.placeid = item.dataset.placeid;
     input.dataset.lat = item.dataset.lat;
     input.dataset.lon = item.dataset.lon;
+    
+    if (isGetID) centerMapAndAddMarker(item.dataset.lat, item.dataset.lon, locationIcon.src);
+
     event.currentTarget.innerHTML = '';
     event.currentTarget.style.display = 'none';
+
+    // Create and dispatch the custom event with lat and lon details
+    const placeSelectedEvent = new CustomEvent('placeSelected', {
+      detail: {
+        lat: item.dataset.lat,
+        lon: item.dataset.lon
+      }
+    });
+    input.dispatchEvent(placeSelectedEvent);
   }
 }
 
-function updateList(predictions, listId, inputId, iconId) {
+
+function updateList(predictions, listId, inputId, iconId, isGetID = false) {
   const list = document.getElementById(listId);
   const input = document.getElementById(inputId);
 
@@ -338,7 +357,7 @@ function updateList(predictions, listId, inputId, iconId) {
   list.appendChild(fragment);
   list.style.display = 'block';
 
-  list.addEventListener('click', (event) => handleListClick(event, input, iconId));
+  list.addEventListener('click', (event) => handleListClick(event, input, iconId, isGetID));
 }
 function generateDynamicLinks(pickup, destination, date, time, passenger) {
   const baseURL = "https://taxi.booking.com/search-results-mfe/rates?format=envelope";
@@ -379,28 +398,28 @@ function getSpinner() {
   }
   return spinner;
 }
-
-function showLoadingSpinner() {
-  const submitButton = document.querySelector('#submit-button');
-  submitButton.textContent = '';
-  if (!submitButton.contains(getSpinner())) {
-    submitButton.appendChild(getSpinner());
+function showLoadingSpinner(button) {
+  if (!button) button = document.querySelector('#submit-button');
+  button.textContent = '';
+  if (!button.contains(getSpinner())) {
+    button.appendChild(getSpinner());
   }
 }
 
-function hideLoadingSpinner() {
-  const submitButton = document.querySelector('#submit-button');
-  submitButton.textContent = 'Search';
-  if (submitButton.contains(getSpinner())) {
-    submitButton.removeChild(getSpinner());
+function hideLoadingSpinner(button, text) {
+  if (!button) button = document.querySelector('#submit-button');
+  if (!text) text = 'Search';
+  button.textContent = text;
+  if (button.contains(getSpinner())) {
+    button.removeChild(getSpinner());
   }
 }
 
-function setupWorker(worker, listSelector, inputSelector, iconSelector) {
+function setupWorker(worker, listSelector, inputSelector, iconSelector, isGetID = false) {
     worker.addEventListener('message', function(e) {
       const processedData = e.data;
       if (processedData.filter(Boolean).length > 0) {
-        updateList(processedData, listSelector, inputSelector, iconSelector);
+        updateList(processedData, listSelector, inputSelector, iconSelector, isGetID);
       } else {
         console.error('Predictions not found in response data');
       }

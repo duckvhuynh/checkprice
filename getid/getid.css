@@ -1,0 +1,100 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+body {
+    overflow-y: hidden; /* Hide vertical scrollbar */
+    overflow-x: hidden; /* Hide horizontal scrollbar */
+}
+
+#notification-container {
+    top: 20px;
+    z-index: 1000;
+}
+.notification, .warning {
+    margin-top: 110px;
+    left: 7px;
+}
+#places-table-container {
+    width: 470px;
+    position: absolute;
+    top: 49px;
+    right: 10px;
+    max-height: 88%;
+    overflow-y: auto;
+    overflow-x: auto;
+    z-index: 1000;
+}
+
+#places-table {
+    font-size: 10px;
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed; /* Add this line */
+}
+
+#places-table th:nth-child(1),
+#places-table td:nth-child(1) {
+    width: 10%; /* adjust as needed */
+}
+
+#places-table th:nth-child(2),
+#places-table td:nth-child(2) {
+    width: 35%; /* adjust as needed */
+}
+
+#places-table th:nth-child(3),
+#places-table td:nth-child(3) {
+    width: 10%; /* adjust as needed */
+}
+
+#places-table th:nth-child(4),
+#places-table td:nth-child(4) {
+    width: 10%; /* adjust as needed */
+}
+#places-table td {
+    word-wrap: break-word; /* Add this line */
+}
+#radius {
+    width: 80px;
+}
+#points {
+    width: 60px;
+}
+#map {
+    height: 100%;
+    width: 100%;
+    position: relative;
+}
+#search-form {
+    position: absolute;
+    top: 40px; /* adjust as needed */
+    left: 270px; /* adjust as needed */
+    transform: translateX(-50%);
+    z-index: 1000; /* Ensure the form is above the map */
+}
+#form-container {
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000; /* Ensure the form is above the map */
+}
+  
+#map-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Space between form elements */
+}
+#map {
+    border-radius: 0;
+}
+#top-container {
+    margin-bottom: 0;
+    z-index: 1001;
+}
+.spacer {
+    height: 20px; 
+}

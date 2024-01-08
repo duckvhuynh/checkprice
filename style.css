@@ -1,4 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500&display=swap');
+.leaflet-control-attribution.leaflet-control {
+  display: none;
+}
 #loading-skeleton {
   width: 920px;
 }
@@ -671,7 +674,7 @@ form {
   margin-bottom: -25px;
 }
 
-.autocomplete {
+.autocomplete, .normal {
   position: relative;
 }
 

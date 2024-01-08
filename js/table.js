@@ -1,57 +1,57 @@
-let copyData = [];
-let copyDataDropoff = "";
-let copyDataElife = [];
-let copyDataDistance = 0;
+// let copyData = [];
+// let copyDataDropoff = "";
+// let copyDataElife = [];
+// let copyDataDistance = 0;
 
-document.addEventListener("DOMContentLoaded", function() {
-  const priceHeader = document.querySelector("#data-table th:nth-child(4)");
-  const carDescriptionHeader = document.querySelector("#data-table th:nth-child(3)");
-  const priceHeaderElife = document.querySelector("#data-table-elifelimo th:nth-child(4)");
-  const carDescriptionHeaderElife = document.querySelector("#data-table-elifelimo th:nth-child(3)");
-  const cellDropoff = document.querySelector("#data-table-route th:nth-child(2)");
-  const cellDistance = document.querySelector("#data-table-route th:nth-child(4)");
+// document.addEventListener("DOMContentLoaded", function() {
+//   const priceHeader = document.querySelector("#data-table th:nth-child(4)");
+//   const carDescriptionHeader = document.querySelector("#data-table th:nth-child(3)");
+//   const priceHeaderElife = document.querySelector("#data-table-elifelimo th:nth-child(4)");
+//   const carDescriptionHeaderElife = document.querySelector("#data-table-elifelimo th:nth-child(3)");
+//   const cellDropoff = document.querySelector("#data-table-route th:nth-child(2)");
+//   const cellDistance = document.querySelector("#data-table-route th:nth-child(4)");
 
-  addCopyIconToCell(cellDropoff);
-  addCopyIconToCell(cellDistance);
-  [priceHeader, carDescriptionHeader].forEach(addCopyIconToCell);
-  [priceHeaderElife, carDescriptionHeaderElife].forEach(addCopyIconToCell);
+//   addCopyIconToCell(cellDropoff);
+//   addCopyIconToCell(cellDistance);
+//   [priceHeader, carDescriptionHeader].forEach(addCopyIconToCell);
+//   [priceHeaderElife, carDescriptionHeaderElife].forEach(addCopyIconToCell);
 
-  cellDropoff.style.cursor = "pointer";
-  cellDropoff.title = "Click to copy dropoff location";
-  cellDropoff.addEventListener("click", () => {
-    copyToClipboard(copyDataDropoff, "Copied dropoff location");
-  });
+//   cellDropoff.style.cursor = "pointer";
+//   cellDropoff.title = "Click to copy dropoff location";
+//   cellDropoff.addEventListener("click", () => {
+//     copyToClipboard(copyDataDropoff, "Copied dropoff location");
+//   });
 
-  cellDistance.style.cursor = "pointer";
-  cellDistance.title = "Click to copy distance";
-  cellDistance.addEventListener("click", () => {
-    copyToClipboard(copyDataDistance, "Copied distance");
-  });
+//   cellDistance.style.cursor = "pointer";
+//   cellDistance.title = "Click to copy distance";
+//   cellDistance.addEventListener("click", () => {
+//     copyToClipboard(copyDataDistance, "Copied distance");
+//   });
 
-  priceHeader.style.cursor = "pointer"; 
-  priceHeader.title = "Click to copy all prices"; 
-  priceHeader.addEventListener("click", () => {
-    copyToClipboard(copyData.map(data => data.price).join("\n"), "Copied all prices");
-  });
-  carDescriptionHeader.style.cursor = "pointer";
-  carDescriptionHeader.title = "Click to copy all car descriptions";
-  carDescriptionHeader.addEventListener("click", () => {
-    copyToClipboard(copyData.map(data => data.carDescription).join("\n"), "Copied all car descriptions");
-  });
+//   priceHeader.style.cursor = "pointer"; 
+//   priceHeader.title = "Click to copy all prices"; 
+//   priceHeader.addEventListener("click", () => {
+//     copyToClipboard(copyData.map(data => data.price).join("\n"), "Copied all prices");
+//   });
+//   carDescriptionHeader.style.cursor = "pointer";
+//   carDescriptionHeader.title = "Click to copy all car descriptions";
+//   carDescriptionHeader.addEventListener("click", () => {
+//     copyToClipboard(copyData.map(data => data.carDescription).join("\n"), "Copied all car descriptions");
+//   });
 
-  priceHeaderElife.style.cursor = "pointer";
-  priceHeaderElife.title = "Click to copy all prices";
-  priceHeaderElife.addEventListener("click", () => {
-    copyToClipboard(copyDataElife.map(data => data.price).join("\n"), "Copied all prices");
-  });
+//   priceHeaderElife.style.cursor = "pointer";
+//   priceHeaderElife.title = "Click to copy all prices";
+//   priceHeaderElife.addEventListener("click", () => {
+//     copyToClipboard(copyDataElife.map(data => data.price).join("\n"), "Copied all prices");
+//   });
 
-  carDescriptionHeaderElife.style.cursor = "pointer";
-  carDescriptionHeaderElife.title = "Click to copy all car descriptions";
-  carDescriptionHeaderElife.addEventListener("click", () => {
-    copyToClipboard(copyDataElife.map(data => data.carDescription).join("\n"), "Copied all car descriptions");
-  });
+//   carDescriptionHeaderElife.style.cursor = "pointer";
+//   carDescriptionHeaderElife.title = "Click to copy all car descriptions";
+//   carDescriptionHeaderElife.addEventListener("click", () => {
+//     copyToClipboard(copyDataElife.map(data => data.carDescription).join("\n"), "Copied all car descriptions");
+//   });
   
-});
+// });
 
 function updateCopyDataDistance() {
   copyDataDistance = 0;
@@ -133,7 +133,7 @@ function copyToClipboard(text, message) {
 
 function createCopyIcon() {
   const img = document.createElement('img');
-  img.src = 'icon/copy.svg';
+  img.src = `${path}copy.svg`;
   img.classList.add('copy-icon'); 
   return img;
 }
@@ -193,6 +193,12 @@ function showDefaultInstructions() {
   showInstructions('🛈 Please fill all pickup and dropoff locations');
 }
 
+function showPlaceIdTable() {
+    document.getElementById('places-table-container').style.display = 'block';
+}
+function hidePlaceIdTable() {
+    document.getElementById('places-table-container').style.display = 'none';
+}
 function showElifeLimo() {
     document.getElementById('elifelimo-container').style.display = 'block';
 }
