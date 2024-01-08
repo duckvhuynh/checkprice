@@ -14,7 +14,7 @@ body {
 }
 .notification, .warning {
     margin-top: 110px;
-    left: 7px;
+    left: 10px;
 }
 #places-table-container {
     width: 470px;
@@ -70,7 +70,7 @@ body {
 #search-form {
     position: absolute;
     top: 40px; /* adjust as needed */
-    left: 270px; /* adjust as needed */
+    left: 275px; /* adjust as needed */
     transform: translateX(-50%);
     z-index: 1000; /* Ensure the form is above the map */
 }
