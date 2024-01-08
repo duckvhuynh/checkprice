@@ -1,4 +1,33 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500&display=swap');
+
+/* Ensure that the .current class is being applied to the correct <li> element */
+.menu-bar li.current a {
+  color: #fff; /* Keep text color white for contrast */
+  background-color: #f15a22; /* Vibrant color for the background */
+  border-radius: 15px; /* Rounded corners */
+  padding: 10px 15px; /* Padding for better spacing */
+  transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+  position: relative; /* Position relative to allow absolute positioning of pseudo-elements */
+  text-decoration: none; /* Remove underline from links if present */
+}
+
+.menu-bar li.current a:hover {
+  background-color: #e14d20; /* Slightly darker shade on hover for a subtle effect */
+}
+
+/* Add the dash using the :after pseudo-element */
+.menu-bar li.current a:after {
+  content: ''; /* Required for pseudo-elements */
+  display: block; /* Make it a block to give it width and height */
+  width: 30px; /* Width of the dash */
+  height: 3px; /* Height of the dash */
+  background-color: #f88a4b; /* Color of the dash */
+  position: absolute; /* Position absolutely within the relative parent */
+  bottom: -6px; /* Position below the text */
+  left: 50%; /* Start from the middle */
+  transform: translateX(-50%); /* Center the dash */
+  border-radius: 1px; /* Optional: slightly round the corners of the dash */
+}
 .leaflet-control-attribution.leaflet-control {
   display: none;
 }
