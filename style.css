@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500&display=swap');
 #loading-skeleton {
-  width: 910px;
+  width: 920px;
 }
 .skeleton-table {
   width: 100%;
@@ -596,7 +596,7 @@ form input[type="time"] {
 
 form button[type="submit"] {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
-  padding: 5px 10px;
+  padding: 10px 11px;
   border: none;
   border-radius: 15px;
   cursor: pointer;
@@ -640,7 +640,7 @@ form select {
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
   height: auto;
   font-family: 'Quicksand', sans-serif;
-  padding: 10.5px;
+  padding: 11px;
   border: 2px solid #ddd;
   border-radius: 15px;
   margin-bottom: 20px;
