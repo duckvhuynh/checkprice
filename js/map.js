@@ -43,8 +43,8 @@ function routeMap(fromLat, fromLng, toLat, toLng) {
     var from = L.latLng(fromLat, fromLng);
     var to = L.latLng(toLat, toLng);
 
-    var pickupIcon = createIcon('#pickup-icon');
-    var dropoffIcon = createIcon('#destination-icon');
+    var pickupIcon = createIconRoute('#pickup-icon');
+    var dropoffIcon = createIconRoute('#destination-icon');
 
     if (!map) {
         map = L.map('map').flyToBounds([from, to], {duration: 2.0});
@@ -117,11 +117,7 @@ function addTileLayerToMap() {
 
 
 function addMarkerToMap(lat, lng, iconUrl, draggable) {
-    var customIcon = L.icon({
-        iconUrl: iconUrl? iconUrl : `${path}geo-pin.svg`,
-        iconSize: [24, 24],
-        iconAnchor: [12, 24]
-    });
+    var customIcon = createIcon(iconUrl);
     var markerOptions = {
         icon: customIcon,
         draggable: !!draggable // Convert draggable to a boolean
@@ -138,13 +134,8 @@ function addMarkerToMap(lat, lng, iconUrl, draggable) {
             clearMarkers();
 
             // Set the new icon for the centerMarker
-            var newIconUrl = `${path}geo-pin-drag.svg`; // Replace with the path to your new icon
-            var newIcon = L.icon({
-                iconUrl: newIconUrl,
-                iconSize: [24, 24], // Set the size of the icon
-                iconAnchor: [12, 24] // Set the anchor point of the icon
-            });
-            event.target.setIcon(newIcon);
+            var newIconUrl = createIcon(`${path}marker/geo-pin-drag.png`); // Replace with the path to your new icon
+            event.target.setIcon(newIconUrl);
             const radiusValue = parseFloat(document.getElementById('radius').value);
             if (!isNaN(radiusValue)) {
                 updateCircle(newLatLng.lat, newLatLng.lng, radiusValue);
@@ -187,9 +178,15 @@ function clearMarkers() {
     markerIdCounter = 0; // Reset the counter
 }
 
-function createIcon(elementId) {
+function createIconRoute(elementId) {
     var iconUrl = document.querySelector(elementId).src;
-    return L.icon({ iconUrl: iconUrl, iconSize: [24, 24], iconAnchor: [12, 24] });
+    var marker = iconUrl.includes('hotel') ? 'hotel.png' : iconUrl.includes('airport') ? 'airport.png' : 'geo-pin.png';
+    var markerPath = `${path}marker/${marker}`;
+    return L.icon({ iconUrl: markerPath, iconSize: [36, 36], iconAnchor: [18, 36] });
+}
+
+function createIcon(iconUrl) {
+    return L.icon({ iconUrl: iconUrl? iconUrl : `${path}marker/geo-pin.png`, iconSize: [36, 36], iconAnchor: [18, 36] });
 }
 
 function centerMapAndAddMarker(lat, lng, iconUrl) {

@@ -149,6 +149,7 @@ const destinationWorker = new Worker('worker/locationWorker.js');
 
     const priceHeader = document.querySelector("#data-table th:nth-child(4)");
     const carDescriptionHeader = document.querySelector("#data-table th:nth-child(3)");
+    const carSupplierHeader = document.querySelector("#data-table th:nth-child(5)");
     const priceHeaderElife = document.querySelector("#data-table-elifelimo th:nth-child(4)");
     const carDescriptionHeaderElife = document.querySelector("#data-table-elifelimo th:nth-child(3)");
     const cellDropoff = document.querySelector("#data-table-route th:nth-child(2)");
@@ -156,7 +157,7 @@ const destinationWorker = new Worker('worker/locationWorker.js');
   
     addCopyIconToCell(cellDropoff);
     addCopyIconToCell(cellDistance);
-    [priceHeader, carDescriptionHeader].forEach(addCopyIconToCell);
+    [priceHeader, carDescriptionHeader, carSupplierHeader].forEach(addCopyIconToCell);
     [priceHeaderElife, carDescriptionHeaderElife].forEach(addCopyIconToCell);
   
     cellDropoff.style.cursor = "pointer";
@@ -180,6 +181,12 @@ const destinationWorker = new Worker('worker/locationWorker.js');
     carDescriptionHeader.title = "Click to copy all car descriptions";
     carDescriptionHeader.addEventListener("click", () => {
       copyToClipboard(copyData.map(data => data.carDescription).join("\n"), "Copied all car descriptions");
+    });
+
+    carSupplierHeader.style.cursor = "pointer";
+    carSupplierHeader.title = "Click to copy all car suppliers";
+    carSupplierHeader.addEventListener("click", () => {
+      copyToClipboard(copyData.map(data => data.carSupplier).join("\n"), "Copied all car suppliers");
     });
   
     priceHeaderElife.style.cursor = "pointer";

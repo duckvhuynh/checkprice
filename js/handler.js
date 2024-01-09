@@ -319,7 +319,7 @@ function handleListClick(event, input, iconId, isGetID = false) {
     input.dataset.lat = item.dataset.lat;
     input.dataset.lon = item.dataset.lon;
     
-    if (isGetID) centerMapAndAddMarker(item.dataset.lat, item.dataset.lon, locationIcon.src);
+    if (isGetID) centerMapAndAddMarker(item.dataset.lat, item.dataset.lon, locationIcon.src.replace('svg', 'png').replace('icon/', 'icon/marker/'));
 
     event.currentTarget.innerHTML = '';
     event.currentTarget.style.display = 'none';

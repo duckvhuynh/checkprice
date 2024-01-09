@@ -5,18 +5,20 @@ const placeNameWorker = new Worker('../worker/locationWorker.js');
 document.addEventListener('DOMContentLoaded', function() {
     initMap(16.0555992, 108.2371671, 14);
 
+    const nameHeader = document.querySelector("#places-table th:nth-child(1)");
     const idHeader = document.querySelector("#places-table th:nth-child(2)");
-    addCopyIconToCell(idHeader);
-
-    idHeader.style.cursor = "pointer"; 
-    idHeader.title = "Click to copy all ids"; 
-    idHeader.addEventListener("click", () => {
-      let placeIds = Array.from(document.querySelectorAll('#places-table tbody tr td:nth-child(2)'))
-        .map(td => td.textContent)
-        .join('\n');
-      copyToClipboard(placeIds, "Copied all ids");
+    [nameHeader, idHeader].forEach(item => {
+      addCopyIconToCell(item);
+      item.style.cursor = "pointer";
+      item.title = "Click to copy all values";
+      item.addEventListener("click", () => {
+        const index = item.cellIndex + 1;
+        const copyData = Array.from(document.querySelectorAll(`#places-table td:nth-child(${index})`))
+          .map(td => td.textContent)
+          .join('\n');
+        copyToClipboard(copyData, `Copied all ${item.textContent.toLowerCase()}`);
+      });
     });
-
 
     setupWorker(locationWorker, 'location-list', 'center-location', 'center-icon', true);
 

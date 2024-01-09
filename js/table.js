@@ -77,10 +77,12 @@ function updateCopyData() {
   copyData = [];
   const priceCells = document.querySelectorAll("#data-table td:nth-child(4)");
   const carDescriptionCells = document.querySelectorAll("#data-table td:nth-child(3)");
+  const carSupplierCells = document.querySelectorAll("#data-table td:nth-child(5)");
   priceCells.forEach((cell, index) => {
     copyData.push({
       price: cell.textContent,
-      carDescription: carDescriptionCells[index].textContent
+      carDescription: carDescriptionCells[index].textContent,
+      carSupplier: carSupplierCells[index].textContent
     });
   });
 }
