@@ -23,7 +23,7 @@ function initMapOld(lat, lng, zoom) {
 }
 function initMap(lat, lng, zoom) {
     if (!map) {
-        map = L.map('map', { minZoom: 5, edgeBufferTiles: 5 }).setView([lat, lng], zoom);
+        map = L.map('map', { minZoom: 5 }).setView([lat, lng], zoom);
         addTileLayerToMap();
         addMarkerToMap(lat, lng, `${path}mtt-pin.png`);
     } else {
@@ -112,7 +112,7 @@ function updateCircle(lat, lng, radius) {
 function addTileLayerToMap() {
     // L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=07420e59-d599-4f1f-b5ce-3d843b0c8b40', {}).addTo(map);
     // L.tileLayer('https://{s}.tile.jawg.io/jawg-sunny/{z}/{x}/{y}{r}.png?access-token=OcSnuVIhYcxuMJfVYr1Wt9P4CFi7ae5R3KaSsWbpmHG5Wg9tCXmQgXyRsQtsRagK', {}).addTo(map);
-    L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {subdomains:['mt0','mt1','mt2','mt3']}).addTo(map);
+    L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {subdomains:['mt0','mt1','mt2','mt3'], edgeBufferTiles: 5 }).addTo(map);
 }
 
 
