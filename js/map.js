@@ -23,7 +23,7 @@ function initMapOld(lat, lng, zoom) {
 }
 function initMap(lat, lng, zoom) {
     if (!map) {
-        map = L.map('map', { minZoom: 5 }).setView([lat, lng], zoom);
+        map = L.map('map', { minZoom: 5, edgeBufferTiles: 5 }).setView([lat, lng], zoom);
         addTileLayerToMap();
         addMarkerToMap(lat, lng, `${path}mtt-pin.png`);
     } else {
