@@ -116,6 +116,35 @@ function addTileLayerToMap() {
 }
 
 
+// function addMarkerToMap(lat, lng, iconUrl, draggable) {
+//     var customIcon = createIcon(iconUrl);
+//     var markerOptions = {
+//         icon: customIcon,
+//         draggable: !!draggable // Convert draggable to a boolean
+//     };
+//     var marker = L.marker([lat, lng], markerOptions).addTo(map);
+
+//     if (draggable) {
+//         marker.on('dragend', function(event) {
+//             var newLatLng = event.target.getLatLng();
+//             // Update the center location with the new position
+//             // For example, update the dataset of the center-location input
+//             document.getElementById('center-location').dataset.lat = newLatLng.lat;
+//             document.getElementById('center-location').dataset.lon = newLatLng.lng;
+//             clearMarkers();
+
+//             // Set the new icon for the centerMarker
+//             var newIconUrl = createIcon(`${path}marker/geo-pin-drag.png`); // Replace with the path to your new icon
+//             event.target.setIcon(newIconUrl);
+//             const radiusValue = parseFloat(document.getElementById('radius').value);
+//             if (!isNaN(radiusValue)) {
+//                 updateCircle(newLatLng.lat, newLatLng.lng, radiusValue);
+//             }
+//         });
+//     }
+
+//     return marker;
+// }
 function addMarkerToMap(lat, lng, iconUrl, draggable) {
     var customIcon = createIcon(iconUrl);
     var markerOptions = {
@@ -125,21 +154,31 @@ function addMarkerToMap(lat, lng, iconUrl, draggable) {
     var marker = L.marker([lat, lng], markerOptions).addTo(map);
 
     if (draggable) {
-        marker.on('dragend', function(event) {
+        marker.on('drag', function(event) { // Use 'drag' instead of 'dragend'
             var newLatLng = event.target.getLatLng();
             // Update the center location with the new position
-            // For example, update the dataset of the center-location input
             document.getElementById('center-location').dataset.lat = newLatLng.lat;
             document.getElementById('center-location').dataset.lon = newLatLng.lng;
-            clearMarkers();
 
+            // Update the circle's position to follow the marker
+            if (circle) {
+                circle.setLatLng(newLatLng);
+            }
+
+            // Optionally, you can also update the radius in real-time if needed
+            // const radiusValue = parseFloat(document.getElementById('radius').value);
+            // if (!isNaN(radiusValue)) {
+            //     circle.setRadius(radiusValue);
+            // }
+        });
+
+        // You may still want to keep the 'dragend' event to perform any final updates
+        // once the user has finished dragging the marker.
+        marker.on('dragend', function(event) {
             // Set the new icon for the centerMarker
             var newIconUrl = createIcon(`${path}marker/geo-pin-drag.png`); // Replace with the path to your new icon
             event.target.setIcon(newIconUrl);
-            const radiusValue = parseFloat(document.getElementById('radius').value);
-            if (!isNaN(radiusValue)) {
-                updateCircle(newLatLng.lat, newLatLng.lng, radiusValue);
-            }
+            clearMarkers();
         });
     }
 
