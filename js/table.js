@@ -55,7 +55,7 @@
 
 function updateCopyDataDistance() {
   copyDataDistance = 0;
-  const cellDistance = document.querySelector("#data-table-route td:nth-child(5)");
+  const cellDistance = document.querySelector("#data-table-route td:nth-child(4)");
   copyDataDistance = cellDistance.textContent.split(" ")[0];
 }
 
