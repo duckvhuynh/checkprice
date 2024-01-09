@@ -154,31 +154,22 @@ function addMarkerToMap(lat, lng, iconUrl, draggable) {
     var marker = L.marker([lat, lng], markerOptions).addTo(map);
 
     if (draggable) {
-        marker.on('drag', function(event) { // Use 'drag' instead of 'dragend'
+        marker.on('dragstart', function() {
+            clearMarkers();
+        });
+        marker.on('drag', function(event) {
             var newLatLng = event.target.getLatLng();
-            // Update the center location with the new position
-            document.getElementById('center-location').dataset.lat = newLatLng.lat;
-            document.getElementById('center-location').dataset.lon = newLatLng.lng;
-
-            // Update the circle's position to follow the marker
             if (circle) {
                 circle.setLatLng(newLatLng);
             }
-
-            // Optionally, you can also update the radius in real-time if needed
-            // const radiusValue = parseFloat(document.getElementById('radius').value);
-            // if (!isNaN(radiusValue)) {
-            //     circle.setRadius(radiusValue);
-            // }
         });
-
-        // You may still want to keep the 'dragend' event to perform any final updates
-        // once the user has finished dragging the marker.
         marker.on('dragend', function(event) {
-            // Set the new icon for the centerMarker
-            var newIconUrl = createIcon(`${path}marker/geo-pin-drag.png`); // Replace with the path to your new icon
+            var newLatLng = event.target.getLatLng();
+            document.getElementById('center-location').dataset.lat = newLatLng.lat;
+            document.getElementById('center-location').dataset.lon = newLatLng.lng;
+            var newIconUrl = createIcon(`${path}marker/geo-pin-drag.png`);
             event.target.setIcon(newIconUrl);
-            clearMarkers();
+            
         });
     }
 
