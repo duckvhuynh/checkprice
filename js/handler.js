@@ -439,7 +439,14 @@ function sortItemsByOrder(items, orderIndexes, itemKey) {
 
 function sortCarDecription(websiteData) {
   websiteData.journeys.forEach((journey) => {
-    journey.legs[0].results = sortItemsByOrder(journey.legs[0].results, carOrderIndexes, 'description');
+    journey.legs[0].results.sort((a, b) => {
+      const aOrderIndex = carOrderIndexes[a.carDetails.description];
+      const bOrderIndex = carOrderIndexes[b.carDetails.description];
+      if (aOrderIndex === undefined && bOrderIndex === undefined) return 0;
+      if (aOrderIndex === undefined) return 1;
+      if (bOrderIndex === undefined) return -1;
+      return aOrderIndex - bOrderIndex;
+    });
   });
 }
 
